@@ -8,7 +8,20 @@ import sqlite3
 
 URL_ALL_BLOCKS_PAGE = " https://minecraft.fandom.com/wiki/Block#List_of_blocks"
 URL_ALL_ITEMS_PAGE = "https://minecraft.fandom.com/wiki/Item"
-DB_NAME = "block_list"
+BLOCK_TABLE_NAME = "block_list"
+DB_NAME = "db/minecraft.db"
+
+
+def connect_to_db():
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+    return conn, cur
+
+
+def close_db(conn, cur):
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def init_block_list_database():
@@ -19,20 +32,16 @@ def init_block_list_database():
     item_names = [li_item.text.strip() for li_item in block_list_lis]
 
     # Set up and write to the database
-    conn = sqlite3.connect(f"db/{DB_NAME}.db")
-    cur = conn.cursor()
-    cur.execute(f"DROP TABLE IF EXISTS {DB_NAME}")
-    cur.execute(f"""CREATE TABLE {DB_NAME}
+    conn, cur = connect_to_db()
+    cur.execute(f"DROP TABLE IF EXISTS {BLOCK_TABLE_NAME}")
+    cur.execute(f"""CREATE TABLE {BLOCK_TABLE_NAME}
         (block_name TEXT PRIMARY KEY, block_group TEXT); """)
     calculated_groups = []
     for name in item_names:
         group = input(f"What block group does {name} belong to? ")
         calculated_groups.append(group)
-        cur.execute(f'INSERT INTO {DB_NAME} VALUES ("{name}", "{group}");')
-    print(calculated_groups)
-    conn.commit()
-    cur.close()
-    conn.close()
+        cur.execute(f'INSERT INTO {BLOCK_TABLE_NAME} VALUES ("{name}", "{group}");')
+    close_db(conn, cur)
 
 
 def add_items_to_block_list():
@@ -46,23 +55,20 @@ def add_items_to_block_list():
         item_list = item_lists[i].contents[1].find_all("li")
         item_names = item_names + [item.text.strip() for item in item_list]
 
-    conn = sqlite3.connect(f"db/{DB_NAME}.db")
+    conn = sqlite3.connect(f"db/{BLOCK_TABLE_NAME}.db")
     cur = conn.cursor()
+    conn, cur = connect_to_db()
     for name in item_names:
         try:
-            cur.execute(f'INSERT INTO {DB_NAME} VALUES ("{name}", "");')
+            cur.execute(f'INSERT INTO {BLOCK_TABLE_NAME} VALUES ("{name}", "");')
         except sqlite3.IntegrityError:
             continue
-
-    conn.commit()
-    cur.close()
-    conn.close()
+    close_db(conn, cur)
 
 
 def sanity_check_group():
-    conn = sqlite3.connect(f"db/{DB_NAME}.db")
-    cur = conn.cursor()
-    cur.execute(f"SELECT * FROM {DB_NAME}")
+    conn, cur = connect_to_db()
+    cur.execute(f"SELECT * FROM {BLOCK_TABLE_NAME}")
     result = cur.fetchall()
     # Make a dictionary
     group_dict = defaultdict(int)
@@ -73,6 +79,22 @@ def sanity_check_group():
         print(f"{key}: {group_dict[key]}")
 
 
+def move_db():
+    OLD_DB_NAME = "db/block_list.db"
+    conn = sqlite3.connect(OLD_DB_NAME)
+    cur = conn.cursor()
+    cur.execute(f"SELECT * FROM {BLOCK_TABLE_NAME}")
+    results = cur.fetchall()
+    close_db(conn, cur)
+
+    conn, cur = connect_to_db()
+    cur.execute(f"DROP TABLE IF EXISTS {BLOCK_TABLE_NAME}")
+    cur.execute(f"""CREATE TABLE {BLOCK_TABLE_NAME}
+            (block_name TEXT PRIMARY KEY, block_group TEXT); """)
+    for result in results:
+        cur.execute(f'INSERT INTO {BLOCK_TABLE_NAME} VALUES ("{result[0]}", "{result[1]}");')
+    close_db(conn, cur)
+
 
 if __name__ == '__main__':
-    add_items_to_block_list()
+    move_db()
