@@ -34,8 +34,29 @@ def init_block_list_database():
     cur.close()
     conn.close()
 
+
 def add_items_to_block_list():
-    page = requests.get()
+    page = requests.get(URL_ALL_ITEMS_PAGE)
+    soup = BeautifulSoup(page.content, "html.parser")
+
+    item_lists = soup.find_all("div", class_="div-col")
+    # I only care about the first 3 from here
+    item_names = []
+    for i in range(3):
+        item_list = item_lists[i].contents[1].find_all("li")
+        item_names = item_names + [item.text.strip() for item in item_list]
+
+    conn = sqlite3.connect(f"db/{DB_NAME}.db")
+    cur = conn.cursor()
+    for name in item_names:
+        try:
+            cur.execute(f'INSERT INTO {DB_NAME} VALUES ("{name}", "");')
+        except sqlite3.IntegrityError:
+            continue
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def sanity_check_group():
@@ -54,4 +75,4 @@ def sanity_check_group():
 
 
 if __name__ == '__main__':
-    sanity_check_group()
+    add_items_to_block_list()
