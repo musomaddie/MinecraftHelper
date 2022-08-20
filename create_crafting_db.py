@@ -13,6 +13,8 @@ OBTAINING_TABLE_NAME = "item_obtaining_method"
 BREAKING_TABLE_NAME = "item_breaking"
 TRADING_TABLE_NAME = "item_trading"
 NAT_GEN_TABLE_NAME = "item_natural_generation"
+NAT_GEN_BIOME_TABLE_NAME = "item_generation_biome"
+FISHING_TABLE_NAME = "item_fishing"
 
 DB_NAME = "db/minecraft.db"
 
@@ -56,12 +58,14 @@ def _get_blocks_to_groups(cur):
 def init_schema():
     conn, cur = connect_to_db()
     tables = [
-        CRAFTING_TABLE_NAME,
-        RECIPE_TABLE_NAME,
-        BREAKING_TABLE_NAME,
-        OBTAINING_TABLE_NAME,
-        TRADING_TABLE_NAME,
-        NAT_GEN_TABLE_NAME
+        # CRAFTING_TABLE_NAME,
+        # RECIPE_TABLE_NAME,
+        # BREAKING_TABLE_NAME,
+        # OBTAINING_TABLE_NAME,
+        # TRADING_TABLE_NAME,
+        # NAT_GEN_TABLE_NAME,
+        NAT_GEN_BIOME_TABLE_NAME,
+        FISHING_TABLE_NAME,
     ]
     for table in tables:
         cur.execute(f"DROP TABLE IF EXISTS {table}")
@@ -126,7 +130,7 @@ def _get_all_paragraph_elements(starting_point, end_name):
     paragraphs = []
     current_item = starting_point.next_sibling
     while True:
-        if current_item.name == end_name:
+        if current_item.name == end_name or current_item.name == "h2":
             return paragraphs
         if current_item.name == "p":
             paragraphs.append(current_item)
@@ -146,6 +150,20 @@ def _find_table_type(starting_point, end_search_name):
 def _add_to_obtaining_table(conn, block_name, method_name, g_id):
     with open("db/scripts/insert_item_obtaining_method.sql") as f:
         conn.execute(f.read(), [block_name, method_name, g_id])
+
+
+def add_fishing(conn, cur, block_name, fishing_heading_element):
+    paragraphs = _get_all_paragraph_elements(fishing_heading_element, "h3")
+    print(paragraphs)
+    treasure_type = input(f"What treasure type is this? ")
+    with open("db/scripts/insert_item_fishing.sql") as f:
+        conn.execute(f.read(), [block_name, treasure_type])
+
+    cur.execute(
+        f'''SELECT fishing_id FROM item_fishing WHERE item_name = "{block_name}"''')
+    ids = [row[0] for row in cur.fetchall()]
+    for i in ids:
+        _add_to_obtaining_table(conn, block_name, "fishing", i)
 
 
 def add_trading(conn, cur, block_name, trading_heading_element):
@@ -183,8 +201,25 @@ def add_trading(conn, cur, block_name, trading_heading_element):
         _add_to_obtaining_table(conn, block_name, "trading", i)
 
 
+def add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element):
+    paragraphs = _get_all_paragraph_elements(natural_gen_heading_element, "h3")
+    print(paragraphs)
+    biome = input(f"What biome is {block_name} found in? ")
+    with open("db/scripts/insert_item_generation_biome.sql") as f:
+        conn.execute(f.read(), [block_name, biome])
+
+    cur.execute(
+        f'''SELECT generation_id FROM item_generation_biome WHERE item_name = "{block_name}"''')
+    ids = [row[0] for row in cur.fetchall()]
+    for i in ids:
+        _add_to_obtaining_table(conn, block_name, "natural generation biome", i)
+
+
 def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
     table = _find_table_type(natural_gen_heading_element, "h3")
+    if table is None:
+        add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element)
+        return
     rows = []
     current_structure = ""
     structures = []
@@ -229,8 +264,21 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
 
 
 def add_breaking(conn, cur, block_name, breaking_heading_element):
-    print(breaking_heading_element)
-    pass
+    paragraphs = _get_all_paragraph_elements(breaking_heading_element, "h3")
+    print(paragraphs)
+    tool = input(f"Does {block_name} require a tool to mine? ") == "yes"
+    if tool:
+        fastest_tool = input("What is the fastest tool? ")
+        requires_silk = input("Does {block_name} require silk touch to mine") == "yes"
+        with open("db/scripts/insert_item_breaking.sql") as f:
+            conn.execute(f.read(), [block_name, tool, requires_silk, fastest_tool])
+    else:
+        with open("db/scripts/insert_item_breaking_without_fastest_tool.sql") as f:
+            conn.execute(f.read(), [block_name, False, False])
+    cur.execute(f'''SELECT breaking_id FROM item_breaking WHERE item_name = "{block_name}"''')
+    ids = [row[0] for row in cur.fetchall()]
+    for i in ids:
+        _add_to_obtaining_table(conn, block_name, "breaking", i)
 
 
 def read_obtaining(conn, cur, block_name, obtaining_heading_element):
@@ -242,10 +290,12 @@ def read_obtaining(conn, cur, block_name, obtaining_heading_element):
             text = current_item.text.strip().lower()
             if "breaking" in text:
                 add_breaking(conn, cur, block_name, current_item)
-            # if text == "trading[]":
-            #     add_trading(conn, cur, block_name, current_item)
-            # if text == "natural generation[]":
-            #     add_natural_gen(conn, cur, block_name, current_item)
+            if "trading" in text:
+                add_trading(conn, cur, block_name, current_item)
+            if "natural generation" in text:
+                add_natural_gen(conn, cur, block_name, current_item)
+            if "fishing" in text:
+                add_fishing(conn, cur, block_name, current_item)
         current_item = current_item.next_sibling
 
 
