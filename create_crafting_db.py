@@ -143,7 +143,12 @@ def _find_table_type(starting_point, end_search_name):
         current_item = current_item.next_sibling
 
 
-def add_trading(block_name, conn, trading_heading_element):
+def _add_to_obtaining_table(conn, block_name, method_name, g_id):
+    with open("db/scripts/insert_item_obtaining_method.sql") as f:
+        conn.execute(f.read(), [block_name, method_name, g_id])
+
+
+def add_trading(conn, cur, block_name, trading_heading_element):
     # TODO: not sure of a nice way to auto generate the trading information.
     all_paragraph_elements = _get_all_paragraph_elements(trading_heading_element, "h3")
     print(f"Please enter the trading information extracted from below {block_name}")
@@ -168,8 +173,17 @@ def add_trading(block_name, conn, trading_heading_element):
             with open("db/scripts/insert_item_trading.sql") as f:
                 conn.execute(f.read(), [block_name, villager, emerald, other])
 
+    # Finds the IDs
+    cur.execute(
+        f'''SELECT trading_id
+        FROM item_trading
+        WHERE item_name = "{block_name}"''')
+    ids = [row[0] for row in cur.fetchall()]
+    for i in ids:
+        _add_to_obtaining_table(conn, block_name, "trading", i)
 
-def add_natural_gen(block_name, conn, natural_gen_heading_element):
+
+def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
     table = _find_table_type(natural_gen_heading_element, "h3")
     rows = []
     current_structure = ""
@@ -204,18 +218,34 @@ def add_natural_gen(block_name, conn, natural_gen_heading_element):
         with open("db/scripts/insert_item_natural_generation.sql") as f:
             conn.execute(f.read(), [block_name, structure, container, quantity, chance])
 
+    # Finds the IDs
+    cur.execute(
+        f'''SELECT generation_id 
+        FROM item_natural_generation 
+        WHERE item_name = "{block_name}"''')
+    ids = [row[0] for row in cur.fetchall()]
+    for i in ids:
+        _add_to_obtaining_table(conn, block_name, "natural generation", i)
 
-def read_obtaining(block_name, conn, obtaining_heading_element):
+
+def add_breaking(conn, cur, block_name, breaking_heading_element):
+    print(breaking_heading_element)
+    pass
+
+
+def read_obtaining(conn, cur, block_name, obtaining_heading_element):
     current_item = obtaining_heading_element.next_sibling
     while True:
         if current_item.name == "h2":
             break
         if current_item.name == "h3":
             text = current_item.text.strip().lower()
-            if text == "trading[]":
-                add_trading(block_name, conn, current_item)
-            if text == "natural generation[]":
-                add_natural_gen(block_name, conn, current_item)
+            if "breaking" in text:
+                add_breaking(conn, cur, block_name, current_item)
+            # if text == "trading[]":
+            #     add_trading(conn, cur, block_name, current_item)
+            # if text == "natural generation[]":
+            #     add_natural_gen(conn, cur, block_name, current_item)
         current_item = current_item.next_sibling
 
 
@@ -223,7 +253,8 @@ def add_recipes():
     conn, cur = connect_to_db()
     block_list = _get_all_blocks(cur)
     blocks_to_group = _get_blocks_to_groups(cur)
-    current_recipes = []
+    cur.execute("SELECT item_name FROM item_obtaining_method")
+    current_recipes = [row[0] for row in cur.fetchall()]
     for block in block_list:
         if block["name"] in current_recipes:
             print(f"Skipping {block['name']} as already completed")
@@ -233,7 +264,7 @@ def add_recipes():
         page = requests.get(f"{URL_BLOCK_PAGE_TEMPLATE}{url_name}")
         soup = BeautifulSoup(page.content, "html.parser")
         heading_element = soup.find(id="Obtaining").parent
-        read_obtaining(url_name, conn, heading_element)
+        read_obtaining(conn, cur, url_name, heading_element)
         conn.commit()
         current_recipes.append(block["name"])
 
