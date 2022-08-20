@@ -1,10 +1,8 @@
+import sqlite3
 from collections import defaultdict
-from typing import DefaultDict
 
-import bs4
 import requests
 from bs4 import BeautifulSoup
-import sqlite3
 
 URL_ALL_BLOCKS_PAGE = " https://minecraft.fandom.com/wiki/Block#List_of_blocks"
 URL_ALL_ITEMS_PAGE = "https://minecraft.fandom.com/wiki/Item"
@@ -28,13 +26,15 @@ def init_block_list_database():
     page = requests.get(URL_ALL_BLOCKS_PAGE)
     soup = BeautifulSoup(page.content, "html.parser")
 
-    block_list_lis = soup.find_all("div", class_="collapsible-content")[0].contents[0].find_all("li")
+    block_list_lis = soup.find_all("div", class_="collapsible-content")[0].contents[0].find_all(
+        "li")
     item_names = [li_item.text.strip() for li_item in block_list_lis]
 
     # Set up and write to the database
     conn, cur = connect_to_db()
     cur.execute(f"DROP TABLE IF EXISTS {BLOCK_TABLE_NAME}")
-    cur.execute(f"""CREATE TABLE {BLOCK_TABLE_NAME}
+    cur.execute(
+        f"""CREATE TABLE {BLOCK_TABLE_NAME}
         (block_name TEXT PRIMARY KEY, block_group TEXT); """)
     calculated_groups = []
     for name in item_names:
@@ -89,7 +89,8 @@ def move_db():
 
     conn, cur = connect_to_db()
     cur.execute(f"DROP TABLE IF EXISTS {BLOCK_TABLE_NAME}")
-    cur.execute(f"""CREATE TABLE {BLOCK_TABLE_NAME}
+    cur.execute(
+        f"""CREATE TABLE {BLOCK_TABLE_NAME}
             (block_name TEXT PRIMARY KEY, block_group TEXT); """)
     for result in results:
         cur.execute(f'INSERT INTO {BLOCK_TABLE_NAME} VALUES ("{result[0]}", "{result[1]}");')
@@ -97,4 +98,5 @@ def move_db():
 
 
 if __name__ == '__main__':
-    move_db()
+    # move_db()
+    print("nothing left to do")
