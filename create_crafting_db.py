@@ -152,17 +152,20 @@ def _add_to_obtaining_table(conn, block_name, method_name, g_id):
         conn.execute(f.read(), [block_name, method_name, g_id])
 
 
+def calculate_ids(cur, id_name, block_name, table_name):
+    cur.execute(
+        f'''SELECT {id_name} FROM {table_name} WHERE item_name ="{block_name}"'''
+    )
+    return [row[0] for row in cur.fetchall()]
+
+
 def add_fishing(conn, cur, block_name, fishing_heading_element):
     paragraphs = _get_all_paragraph_elements(fishing_heading_element, "h3")
     print(paragraphs)
     treasure_type = input(f"What treasure type is this? ")
     with open("db/scripts/insert_item_fishing.sql") as f:
         conn.execute(f.read(), [block_name, treasure_type])
-
-    cur.execute(
-        f'''SELECT fishing_id FROM item_fishing WHERE item_name = "{block_name}"''')
-    ids = [row[0] for row in cur.fetchall()]
-    for i in ids:
+    for i in calculate_ids(cur, "fishing_id", block_name, FISHING_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "fishing", i)
 
 
@@ -191,13 +194,7 @@ def add_trading(conn, cur, block_name, trading_heading_element):
             with open("db/scripts/insert_item_trading.sql") as f:
                 conn.execute(f.read(), [block_name, villager, emerald, other])
 
-    # Finds the IDs
-    cur.execute(
-        f'''SELECT trading_id
-        FROM item_trading
-        WHERE item_name = "{block_name}"''')
-    ids = [row[0] for row in cur.fetchall()]
-    for i in ids:
+    for i in calculate_ids(cur, "trading_id", block_name, TRADING_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "trading", i)
 
 
@@ -207,11 +204,7 @@ def add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element
     biome = input(f"What biome is {block_name} found in? ")
     with open("db/scripts/insert_item_generation_biome.sql") as f:
         conn.execute(f.read(), [block_name, biome])
-
-    cur.execute(
-        f'''SELECT generation_id FROM item_generation_biome WHERE item_name = "{block_name}"''')
-    ids = [row[0] for row in cur.fetchall()]
-    for i in ids:
+    for i in calculate_ids(cur, "generation_id", block_name, NAT_GEN_BIOME_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "natural generation biome", i)
 
 
@@ -220,14 +213,12 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
     if table is None:
         add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element)
         return
-    rows = []
     current_structure = ""
     structures = []
     containers = []
     quantities = []
     chances = []
     seen_java = False
-    seen_first_cell = False
     for desc in table.descendants:
         if desc.name == "tr":
             if "bedrock edition" in desc.text.strip().lower():
@@ -252,14 +243,7 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
     for structure, container, quantity, chance in zip(structures, quantities, containers, chances):
         with open("db/scripts/insert_item_natural_generation.sql") as f:
             conn.execute(f.read(), [block_name, structure, container, quantity, chance])
-
-    # Finds the IDs
-    cur.execute(
-        f'''SELECT generation_id 
-        FROM item_natural_generation 
-        WHERE item_name = "{block_name}"''')
-    ids = [row[0] for row in cur.fetchall()]
-    for i in ids:
+    for i in calculate_ids(cur, "generation_id", block_name, NAT_GEN_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "natural generation", i)
 
 
@@ -275,9 +259,7 @@ def add_breaking(conn, cur, block_name, breaking_heading_element):
     else:
         with open("db/scripts/insert_item_breaking_without_fastest_tool.sql") as f:
             conn.execute(f.read(), [block_name, False, False])
-    cur.execute(f'''SELECT breaking_id FROM item_breaking WHERE item_name = "{block_name}"''')
-    ids = [row[0] for row in cur.fetchall()]
-    for i in ids:
+    for i in calculate_ids(cur, "breaking_id", block_name, BREAKING_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "breaking", i)
 
 
