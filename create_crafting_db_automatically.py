@@ -58,14 +58,14 @@ def _get_blocks_to_groups(cur):
 def init_schema():
     conn, cur = connect_to_db()
     tables = [
-        # CRAFTING_TABLE_NAME,
+        CRAFTING_TABLE_NAME,
         # RECIPE_TABLE_NAME,
         # BREAKING_TABLE_NAME,
         # OBTAINING_TABLE_NAME,
         # TRADING_TABLE_NAME,
         # NAT_GEN_TABLE_NAME,
-        NAT_GEN_BIOME_TABLE_NAME,
-        FISHING_TABLE_NAME,
+        # NAT_GEN_BIOME_TABLE_NAME,
+        # FISHING_TABLE_NAME,
     ]
     for table in tables:
         cur.execute(f"DROP TABLE IF EXISTS {table}")
@@ -217,6 +217,9 @@ def add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element
 
 
 def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
+    to_continue = input(f"Save natural generation data for {block_name} (y)? ")
+    if to_continue != "y":
+        return
     table = _find_table_type(natural_gen_heading_element, "h3")
     if table is None:
         add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element)
@@ -257,6 +260,7 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
 
 def add_breaking(conn, cur, block_name, breaking_heading_element):
     # Attempt to find the tool table
+    # TODO: if in a group and there's multiple types prompt for explicit thing
     table_element = _find_table_type(breaking_heading_element, "h3")
     if table_element:
         rows = _find_all_tr(table_element)
@@ -283,6 +287,18 @@ def add_breaking(conn, cur, block_name, breaking_heading_element):
         _add_to_obtaining_table(conn, block_name, "breaking", i)
 
 
+def add_crafting(conn, cur, block_name, crafting_heading_element):
+    # Attempt to find the table
+    # rows = _find_all_tr(_find_table_type(crafting_heading_element, "h3").find("tbody"))
+    rows = _find_table_type(crafting_heading_element, "h2").find("tbody")
+    print(rows.prettify())
+    input()
+    # for row in rows:
+    #     print(row)
+    #     break
+    # input()
+
+
 def read_obtaining(conn, cur, block_name, obtaining_heading_element):
     current_item = obtaining_heading_element.next_sibling
     while True:
@@ -290,15 +306,18 @@ def read_obtaining(conn, cur, block_name, obtaining_heading_element):
             break
         if current_item.name == "h3":
             text = current_item.text.strip().lower()
+            if "crafting" in text:
+                add_crafting(conn, cur, block_name, current_item)
             if "breaking" in text:
                 add_breaking(conn, cur, block_name, current_item)
             if "trading" in text:
                 add_trading(conn, cur, block_name, current_item)
-            if "natural generation" in text:
-                add_natural_gen(conn, cur, block_name, current_item)
+            # if "natural generation" in text:
+            #     add_natural_gen(conn, cur, block_name, current_item)
             if "fishing" in text:
                 add_fishing(conn, cur, block_name, current_item)
         current_item = current_item.next_sibling
+    input()
 
 
 def add_recipes():

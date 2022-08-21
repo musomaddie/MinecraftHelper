@@ -10,6 +10,7 @@ CREATE TABLE crafting_recipe
     crafting_slot_7                  TEXT,
     crafting_slot_8                  TEXT,
     crafting_slot_9                  TEXT,
+    number_created                   INT,
     works_four_by_four               BOOLEAN NOT NULL,
     requires_exact_positioning       BOOLEAN NOT NULL,
     for_group                        BOOLEAN,
