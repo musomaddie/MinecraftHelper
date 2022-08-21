@@ -147,6 +147,14 @@ def _find_table_type(starting_point, end_search_name):
         current_item = current_item.next_sibling
 
 
+def _find_all_tr(table_element):
+    elements = []
+    for desc in table_element.descendants:
+        if desc.name == "tr":
+            elements.append(desc)
+    return elements
+
+
 def _add_to_obtaining_table(conn, block_name, method_name, g_id):
     with open("db/scripts/insert_item_obtaining_method.sql") as f:
         conn.execute(f.read(), [block_name, method_name, g_id])
@@ -248,17 +256,29 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
 
 
 def add_breaking(conn, cur, block_name, breaking_heading_element):
-    paragraphs = _get_all_paragraph_elements(breaking_heading_element, "h3")
-    print(paragraphs)
-    tool = input(f"Does {block_name} require a tool to mine? ") == "yes"
-    if tool:
-        fastest_tool = input("What is the fastest tool? ")
-        requires_silk = input("Does {block_name} require silk touch to mine") == "yes"
-        with open("db/scripts/insert_item_breaking.sql") as f:
-            conn.execute(f.read(), [block_name, tool, requires_silk, fastest_tool])
+    # Attempt to find the tool table
+    table_element = _find_table_type(breaking_heading_element, "h3")
+    if table_element:
+        rows = _find_all_tr(table_element)
+        for row in rows:
+            if "tool" in row.contents[1].text.lower():
+                tool_link = row.contents[3].a.attrs["href"]
+                tool = tool_link.split("/")[2]
+                with open("db/scripts/insert_item_breaking.sql") as f:
+                    conn.execute(f.read(), [block_name, True, False, tool])
+                break
     else:
-        with open("db/scripts/insert_item_breaking_without_fastest_tool.sql") as f:
-            conn.execute(f.read(), [block_name, False, False])
+        paragraphs = _get_all_paragraph_elements(breaking_heading_element, "h3")
+        print(paragraphs)
+        tool = input(f"Does {block_name} require a tool to mine? ") == "yes"
+        if tool:
+            fastest_tool = input("What is the fastest tool? ")
+            requires_silk = input("Does {block_name} require silk touch to mine") == "yes"
+            with open("db/scripts/insert_item_breaking.sql") as f:
+                conn.execute(f.read(), [block_name, tool, requires_silk, fastest_tool])
+        else:
+            with open("db/scripts/insert_item_breaking_without_fastest_tool.sql") as f:
+                conn.execute(f.read(), [block_name, False, False])
     for i in calculate_ids(cur, "breaking_id", block_name, BREAKING_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "breaking", i)
 
