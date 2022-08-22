@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Item Addition Start</title>
+</head>
+<body>
+<h1> Adding information for {{block_name}} </h1>
+<!--TODO: how to make link again??-->
+<p>
+    <a href={{block_url}}>View in Minecraft Wiki</a>
+</p>
+<h2> How to obtain this block? </h2>
+<form method="post">
+    <!--    label for="trading_checkbox">Trading: </label>-->
+    <ul>
+        <li>
+            <input type="checkbox" id="trading_checkbox" name="trading"/>
+            <label for="trading_checkbox">Trading: </label>
+        </li>
+        <li>
+            <input type="checkbox" id="nat_gen_checkbox" name="nat_gen"/>
+            <label for="nat_gen_checkbox">Natural Generation (chests) </label>
+        </li>
+    </ul>
+    <input type="submit" value="Next"></input>
+</form>
+</body>
+</html>
