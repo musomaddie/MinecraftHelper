@@ -33,7 +33,7 @@ def close_db(conn, cur):
 
 
 def _add_from_schema_file(conn, table_name):
-    with open(f"db/schema/{table_name}.sql") as f:
+    with open(f"db/scripts/schema/{table_name}.sql") as f:
         conn.executescript(f.read())
         print("added schema")
 
@@ -199,7 +199,7 @@ def add_trading(conn, cur, block_name, trading_heading_element):
             with open("db/scripts/insert_item_trading_no_other_price.sql") as f:
                 conn.execute(f.read(), [block_name, villager, emerald])
         else:
-            with open("db/scripts/insert_item_trading.sql") as f:
+            with open("db/scripts/insert_into/insert_item_trading_other_item_no_level.sql") as f:
                 conn.execute(f.read(), [block_name, villager, emerald, other])
 
     for i in calculate_ids(cur, "trading_id", block_name, TRADING_TABLE_NAME):

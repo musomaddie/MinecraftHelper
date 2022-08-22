@@ -1674,76 +1674,81 @@
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="568" parent="490" name="emerald_price">
-      <DataType>INT|0s</DataType>
+    <column id="568" parent="490" name="villager_level">
+      <DataType>TEXT|0s</DataType>
       <Position>4</Position>
     </column>
-    <column id="569" parent="490" name="other_price">
-      <DataType>TEXT|0s</DataType>
+    <column id="569" parent="490" name="emerald_price">
+      <DataType>INT|0s</DataType>
+      <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <foreign-key id="570" parent="490">
+    <column id="570" parent="490" name="other_price">
+      <DataType>TEXT|0s</DataType>
+      <Position>6</Position>
+    </column>
+    <foreign-key id="571" parent="490">
       <ColNames>trading_id</ColNames>
       <RefColNames>generates</RefColNames>
       <RefTableName>item_obtaining_method</RefTableName>
     </foreign-key>
-    <foreign-key id="571" parent="490">
+    <foreign-key id="572" parent="490">
       <ColNames>item_name</ColNames>
       <RefColNames>name</RefColNames>
       <RefTableName>items_and_groups</RefTableName>
     </foreign-key>
-    <key id="572" parent="490">
+    <key id="573" parent="490">
       <ColNames>trading_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="573" parent="491" name="name">
+    <column id="574" parent="491" name="name">
       <DataType>TEXT|0s</DataType>
       <Position>1</Position>
     </column>
-    <column id="574" parent="491" name="is_group">
+    <column id="575" parent="491" name="is_group">
       <DataType>BOOLEAN|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="575" parent="491" name="part_of_group">
+    <column id="576" parent="491" name="part_of_group">
       <DataType>BOOLEAN|0s</DataType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <index id="576" parent="491" name="sqlite_autoindex_items_and_groups_1">
+    <index id="577" parent="491" name="sqlite_autoindex_items_and_groups_1">
       <ColNames>name</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="577" parent="491">
+    <key id="578" parent="491">
       <ColNames>name</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_items_and_groups_1</UnderlyingIndexName>
     </key>
-    <column id="578" parent="492" name="type">
+    <column id="579" parent="492" name="type">
       <DataType>TEXT|0s</DataType>
       <Position>1</Position>
     </column>
-    <column id="579" parent="492" name="name">
+    <column id="580" parent="492" name="name">
       <DataType>TEXT|0s</DataType>
       <Position>2</Position>
     </column>
-    <column id="580" parent="492" name="tbl_name">
+    <column id="581" parent="492" name="tbl_name">
       <DataType>TEXT|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="581" parent="492" name="rootpage">
+    <column id="582" parent="492" name="rootpage">
       <DataType>INT|0s</DataType>
       <Position>4</Position>
     </column>
-    <column id="582" parent="492" name="sql">
+    <column id="583" parent="492" name="sql">
       <DataType>TEXT|0s</DataType>
       <Position>5</Position>
     </column>
-    <column id="583" parent="493" name="name">
+    <column id="584" parent="493" name="name">
       <Position>1</Position>
     </column>
-    <column id="584" parent="493" name="seq">
+    <column id="585" parent="493" name="seq">
       <Position>2</Position>
     </column>
   </database-model>
