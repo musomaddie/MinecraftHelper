@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Item Addition Start</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block body %}
 <h1> Adding information for {{block_name}} </h1>
-<!--TODO: how to make link again??-->
 <p>
     <a href={{block_url}}>View in Minecraft Wiki</a>
 </p>
@@ -25,5 +19,4 @@
     </ul>
     <input type="submit" value="Next"></input>
 </form>
-</body>
-</html>
+{% endblock %}

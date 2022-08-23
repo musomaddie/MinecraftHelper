@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Natural Generation</title>
-</head>
-<body>
-
+{% extends "layout.html" %}
+{% block body %}
 <h1> Adding natural generation information for {{block_name}}</h1>
 <form method="post">
     <ul>
@@ -29,5 +23,4 @@
     <input type="submit" value="Submit & add another " name="another"/>
     <input type="submit" value="Submit & e to next obtaining method" name="next"/>
 </form>
-</body>
-</html>
+{% endblock %}

@@ -2,7 +2,7 @@ import ast
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
-from db_for_flask import add_natural_gen_to_db, get_db
+from db_for_flask import add_natural_gen_to_db, add_trading_to_db, get_db
 
 app = Flask(__name__)
 app.secret_key = "SECRET KEY EXAMPLE"
@@ -25,6 +25,8 @@ def move_next_page(block_name, remaining_items):
     # Get the first item
     if type(remaining_items) == str:
         remaining_items = ast.literal_eval(remaining_items)
+    if len(remaining_items) == 0:
+        return select_next_block(get_db().cursor())
     next_method = remaining_items.pop(0)
     return redirect(url_for(next_method, block_name=block_name, remaining_items=remaining_items))
 
@@ -56,7 +58,7 @@ def add_trading(block_name, remaining_items):
     emerald_price = request.form["emerald_price"]
     village_level = request.form["villager_level"]  # "" if not present
     other_item = request.form["other_item"]
-    # add_trading_to_db(get_db(), villager_type, village_level, emerald_price, other_item)
+    add_trading_to_db(get_db(), block_name, villager_type, village_level, emerald_price, other_item)
     flash(f"Successfully added {block_name} to trading table.")
     return move_next_page(block_name, remaining_items)
 
@@ -69,8 +71,8 @@ def add_block(block_name):
             block_name=block_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{block_name.replace(' ', '%20')}")
     methods = []
-    # if "trading" in request.form.keys():
-    #     methods.append("add_trading")
+    if "trading" in request.form.keys():
+        methods.append("add_trading")
     if "nat_gen" in request.form.keys():
         methods.append("add_natural_generation")
     # Get the correct method list for each step.
