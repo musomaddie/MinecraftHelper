@@ -6,6 +6,7 @@ from flask import g
 DB_S = "db/scripts/schema/"
 TRADING_TN = "item_trading"
 OBTAINING_TN = "item_obtaining_method"
+NAT_GEN_TN = "item_natural_generation"
 DB_INSERT_FN = "db/scripts/insert_into"
 
 
@@ -54,6 +55,13 @@ def add_trading_to_db(conn, block_name, villager, vill_level, emeralds, other):
 
     # Add to obtaining table
     add_to_obtaining_table(conn, conn.cursor(), block_name, "trading", "trading_id", TRADING_TN)
+
+
+def add_natural_gen_to_db(conn, block_name, struct, cont, quant, ch):
+    with open(f"{DB_INSERT_FN}insert_{NAT_GEN_TN}.sql") as f:
+        conn.execute(f.read(), [block_name, struct, cont, quant, ch])
+    add_to_obtaining_table(
+        conn, conn.cursor(), block_name, "natural generation", "generation_id", NAT_GEN_TN)
 
 
 def reset_table(conn, cur, table_name):

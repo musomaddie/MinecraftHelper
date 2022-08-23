@@ -1,8 +1,8 @@
 import ast
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
 
-from db_for_flask import get_db
+from db_for_flask import add_natural_gen_to_db, get_db
 
 app = Flask(__name__)
 app.secret_key = "SECRET KEY EXAMPLE"
@@ -31,7 +31,21 @@ def move_next_page(block_name, remaining_items):
 
 @app.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_natural_generation(block_name, remaining_items):
-    return "Adding natural generation"
+    if request.method == "GET":
+        return render_template("add_natural_generation.html", block_name=block_name)
+    structure = request.form["structure"]
+    container = request.form["container"]
+    quant = request.form["quantity_fd"]
+    ch = request.form["chance"]
+    add_natural_gen_to_db(get_db(), block_name, structure, container, quant, ch)
+    flash(f"Successfully added {block_name} to natural generation table")
+    if "next" in request.form.keys():
+        return move_next_page(block_name, remaining_items)
+    return redirect(
+        url_for(
+            "add_natural_generation",
+            block_name=block_name,
+            remaining_items=remaining_items))
 
 
 @app.route("/add_trading/<block_name>/<remaining_items>", methods=["GET", "POST"])
@@ -43,7 +57,7 @@ def add_trading(block_name, remaining_items):
     village_level = request.form["villager_level"]  # "" if not present
     other_item = request.form["other_item"]
     # add_trading_to_db(get_db(), villager_type, village_level, emerald_price, other_item)
-    # flash(f"Successfully added {block_name} to trading table.")
+    flash(f"Successfully added {block_name} to trading table.")
     return move_next_page(block_name, remaining_items)
 
 
@@ -55,8 +69,8 @@ def add_block(block_name):
             block_name=block_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{block_name.replace(' ', '%20')}")
     methods = []
-    if "trading" in request.form.keys():
-        methods.append("add_trading")
+    # if "trading" in request.form.keys():
+    #     methods.append("add_trading")
     if "nat_gen" in request.form.keys():
         methods.append("add_natural_generation")
     # Get the correct method list for each step.

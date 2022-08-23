@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Natural Generation</title>
+</head>
+<body>
+
+<h1> Adding natural generation information for {{block_name}}</h1>
+<form method="post">
+    <ul>
+        <li>
+            <label for="structure">What structure? </label>
+            <input type="text" id="structure" name="structure" required/>
+        </li>
+        <li>
+            <label for="container">Which container? </label>
+            <input type="text" id="container" name="container" required/>
+        </li>
+        <li>
+            <label for="quantity_fd">How many?</label>
+            <input type="number" id="quantity_fd" name="quantity_fd" required/>
+        </li>
+        <li>
+            <label for="chance">How likely? </label>
+            <input type="number" id="chance" name="chance" required/>
+        </li>
+    </ul>
+    <input type="submit" value="Submit & add another " name="another"/>
+    <input type="submit" value="Submit & e to next obtaining method" name="next"/>
+</form>
+</body>
+</html>

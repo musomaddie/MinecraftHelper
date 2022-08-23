@@ -252,7 +252,7 @@ def add_natural_gen(conn, cur, block_name, natural_gen_heading_element):
                 structures.append(s)
 
     for structure, container, quantity, chance in zip(structures, quantities, containers, chances):
-        with open("db/scripts/insert_item_natural_generation.sql") as f:
+        with open("db/scripts/insert_into/insert_item_natural_generation.sql") as f:
             conn.execute(f.read(), [block_name, structure, container, quantity, chance])
     for i in calculate_ids(cur, "generation_id", block_name, NAT_GEN_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "natural generation", i)
