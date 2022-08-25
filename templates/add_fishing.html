@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h1>How is {{block_name}} obtained via fishing? </h1>
+<form method="post">
+    <ul>
+        <li>
+            <label for="item_level">Item Level </label>
+            <input type="text" id="item_level" name="item_level" required/>
+        </li>
+    </ul>
+</form>
+
+{% endblock %}

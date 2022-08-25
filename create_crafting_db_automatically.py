@@ -171,7 +171,7 @@ def add_fishing(conn, cur, block_name, fishing_heading_element):
     paragraphs = _get_all_paragraph_elements(fishing_heading_element, "h3")
     print(paragraphs)
     treasure_type = input(f"What treasure type is this? ")
-    with open("db/scripts/insert_item_fishing.sql") as f:
+    with open("db/scripts/insert_into/item_fishing.sql") as f:
         conn.execute(f.read(), [block_name, treasure_type])
     for i in calculate_ids(cur, "fishing_id", block_name, FISHING_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "fishing", i)

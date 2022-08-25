@@ -5,9 +5,10 @@ from flask import g
 
 DB_S = "db/scripts/schema/"
 TRADING_TN = "item_trading"
-OBTAINING_TN = "item_obtaining_method"
 BREAKING_TN = "item_breaking"
+FISHING_TN = "item_fishing"
 NAT_GEN_TN = "item_natural_generation"
+OBTAINING_TN = "item_obtaining_method"
 DB_INSERT_FN = "db/scripts/insert_into/"
 
 
@@ -52,6 +53,13 @@ def add_breaking_to_db(conn, block_name, r_tool_s, r_silk_s, f_tool):
             conn.execute(f.read(), [block_name, r_tool, r_silk, f_tool])
     conn.commit()
     add_to_obtaining_table(conn, conn.cursor(), block_name, "breaking", "breaking_id", BREAKING_TN)
+
+
+def add_fishing_to_db(conn, block_name, item_lvl):
+    with open(f"{DB_INSERT_FN}{FISHING_TN}") as f:
+        conn.execute(f.read(), [block_name, item_lvl])
+    conn.commit()
+    add_to_obtaining_table(conn, conn.cursor(), block_name, "fishing", "fishing_id", FISHING_TN)
 
 
 def add_natural_gen_to_db(conn, block_name, struct, cont, quant, ch):

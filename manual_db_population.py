@@ -43,6 +43,14 @@ def add_breaking(block_name, remaining_items):
     return move_next_page(block_name, remaining_items)
 
 
+@app.route("/add_fishing/<block_name>/<remaining_items>", methods=["GET", "POST"])
+def add_fishing(block_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_fishing.html", block_name=block_name)
+    item_lvl = request.form["item_level"]
+    pass
+
+
 @app.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_natural_generation(block_name, remaining_items):
     if request.method == "GET":
@@ -89,6 +97,8 @@ def add_block(block_name):
         methods.append("add_natural_generation")
     if "breaking" in request.form.keys():
         methods.append("add_breaking")
+    if "fishing" in request.form.keys():
+        methods.append("add_fishing")
     return move_next_page(block_name, methods)
 
 
