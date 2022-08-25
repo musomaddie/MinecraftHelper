@@ -2,7 +2,7 @@ import ast
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
-from db_for_flask import add_natural_gen_to_db, add_trading_to_db, get_db
+from db_for_flask import add_breaking_to_db, add_natural_gen_to_db, add_trading_to_db, get_db
 
 app = Flask(__name__)
 app.secret_key = "SECRET KEY EXAMPLE"
@@ -29,6 +29,18 @@ def move_next_page(block_name, remaining_items):
         return select_next_block(get_db().cursor())
     next_method = remaining_items.pop(0)
     return redirect(url_for(next_method, block_name=block_name, remaining_items=remaining_items))
+
+
+@app.route("/add_breaking/<block_name>/<remaining_items>", methods=["GET", "POST"])
+def add_breaking(block_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_breaking.html", block_name=block_name)
+    requires_tool = request.form["requires_tool"]
+    requires_silk = request.form["requires_silk"]
+    fastest_tool = request.form["fastest_tool"] if "fastest_tool" in request.form else ""
+    add_breaking_to_db(get_db(), block_name, requires_tool, requires_silk, fastest_tool)
+    flash(f"Successfully added {block_name} to the breaking table")
+    return move_next_page(block_name, remaining_items)
 
 
 @app.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
@@ -75,7 +87,8 @@ def add_block(block_name):
         methods.append("add_trading")
     if "nat_gen" in request.form.keys():
         methods.append("add_natural_generation")
-    # Get the correct method list for each step.
+    if "breaking" in request.form.keys():
+        methods.append("add_breaking")
     return move_next_page(block_name, methods)
 
 

@@ -268,7 +268,7 @@ def add_breaking(conn, cur, block_name, breaking_heading_element):
             if "tool" in row.contents[1].text.lower():
                 tool_link = row.contents[3].a.attrs["href"]
                 tool = tool_link.split("/")[2]
-                with open("db/scripts/insert_item_breaking.sql") as f:
+                with open("db/scripts/insert_into/item_breaking_all_values.sql") as f:
                     conn.execute(f.read(), [block_name, True, False, tool])
                 break
     else:
@@ -278,7 +278,7 @@ def add_breaking(conn, cur, block_name, breaking_heading_element):
         if tool:
             fastest_tool = input("What is the fastest tool? ")
             requires_silk = input("Does {block_name} require silk touch to mine") == "yes"
-            with open("db/scripts/insert_item_breaking.sql") as f:
+            with open("db/scripts/insert_into/item_breaking_all_values.sql") as f:
                 conn.execute(f.read(), [block_name, tool, requires_silk, fastest_tool])
         else:
             with open("db/scripts/insert_item_breaking_without_fastest_tool.sql") as f:

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Adding breaking information for {{block_name}}</h1>
+<form method="post">
+    <ul>
+        <li>
+            Does this require a tool?
+            <label for="requires_tool">Yes: </label>
+            <input type="radio" id="requires_tool" value="tool_yes" name="requires_tool" required/>
+            <label for="requires_tool_no">No: </label>
+            <input type="radio" id="requires_tool_no" value="tool_no" name="requires_tool"
+                   required/>
+        </li>
+        <li>
+            Does this require silk touch?
+            <label for="requires_silk">Yes: </label>
+            <input type="radio" id="requires_silk" value="silk_yes" name="requires_silk" required/>
+            <label for="requires_silk_no">No: </label>
+            <input type="radio" id="requires_silk_no" value="silk_no" name="requires_silk"
+                   required/>
+        </li>
+        <li>
+            <label for="fastest_tool">What tool is fastest? </label>
+            <input type="text" id="fastest_tool" name="fastest_tool"/>
+        </li>
+    </ul>
+    <input type="submit" value="Add"/>
+</form>
+
+{% endblock %}
