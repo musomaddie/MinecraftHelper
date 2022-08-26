@@ -1,0 +1,4 @@
+graft block_adder_flask/static
+graft block_adder_flask/templates
+graft test_block-adder_flask
+global-exclude *.pyc

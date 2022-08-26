@@ -119,8 +119,24 @@ def reset_table(conn, cur, table_name):
 
 def reset_entire_db():
     conn = get_db()
+    cur = conn.cursor()
     for table_name in ALL_TABLE_NAMES:
-        reset_table(conn, conn.cursor(), table_name)
+        reset_table(conn, cur, table_name)
+    reset_table(conn, cur, "item_to_group")
+
+    # TODO: update schema to use item_to_group as foreign key references.
+    """ Move in item_to_group (previously block_to_group) as copied from the original database. """
+    other_db = sqlite3.connect("block_adder_flask/db/minecraft.db")
+    other_db_cursor = other_db.cursor()
+    other_db_cursor.execute("SELECT * FROM block_to_group")
+    all_items = other_db_cursor.fetchall()
+    other_db.close()
+
+    for row in all_items:
+        cur.execute(
+            """INSERT INTO item_to_group(item_name, item_group) VALUES (?, ?); """,
+            [row[0], row[1]])
+    conn.commit()
 
 
 @click.command("init-db")
@@ -128,6 +144,7 @@ def init_db_command():
     """ Clear all existing tables. (besides item list)"""
     db = get_db()
     reset_entire_db()
+    reset_table(db, db.cursor(), "item_to_group")
 
 
 def init_app(app):

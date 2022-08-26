@@ -5,3 +5,4 @@ CREATE TABLE items_and_groups
     part_of_group BOOLEAN NOT NULL
 );
 -- TODO: clean this up so that the group names included here link well to what I should expect in links
+-- TODO: I am not sure this is even helpful / required anymore.
