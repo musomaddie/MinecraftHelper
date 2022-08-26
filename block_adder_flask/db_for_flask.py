@@ -1,10 +1,11 @@
 import sqlite3
 from sqlite3 import PARSE_DECLTYPES, Row
 
-from flask import g
+import click
+from flask import current_app, g
 
-DB_S = "db/scripts/schema/"
-DB_INSERT_FN = "db/scripts/insert_into/"
+DB_S = "block_adder_flask/db/scripts/schema/"
+DB_INSERT_FN = "block_adder_flask/db/scripts/insert_into/"
 
 BREAKING_TN = "item_breaking"
 FISHING_TN = "item_fishing"
@@ -13,15 +14,26 @@ NAT_GEN_TN = "item_natural_generation"
 OBTAINING_TN = "item_obtaining_method"
 TRADING_TN = "item_trading"
 
+ALL_TABLE_NAMES = [
+    BREAKING_TN,
+    FISHING_TN,
+    NAT_BIOME_TN,
+    NAT_GEN_TN,
+    OBTAINING_TN,
+    TRADING_TN
+]
+
 
 def get_db():
     if "db" not in g:
         print("Connecting for the first time")
         g.db = sqlite3.connect(
-            "db/minecraft.db",
+            current_app.config["DATABASE"],
             detect_types=PARSE_DECLTYPES
         )
         g.db.row_factory = Row
+        sqlite3.register_adapter(bool, int)
+        sqlite3.register_converter("BOOLEAN", lambda v: bool(int(v)))
 
     return g.db
 
@@ -102,13 +114,32 @@ def reset_table(conn, cur, table_name):
     with open(f"{DB_S}{table_name}.sql") as f:
         conn.executescript(f.read())
     print(f"schema added for {table_name}")
+    conn.commit()
+
+
+def reset_entire_db():
+    conn = get_db()
+    for table_name in ALL_TABLE_NAMES:
+        reset_table(conn, conn.cursor(), table_name)
+
+
+@click.command("init-db")
+def init_db_command():
+    """ Clear all existing tables. (besides item list)"""
+    db = get_db()
+    reset_entire_db()
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 
 if __name__ == '__main__':
     conn = sqlite3.connect("db/minecraft.db")
     cur = conn.cursor()
     # reset_table(conn, cur, TRADING_TN)
-    reset_table(conn, cur, BREAKING_TN)
+    # reset_table(conn, cur, BREAKING_TN)
     conn.commit()
     cur.close()
     conn.close()

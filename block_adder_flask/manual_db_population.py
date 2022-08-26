@@ -1,16 +1,15 @@
 import ast
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from db_for_flask import (
+from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_fishing_to_db, add_nat_biome_to_db, add_natural_gen_to_db,
-    add_trading_to_db, get_db)
+    add_trading_to_db, get_db, reset_entire_db)
 
-app = Flask(__name__)
-app.secret_key = "SECRET KEY EXAMPLE"
 ITEMS_GROUPS_TN = "items_and_groups"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
 
+bp = Blueprint("add", __name__)
 
 def select_next_block(cur):
     cur.execute(f"SELECT * FROM {ITEMS_GROUPS_TN}")
@@ -34,7 +33,7 @@ def move_next_page(block_name, remaining_items):
     return redirect(url_for(next_method, block_name=block_name, remaining_items=remaining_items))
 
 
-@app.route("/add_breaking/<block_name>/<remaining_items>", methods=["GET", "POST"])
+@bp.route("/add_breaking/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_breaking(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", block_name=block_name)
@@ -46,7 +45,7 @@ def add_breaking(block_name, remaining_items):
     return move_next_page(block_name, remaining_items)
 
 
-@app.route("/add_fishing/<block_name>/<remaining_items>", methods=["GET", "POST"])
+@bp.route("/add_fishing/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_fishing(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", block_name=block_name)
@@ -56,7 +55,7 @@ def add_fishing(block_name, remaining_items):
     return move_next_page(block_name, remaining_items)
 
 
-@app.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
+@bp.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_natural_generation(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_natural_generation.html", block_name=block_name)
@@ -75,7 +74,7 @@ def add_natural_generation(block_name, remaining_items):
             remaining_items=remaining_items))
 
 
-@app.route("/add_natural_biome/<block_name>/<remaining_items>", methods=["GET", "POST"])
+@bp.route("/add_natural_biome/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_natural_generation_biome(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
@@ -85,7 +84,7 @@ def add_natural_generation_biome(block_name, remaining_items):
     return move_next_page(block_name, remaining_items)
 
 
-@app.route("/add_trading/<block_name>/<remaining_items>", methods=["GET", "POST"])
+@bp.route("/add_trading/<block_name>/<remaining_items>", methods=["GET", "POST"])
 def add_trading(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", block_name=block_name)
@@ -98,7 +97,7 @@ def add_trading(block_name, remaining_items):
     return move_next_page(block_name, remaining_items)
 
 
-@app.route("/add_block/<block_name>", methods=["GET", "POST"])
+@bp.route("/add_block/<block_name>", methods=["GET", "POST"])
 def add_block(block_name):
     if request.method == "GET":
         return render_template(
@@ -119,8 +118,16 @@ def add_block(block_name):
     return move_next_page(block_name, methods)
 
 
-@app.route("/")
+@bp.route("/start_new")
+def start_new():
+    reset_entire_db()
+    return "I am starting new"
+
+
+@bp.route("/")
 def start():
-    conn = get_db()
-    cur = conn.cursor()
-    return select_next_block(cur)
+    # conn = get_db()
+    # cur = conn.cursor()
+    # print("I have started")
+    # return select_next_block(cur)
+    return "Hello world I am starting!"
