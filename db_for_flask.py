@@ -4,12 +4,14 @@ from sqlite3 import PARSE_DECLTYPES, Row
 from flask import g
 
 DB_S = "db/scripts/schema/"
-TRADING_TN = "item_trading"
+DB_INSERT_FN = "db/scripts/insert_into/"
+
 BREAKING_TN = "item_breaking"
 FISHING_TN = "item_fishing"
+NAT_BIOME_TN = "item_generation_biome"
 NAT_GEN_TN = "item_natural_generation"
 OBTAINING_TN = "item_obtaining_method"
-DB_INSERT_FN = "db/scripts/insert_into/"
+TRADING_TN = "item_trading"
 
 
 def get_db():
@@ -37,7 +39,6 @@ def add_to_obtaining_table(conn, cur, block_name, method_name, id_title, table_n
     ids = [row[0] for row in cur.fetchall()]
     for i in ids:
         with open(f"{DB_INSERT_FN}{OBTAINING_TN}.sql") as f:
-            print(block_name, method_name, i)
             conn.execute(f.read(), [block_name, method_name, i])
     conn.commit()
 
@@ -56,10 +57,17 @@ def add_breaking_to_db(conn, block_name, r_tool_s, r_silk_s, f_tool):
 
 
 def add_fishing_to_db(conn, block_name, item_lvl):
-    with open(f"{DB_INSERT_FN}{FISHING_TN}") as f:
+    with open(f"{DB_INSERT_FN}{FISHING_TN}.sql") as f:
         conn.execute(f.read(), [block_name, item_lvl])
     conn.commit()
     add_to_obtaining_table(conn, conn.cursor(), block_name, "fishing", "fishing_id", FISHING_TN)
+
+
+def add_nat_biome_to_db(conn, block_name, biome):
+    with open(f"{DB_INSERT_FN}{NAT_BIOME_TN}.sql") as f:
+        conn.execute(f.read(), [block_name, biome])
+    conn.commit()
+    add_to_obtaining_table(conn, conn.cursor(), block_name, "biome", "generation_id", NAT_BIOME_TN)
 
 
 def add_natural_gen_to_db(conn, block_name, struct, cont, quant, ch):

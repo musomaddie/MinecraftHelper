@@ -210,7 +210,7 @@ def add_natural_gen_not_table(conn, cur, block_name, natural_gen_heading_element
     paragraphs = _get_all_paragraph_elements(natural_gen_heading_element, "h3")
     print(paragraphs)
     biome = input(f"What biome is {block_name} found in? ")
-    with open("db/scripts/insert_item_generation_biome.sql") as f:
+    with open("db/scripts/insert_into/item_generation_biome.sql") as f:
         conn.execute(f.read(), [block_name, biome])
     for i in calculate_ids(cur, "generation_id", block_name, NAT_GEN_BIOME_TABLE_NAME):
         _add_to_obtaining_table(conn, block_name, "natural generation biome", i)

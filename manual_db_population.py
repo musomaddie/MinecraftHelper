@@ -2,7 +2,9 @@ import ast
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
-from db_for_flask import add_breaking_to_db, add_natural_gen_to_db, add_trading_to_db, get_db
+from db_for_flask import (
+    add_breaking_to_db, add_fishing_to_db, add_nat_biome_to_db, add_natural_gen_to_db,
+    add_trading_to_db, get_db)
 
 app = Flask(__name__)
 app.secret_key = "SECRET KEY EXAMPLE"
@@ -28,6 +30,7 @@ def move_next_page(block_name, remaining_items):
     if len(remaining_items) == 0:
         return select_next_block(get_db().cursor())
     next_method = remaining_items.pop(0)
+    print(next_method)
     return redirect(url_for(next_method, block_name=block_name, remaining_items=remaining_items))
 
 
@@ -48,7 +51,9 @@ def add_fishing(block_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", block_name=block_name)
     item_lvl = request.form["item_level"]
-    pass
+    add_fishing_to_db(get_db(), block_name, item_lvl)
+    flash(f"Successfully added {block_name} to fishing")
+    return move_next_page(block_name, remaining_items)
 
 
 @app.route("/add_natural_generation/<block_name>/<remaining_items>", methods=["GET", "POST"])
@@ -68,6 +73,16 @@ def add_natural_generation(block_name, remaining_items):
             "add_natural_generation",
             block_name=block_name,
             remaining_items=remaining_items))
+
+
+@app.route("/add_natural_biome/<block_name>/<remaining_items>", methods=["GET", "POST"])
+def add_natural_generation_biome(block_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_nat_biome.html")
+    biome = request.form["biome"]
+    add_nat_biome_to_db(get_db(), block_name, biome)
+    flash(f"Successfully added {block_name} to biome")
+    return move_next_page(block_name, remaining_items)
 
 
 @app.route("/add_trading/<block_name>/<remaining_items>", methods=["GET", "POST"])
@@ -99,6 +114,8 @@ def add_block(block_name):
         methods.append("add_breaking")
     if "fishing" in request.form.keys():
         methods.append("add_fishing")
+    if "nat_biome" in request.form.keys():
+        methods.append("add_natural_biome")
     return move_next_page(block_name, methods)
 
 
