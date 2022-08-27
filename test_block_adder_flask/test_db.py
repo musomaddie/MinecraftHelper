@@ -7,8 +7,8 @@ import block_adder_flask.db_for_flask as d
 ITEM_NAME = "Testing Item"
 
 
-def _get_just_added(cur, table_name):
-    cur.execute(f'''SELECT * FROM {table_name} WHERE item_name = "{ITEM_NAME}"''')
+def _get_just_added(cur, table_name, column_name="item_name"):
+    cur.execute(f'''SELECT * FROM {table_name} WHERE {column_name} = "{ITEM_NAME}"''')
     return cur.fetchall()
 
 
@@ -84,6 +84,51 @@ def test_add_breaking_to_db(
         assert result["fastest_tool"] == fastest_tool
     else:
         assert result["fastest_tool"] is None
+
+
+@pytest.mark.parametrize(
+    ("item_list", "expected_items_list", "number_created", "works_four_by_four",
+     "requires_exact_positioning"),
+    [(["Test Item 2", "", "", "", "", "", "", "", "", ""],
+      ["Test Item 2", None, None, None, None, None, None, None, None],
+      1, True, False),
+     (["Test Item 2", "Test Item 3", "", "", "", "", "", "", ""],
+      ["Test Item 2", "Test Item 3", None, None, None, None, None, None, None],
+      1, True, True),
+     (["", "Test Item 2", "", "", "Test Item 3", "", "", "", ""],
+      [None, "Test Item 2", None, None, "Test Item 3", None, None, None, None],
+      1, True, False),
+     (["Test Item 1", "Test Item 2", "Test Item 3", "", "", "", "", "", ""],
+      ["Test Item 1", "Test Item 2", "Test Item 3", None, None, None, None, None, None],
+      20, False, True)
+     ])
+def test_add_crafting_recipe_to_db_one_item(
+        item_list,
+        expected_items_list,
+        number_created,
+        works_four_by_four,
+        requires_exact_positioning,
+        app):
+    with app.app_context():
+        db = d.get_db()
+        d.add_crafting_recipe_to_db(
+            db, ITEM_NAME, item_list, number_created, works_four_by_four,
+            requires_exact_positioning)
+        results = _get_just_added(db.cursor(), d.CRAFTING_TN, "item_created")
+        assert "crafting" in _get_all_obtainment_methods(db.cursor())
+    assert len(results) == 1
+    result = results[0]
+    assert result["item_created"] == ITEM_NAME
+    actual_item_list = [
+        result[key] for key in [
+            "crafting_slot_1", "crafting_slot_2", "crafting_slot_3",
+            "crafting_slot_4", "crafting_slot_5", "crafting_slot_6",
+            "crafting_slot_7", "crafting_slot_8", "crafting_slot_9",
+        ]]
+    assert actual_item_list == expected_items_list
+    assert result["number_created"] == number_created
+    assert result["works_four_by_four"] == works_four_by_four
+    assert result["requires_exact_positioning"] == requires_exact_positioning
 
 
 def test_add_fishing_to_db(app):

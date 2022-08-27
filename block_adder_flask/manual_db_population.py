@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_fishing_to_db, add_nat_biome_to_db, add_natural_gen_to_db,
-    add_trading_to_db, get_db, reset_entire_db)
+    add_trading_to_db, get_db, reset_entire_db, reset_table)
 
 ITEMS_GROUPS_TN = "item_to_group"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
@@ -98,7 +98,6 @@ def add_trading(item_name, remaining_items):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
-    print("starting add item")
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
@@ -122,6 +121,13 @@ def item(item_name):
 def start_new():
     reset_entire_db()
     return "I am starting new"
+
+
+@bp.route("/new_table/<table_name>")
+def new_table(table_name):
+    conn = get_db()
+    reset_table(conn, conn.cursor(), table_name)
+    return f"Added {table_name} to database"
 
 
 @bp.route("/")
