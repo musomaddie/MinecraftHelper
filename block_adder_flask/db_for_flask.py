@@ -8,6 +8,7 @@ DB_S = "block_adder_flask/db/scripts/schema/"
 DB_INSERT_FN = "block_adder_flask/db/scripts/insert_into/"
 
 BREAKING_TN = "item_breaking"
+CRAFTING_TN = "crafting_recipe"
 FISHING_TN = "item_fishing"
 NAT_BIOME_TN = "item_generation_biome"
 NAT_GEN_TN = "item_natural_generation"
@@ -16,6 +17,7 @@ TRADING_TN = "item_trading"
 
 ALL_TABLE_NAMES = [
     BREAKING_TN,
+    CRAFTING_TN,
     FISHING_TN,
     NAT_BIOME_TN,
     NAT_GEN_TN,
@@ -44,9 +46,10 @@ def close_db(e=None):
         db.close()
 
 
-def add_to_obtaining_table(conn, cur, item_name, method_name, id_title, table_name):
+def add_to_obtaining_table(
+        conn, cur, item_name, method_name, id_title, table_name, name_col_identifier="item_name"):
     cur.execute(
-        f'''SELECT {id_title} FROM {table_name} WHERE item_name = "{item_name}"'''
+        f'''SELECT {id_title} FROM {table_name} WHERE {name_col_identifier} = "{item_name}"'''
     )
     ids = [row[0] for row in cur.fetchall()]
     for i in ids:
@@ -66,6 +69,39 @@ def add_breaking_to_db(conn, item_name, r_tool_s, r_silk_s, f_tool):
             conn.execute(f.read(), [item_name, r_tool, r_silk, f_tool])
     conn.commit()
     add_to_obtaining_table(conn, conn.cursor(), item_name, "breaking", "breaking_id", BREAKING_TN)
+
+
+def add_crafting_recipe_to_db(
+        conn,
+        item_name,
+        crafting_slot_list,
+        number_created,
+        works_four_by_four,
+        requires_exact_positioning):
+    number_items = sum([1 for item in crafting_slot_list if item != ""])
+    item_values = [item for item in crafting_slot_list if item != ""]
+    item_indices = [i + 1 for i, item in enumerate(crafting_slot_list) if item != ""]
+    cur = conn.cursor()
+    if number_items == 1:
+        with open(f"{DB_INSERT_FN}{CRAFTING_TN}_one_item.sql") as f:
+            conn.execute(f.read(), [item_name, item_values[0], number_created])
+    else:
+        insert_into_string = ", ".join([f"crafting_slot_{idx}" for idx in item_indices])
+        num_question_marks = 4 + number_items
+        question_mark_string = ", ".join(["?" for _ in range(num_question_marks)])
+        passed_values = [item_name]
+        passed_values.extend([v for v in item_values])
+        passed_values.extend([number_created, works_four_by_four, requires_exact_positioning])
+        cur.execute(
+            f'''INSERT INTO crafting_recipe (
+                    item_created, {insert_into_string}, number_created, 
+                    works_four_by_four, requires_exact_positioning)
+                VALUES ({question_mark_string})''',
+            passed_values)
+    conn.commit()
+    add_to_obtaining_table(
+        conn, conn.cursor(), item_name, "crafting", "recipe_id", CRAFTING_TN,
+        name_col_identifier="item_created")
 
 
 def add_fishing_to_db(conn, item_name, item_lvl):
@@ -149,13 +185,3 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-
-
-if __name__ == '__main__':
-    conn = sqlite3.connect("db/minecraft.db")
-    cur = conn.cursor()
-    # reset_table(conn, cur, TRADING_TN)
-    # reset_table(conn, cur, BREAKING_TN)
-    conn.commit()
-    cur.close()
-    conn.close()

@@ -1,7 +1,6 @@
 README.md
 setup.cfg
 setup.py
-block_adder_flask/OLD_manually_populate_db.py
 block_adder_flask/__init__.py
 block_adder_flask/create_crafting_db_automatically.py
 block_adder_flask/db_for_flask.py
