@@ -18,7 +18,8 @@ def select_next_item(cur):
     cur.execute(f"SELECT item_name FROM item_obtaining_method")
     saved_items = set([row["item_name"] for row in cur.fetchall()])
     item_name_list = [name for name in item_name_list if name not in saved_items]
-    return redirect(url_for("add_block", item_name=item_name_list[0]))
+    print(item_name_list)
+    return redirect(url_for("add.item", item_name=item_name_list[0]))
 
 
 def move_next_page(item_name, remaining_items):
@@ -32,7 +33,7 @@ def move_next_page(item_name, remaining_items):
 
 
 @bp.route("/add_breaking/<item_name>/<remaining_items>", methods=["GET", "POST"])
-def add_breaking(item_name, remaining_items):
+def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
     requires_tool = request.form["requires_tool"]
@@ -44,7 +45,7 @@ def add_breaking(item_name, remaining_items):
 
 
 @bp.route("/add_fishing/<item_name>/<remaining_items>", methods=["GET", "POST"])
-def add_fishing(item_name, remaining_items):
+def fishing(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", item_name=item_name)
     item_lvl = request.form["item_level"]
@@ -54,7 +55,7 @@ def add_fishing(item_name, remaining_items):
 
 
 @bp.route("/add_natural_generation/<item_name>/<remaining_items>", methods=["GET", "POST"])
-def add_natural_generation(item_name, remaining_items):
+def natural_generation(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_natural_generation.html", item_name=item_name)
     structure = request.form["structure"]
@@ -67,13 +68,13 @@ def add_natural_generation(item_name, remaining_items):
         return move_next_page(item_name, remaining_items)
     return redirect(
         url_for(
-            "add_natural_generation",
+            "add.natural_generation",
             item_name=item_name,
             remaining_items=remaining_items))
 
 
 @bp.route("/add_natural_biome/<item_name>/<remaining_items>", methods=["GET", "POST"])
-def add_natural_generation_biome(item_name, remaining_items):
+def natural_generation_biome(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
     biome = request.form["biome"]
@@ -95,8 +96,9 @@ def add_trading(item_name, remaining_items):
     return move_next_page(item_name, remaining_items)
 
 
-@bp.route("/add_block/<item_name>", methods=["GET", "POST"])
-def add_block(item_name):
+@bp.route("/add_item/<item_name>", methods=["GET", "POST"])
+def item(item_name):
+    print("starting add item")
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
@@ -104,15 +106,15 @@ def add_block(item_name):
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
     methods = []
     if "trading" in request.form.keys():
-        methods.append("add_trading")
+        methods.append("add.trading")
     if "nat_gen" in request.form.keys():
-        methods.append("add_natural_generation")
+        methods.append("add.natural_generation")
     if "breaking" in request.form.keys():
-        methods.append("add_breaking")
+        methods.append("add.breaking")
     if "fishing" in request.form.keys():
-        methods.append("add_fishing")
+        methods.append("add.fishing")
     if "nat_biome" in request.form.keys():
-        methods.append("add_natural_biome")
+        methods.append("add.natural_biome")
     return move_next_page(item_name, methods)
 
 
@@ -124,8 +126,6 @@ def start_new():
 
 @bp.route("/")
 def start():
-    # conn = get_db()
-    # cur = conn.cursor()
-    # print("I have started")
-    # return select_next_block(cur)
-    return "Hello world I am starting!"
+    conn = get_db()
+    cur = conn.cursor()
+    return select_next_item(cur)

@@ -22,7 +22,7 @@ def test_select_next_block(
     mock_cursor.fetchall.side_effect = [item_name_list, saved_items]
     select_next_item(mock_cursor)
     mock_url_for.assert_has_calls(
-        [call("add_block", item_name=expected_name)])
+        [call("add.item", item_name=expected_name)])
     mock_redirect.assert_called_once()
 
 
@@ -130,7 +130,7 @@ def test_add_natural_generation_not_next(
     mock_get_db.assert_called_once()
     mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
-        "add_natural_generation", item_name=ITEM_NAME, remaining_items="['trading']")
+        "add.natural_generation", item_name=ITEM_NAME, remaining_items="['trading']")
 
 
 @patch(f"{FILE_LOC}.add_natural_gen_to_db")
@@ -200,12 +200,12 @@ def test_add_trading(
 
 
 @patch(f"{FILE_LOC}.move_next_page")
-def test_add_block(mock_move_next_page, client):
+def test_add_item(mock_move_next_page, client):
     response = client.post(
-        f"/add_block/{ITEM_NAME}",
+        f"/add_item/{ITEM_NAME}",
         data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": ""})
     assert response.status_code == 200
     mock_move_next_page.assert_called_once_with(
         ITEM_NAME,
-        ["add_trading", "add_natural_generation", "add_breaking", "add_fishing",
-         "add_natural_biome"])
+        ["add.trading", "add.natural_generation", "add.breaking", "add.fishing",
+         "add.natural_biome"])
