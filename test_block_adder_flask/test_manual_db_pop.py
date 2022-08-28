@@ -239,14 +239,31 @@ def test_add_trading(
     mock_move_next_page.assert_called_once_with(ITEM_NAME, "['breaking']")
 
 
+@patch(f"{FILE_LOC}.add_nat_structure_to_db")
+@patch(f"{FILE_LOC}.get_db")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_natural_gen_structure(
+        mock_move_next, mock_flash, mock_get_db, mock_to_db, client):
+    struct_name = "Test structure"
+    response = client.post(
+        f"/add_natural_gen_structure/{ITEM_NAME}/['breaking']",
+        data={"structure_name": struct_name, "next": True})
+    assert response.status_code == 200
+    mock_to_db.assert_called_once_with(ANY, ITEM_NAME, struct_name)
+    mock_get_db.assert_called_once()
+    mock_flash.assert_called_once()
+    mock_move_next.assert_called_once()
+
+
 @patch(f"{FILE_LOC}.move_next_page")
 def test_add_item(mock_move_next_page, client):
     response = client.post(
         f"/add_item/{ITEM_NAME}",
         data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": "",
-              "crafting": ""})
+              "crafting": "", "nat_struct": ""})
     assert response.status_code == 200
     mock_move_next_page.assert_called_once_with(
         ITEM_NAME,
-        ["add.trading", "add.natural_generation", "add.breaking", "add.fishing",
-         "add.natural_biome", "add.crafting"])
+        ["add.breaking", "add.crafting", "add.fishing", "add.trading", "add.natural_generation",
+         "add.natural_generation_biome", "add.natural_gen_structure"])

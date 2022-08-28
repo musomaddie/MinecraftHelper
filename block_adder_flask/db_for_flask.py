@@ -12,6 +12,7 @@ CRAFTING_TN = "crafting_recipe"
 FISHING_TN = "item_fishing"
 NAT_BIOME_TN = "item_generation_biome"
 NAT_GEN_TN = "item_natural_generation"
+NAT_STRUCTURE_TN = "item_generation_structure"
 OBTAINING_TN = "item_obtaining_method"
 TRADING_TN = "item_trading"
 
@@ -21,6 +22,7 @@ ALL_TABLE_NAMES = [
     FISHING_TN,
     NAT_BIOME_TN,
     NAT_GEN_TN,
+    NAT_STRUCTURE_TN,
     OBTAINING_TN,
     TRADING_TN
 ]
@@ -123,6 +125,13 @@ def add_natural_gen_to_db(conn, item_name, struct, cont, quant, ch):
         conn.execute(f.read(), [item_name, struct, cont, quant, ch])
     add_to_obtaining_table(
         conn, conn.cursor(), item_name, "natural generation", "generation_id", NAT_GEN_TN)
+
+
+def add_nat_structure_to_db(conn, item_name, structure_name):
+    with open(f"{DB_INSERT_FN}{NAT_STRUCTURE_TN}.sql") as f:
+        conn.execute(f.read(), [item_name, structure_name])
+    add_to_obtaining_table(
+        conn, conn.cursor(), item_name, "structure", "generation_id", NAT_STRUCTURE_TN)
 
 
 def add_trading_to_db(conn, item_name, villager, vill_level, emeralds, other):

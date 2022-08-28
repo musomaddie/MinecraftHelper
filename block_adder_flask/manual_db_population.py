@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
-    add_natural_gen_to_db,
+    add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
     reset_entire_db,
     reset_table)
@@ -112,6 +112,20 @@ def natural_generation_biome(item_name, remaining_items):
     return move_next_page(item_name, remaining_items)
 
 
+@bp.route("/add_natural_gen_structure/<item_name>/<remaining_items>", methods=["GET", "POST"])
+def natural_gen_structure(item_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_nat_structure.html")
+    add_nat_structure_to_db(
+        get_db(), item_name, request.form["structure_name"])
+    flash(f"Successfully added {item_name} to natural structure generation")
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for(
+            "add.natural_gen_structure", item_name=item_name, remaining_items=remaining_items))
+
+
 @bp.route("/add_trading/<item_name>/<remaining_items>", methods=["GET", "POST"])
 def trading(item_name, remaining_items):
     if request.method == "GET":
@@ -144,6 +158,8 @@ def item(item_name):
         methods.append("add.natural_generation")
     if "nat_biome" in request.form.keys():
         methods.append("add.natural_generation_biome")
+    if "nat_struct" in request.form.keys():
+        methods.append("add.natural_gen_structure")
     return move_next_page(item_name, methods)
 
 

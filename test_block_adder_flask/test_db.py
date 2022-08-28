@@ -179,6 +179,20 @@ def test_add_natural_gen_to_db(app):
     assert result["chance"] == chance
 
 
+def test_add_structure_to_db(app):
+    nat_structure = "Test Structure"
+    with app.app_context():
+        db = d.get_db()
+        d.add_nat_structure_to_db(db, ITEM_NAME, nat_structure)
+        results = _get_just_added(db.cursor(), d.NAT_STRUCTURE_TN)
+        assert "structure" in _get_all_obtainment_methods(db.cursor())
+
+    assert len(results) == 1
+    result = results[0]
+    assert result["item_name"] == ITEM_NAME
+    assert result["structure_name"] == nat_structure
+
+
 @pytest.mark.parametrize(
     ("villager", "v_level", "emeralds", "other", "expected_v_lvl", "expected_other"),
     ([("Testing Villager", "Testing Level", 13, "Testing Other", True, True),
