@@ -23,7 +23,6 @@ def select_next_item(cur):
     cur.execute(f"SELECT item_name FROM item_obtaining_method")
     saved_items = set([row["item_name"] for row in cur.fetchall()])
     item_name_list = [name for name in item_name_list if name not in saved_items]
-    print(item_name_list)
     return redirect(url_for("add.item", item_name=item_name_list[0]))
 
 
@@ -44,7 +43,11 @@ def breaking(item_name, remaining_items):
     requires_tool = request.form["requires_tool"]
     requires_silk = request.form["requires_silk"]
     fastest_tool = _get_value_if_exists(request, "fastest_tool")
-    add_breaking_to_db(get_db(), item_name, requires_tool, requires_silk, fastest_tool)
+    add_breaking_to_db(
+        get_db(), item_name,
+        request.form["requires_tool"],
+        request.form["requires_silk"],
+        _get_value_if_exists(request, "fastest_tool"))
     flash(f"Successfully added {item_name} to the breaking table")
     return move_next_page(item_name, remaining_items)
 
@@ -66,8 +69,17 @@ def crafting(item_name, remaining_items):
     works_four = _get_value_if_exists(request, "works_four")
     exact_positioning = _get_value_if_exists(request, "exact_positioning")
     add_crafting_recipe_to_db(
-        get_db(), item_name, [cs1, cs2, cs3, cs4, cs5, cs6, cs7, cs8, cs9], num_created, works_four,
-        exact_positioning)
+        get_db(),
+        item_name,
+        [_get_value_if_exists(request, "cs1"), _get_value_if_exists(request, "cs2"),
+         _get_value_if_exists(request, "cs3"), _get_value_if_exists(request, "cs4"),
+         _get_value_if_exists(request, "cs5"), _get_value_if_exists(request, "cs6"),
+         _get_value_if_exists(request, "cs7"), _get_value_if_exists(request, "cs8"),
+         _get_value_if_exists(request, "cs9")],
+        int(request.form["n_created"]),
+        _get_value_if_exists(request, "works_four"),
+        _get_value_if_exists(request, "exact_positioning")
+    )
     flash(f"Successfully added {item_name} to crafting")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -79,8 +91,7 @@ def crafting(item_name, remaining_items):
 def fishing(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", item_name=item_name)
-    item_lvl = request.form["item_level"]
-    add_fishing_to_db(get_db(), item_name, item_lvl)
+    add_fishing_to_db(get_db(), item_name, request.form["item_level"])
     flash(f"Successfully added {item_name} to fishing")
     return move_next_page(item_name, remaining_items)
 
@@ -93,7 +104,12 @@ def natural_generation(item_name, remaining_items):
     container = request.form["container"]
     quant = int(request.form["quantity_fd"])
     ch = int(request.form["chance"])
-    add_natural_gen_to_db(get_db(), item_name, structure, container, quant, ch)
+    add_natural_gen_to_db(
+        get_db(), item_name,
+        request.form["structure"],
+        request.form["container"],
+        int(request.form["quantity_fd"]),
+        int(request.form["chance"]))
     flash(f"Successfully added {item_name} to natural generation table")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -108,8 +124,7 @@ def natural_generation(item_name, remaining_items):
 def natural_generation_biome(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
-    biome = request.form["biome"]
-    add_nat_biome_to_db(get_db(), item_name, biome)
+    add_nat_biome_to_db(get_db(), item_name, request.form["biome"])
     flash(f"Successfully added {item_name} to biome")
     return move_next_page(item_name, remaining_items)
 
@@ -118,11 +133,10 @@ def natural_generation_biome(item_name, remaining_items):
 def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
-    villager_type = request.form["villager_type"]
-    emerald_price = int(request.form["emerald_price"])
-    villager_level = _get_value_if_exists(request, "villager_level")
-    other_item = _get_value_if_exists(request, "other_item")
-    add_trading_to_db(get_db(), item_name, villager_type, villager_level, emerald_price, other_item)
+    add_trading_to_db(
+        get_db(), item_name,
+        request.form["villager_type"], _get_value_if_exists(request, "villager_level"),
+        int(request.form["emerald_price"]), _get_value_if_exists(request, "other_item"))
     flash(f"Successfully added {item_name} to trading table.")
     return move_next_page(item_name, remaining_items)
 
@@ -145,6 +159,8 @@ def item(item_name):
         methods.append("add.fishing")
     if "nat_biome" in request.form.keys():
         methods.append("add.natural_biome")
+    if "crafting" in request.form.keys():
+        methods.append("add.crafting")
     return move_next_page(item_name, methods)
 
 

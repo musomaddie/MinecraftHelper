@@ -243,9 +243,10 @@ def test_add_trading(
 def test_add_item(mock_move_next_page, client):
     response = client.post(
         f"/add_item/{ITEM_NAME}",
-        data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": ""})
+        data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": "",
+              "crafting": ""})
     assert response.status_code == 200
     mock_move_next_page.assert_called_once_with(
         ITEM_NAME,
         ["add.trading", "add.natural_generation", "add.breaking", "add.fishing",
-         "add.natural_biome"])
+         "add.natural_biome", "add.crafting"])
