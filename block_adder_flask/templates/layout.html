@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
     <meta charset="UTF-8">
     <title>Add Information </title>
-
-    <!--    <style> td {-->
-    <!--            border: 1px solid;-->
-    <!--        }-->
-    <!--    </style>-->
 </head>
 <body>
 {% with messages = get_flashed_messages() %}
@@ -19,6 +18,7 @@
 </ul>
 {% endif %}
 {% endwith %}
+<h1>Adding Minecraft Block Helper </h1>
 {% block body %}{% endblock %}
 </body>
 </html>

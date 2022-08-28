@@ -1,14 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h1>How is {{item_name}} obtained via fishing? </h1>
+<h2>How is {{item_name}} obtained via fishing? </h2>
 <form method="post">
-    <ul>
-        <li>
-            <label for="item_level">Treasure Type </label>
-            <input type="text" id="item_level" name="item_level" required/>
-        </li>
-    </ul>
+    <table>
+        <tr>
+            <td>
+                <label for="item_level">Treasure Type </label>
+            </td>
+            <td class="left_padding">
+                <input type="text" id="item_level" name="item_level" required/>
+            </td>
+        </tr>
+    </table>
+    <input class="submit_button" type="submit" value="Add"/>
 </form>
 
 {% endblock %}

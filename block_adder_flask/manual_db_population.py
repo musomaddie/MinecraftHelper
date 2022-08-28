@@ -5,7 +5,9 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
     add_natural_gen_to_db,
-    add_trading_to_db, get_db, reset_entire_db, reset_table)
+    add_trading_to_db, get_db,
+    reset_entire_db,
+    reset_table)
 
 ITEMS_GROUPS_TN = "item_to_group"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
@@ -40,9 +42,6 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    requires_tool = request.form["requires_tool"]
-    requires_silk = request.form["requires_silk"]
-    fastest_tool = _get_value_if_exists(request, "fastest_tool")
     add_breaking_to_db(
         get_db(), item_name,
         request.form["requires_tool"],
@@ -56,18 +55,6 @@ def breaking(item_name, remaining_items):
 def crafting(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_crafting.html", item_name=item_name)
-    cs1 = _get_value_if_exists(request, "cs1")
-    cs2 = _get_value_if_exists(request, "cs2")
-    cs3 = _get_value_if_exists(request, "cs3")
-    cs4 = _get_value_if_exists(request, "cs4")
-    cs5 = _get_value_if_exists(request, "cs5")
-    cs6 = _get_value_if_exists(request, "cs6")
-    cs7 = _get_value_if_exists(request, "cs7")
-    cs8 = _get_value_if_exists(request, "cs8")
-    cs9 = _get_value_if_exists(request, "cs9")
-    num_created = int(request.form["n_created"])
-    works_four = _get_value_if_exists(request, "works_four")
-    exact_positioning = _get_value_if_exists(request, "exact_positioning")
     add_crafting_recipe_to_db(
         get_db(),
         item_name,
@@ -100,10 +87,6 @@ def fishing(item_name, remaining_items):
 def natural_generation(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_natural_generation.html", item_name=item_name)
-    structure = request.form["structure"]
-    container = request.form["container"]
-    quant = int(request.form["quantity_fd"])
-    ch = int(request.form["chance"])
     add_natural_gen_to_db(
         get_db(), item_name,
         request.form["structure"],
@@ -149,18 +132,18 @@ def item(item_name):
             item_name=item_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
     methods = []
+    if "breaking" in request.form.keys():
+        methods.append("add.breaking")
+    if "crafting" in request.form.keys():
+        methods.append("add.crafting")
+    if "fishing" in request.form.keys():
+        methods.append("add.fishing")
     if "trading" in request.form.keys():
         methods.append("add.trading")
     if "nat_gen" in request.form.keys():
         methods.append("add.natural_generation")
-    if "breaking" in request.form.keys():
-        methods.append("add.breaking")
-    if "fishing" in request.form.keys():
-        methods.append("add.fishing")
     if "nat_biome" in request.form.keys():
-        methods.append("add.natural_biome")
-    if "crafting" in request.form.keys():
-        methods.append("add.crafting")
+        methods.append("add.natural_generation_biome")
     return move_next_page(item_name, methods)
 
 

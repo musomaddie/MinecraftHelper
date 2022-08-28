@@ -1,37 +1,59 @@
 {% extends "layout.html" %}
 {% block body %}
-<h1> Adding information for {{item_name}} </h1>
-<p>
-    <a href={{block_url}}>View in Minecraft Wiki</a>
-</p>
-<h2> How to obtain this block? </h2>
+<h2> Adding information for <a href={{block_url}}> {{item_name}} </a></h2>
+<h3> How to obtain this block? </h3>
 <form method="post">
-    <ul>
-        <li>
-            <input type="checkbox" id="breaking_checkbox" name="breaking"/>
-            <label for="breaking_checkbox">Breaking? </label>
-        </li>
-        <li>
-            <input type="checkbox" id="crafting_checkbox" name="crafting"/>
-            <label for="crafting_checkbox">Crafting? </label>
-        </li>
-        <li>
-            <input type="checkbox" id="fishing_checkbox" name="fishing"/>
-            <label for="fishing_checkbox">Fishing? </label>
-        </li>
-        <li>
-            <input type="checkbox" id="trading_checkbox" name="trading"/>
-            <label for="trading_checkbox">Trading? </label>
-        </li>
-        <li>
-            <input type="checkbox" id="nat_gen_checkbox" name="nat_gen"/>
-            <label for="nat_gen_checkbox">Natural Generation (chests)? </label>
-        </li>
-        <li>
-            <input type="checkbox" id="nat_biome_checkbox" name="nat_biome"/>
-            <label for="nat_biome_checkbox">Occurs naturally in specific biome? </label>
-        </li>
-    </ul>
-    <input type="submit" value="Next"></input>
+    <table class="alignment">
+        <tr>
+            <td>
+                <input type="checkbox" id="breaking_checkbox" name="breaking"/>
+            </td>
+            <td class="left_padding">
+                <label for="breaking_checkbox">Breaking? </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" id="crafting_checkbox" name="crafting"/>
+            </td>
+            <td class="left_padding">
+                <label for="crafting_checkbox">Crafting? </label>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <input type="checkbox" id="fishing_checkbox" name="fishing"/>
+            </td>
+            <td class="left_padding">
+                <label for="fishing_checkbox">Fishing? </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" id="trading_checkbox" name="trading"/>
+            </td>
+            <td class="left_padding">
+                <label for="trading_checkbox">Trading? </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" id="nat_gen_checkbox" name="nat_gen"/>
+            </td>
+            <td class="left_padding">
+                <label for="nat_gen_checkbox">Natural Generation (chests)? </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" id="nat_biome_checkbox" name="nat_biome"/>
+            </td>
+            <td class="left_padding">
+                <label for="nat_biome_checkbox">Occurs naturally in specific biome? </label>
+            </td>
+        </tr>
+    </table>
+    <input class="submit_button" type="submit" value="Next"></input>
 </form>
 {% endblock %}
