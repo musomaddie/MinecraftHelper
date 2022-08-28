@@ -108,6 +108,25 @@ def test_add_fishing(mock_move_next_page, mock_flash, mock_get_db, mock_add_to_d
 @patch(f"{FILE_LOC}.add_crafting_recipe_to_db")
 @patch(f"{FILE_LOC}.get_db")
 @patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_crafting(
+        mock_move_next_page, mock_flash, mock_get_db, mock_add_to_db, client):
+    response = client.post(
+        f"/add_crafting/{ITEM_NAME}/['breaking']",
+        data={"cs1": "Test Item 2", "n_created": 1, "next": True}
+    )
+    # TODO: add more params in here - more tests!
+    assert response.status_code == 200
+    mock_add_to_db.assert_called_once_with(
+        ANY, ITEM_NAME, ["Test Item 2", "", "", "", "", "", "", "", ""], 1, "", "")
+    mock_get_db.assert_called_once()
+    mock_flash.assert_called_once_with(f"Successfully added {ITEM_NAME} to crafting")
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, "['breaking']")
+
+
+@patch(f"{FILE_LOC}.add_crafting_recipe_to_db")
+@patch(f"{FILE_LOC}.get_db")
+@patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.redirect")
 @patch(f"{FILE_LOC}.url_for")
 def test_add_crafting_not_next(
@@ -123,7 +142,7 @@ def test_add_crafting_not_next(
     mock_flash.assert_called_once_with(f"Successfully added {ITEM_NAME} to crafting")
     mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
-        "add.add_crafting", item_name=ITEM_NAME, remaining_items="['breaking']")
+        "add.crafting", item_name=ITEM_NAME, remaining_items="['breaking']")
 
 
 @patch(f"{FILE_LOC}.add_natural_gen_to_db")

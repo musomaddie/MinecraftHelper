@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="minecraft_items.db">
-  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.39">
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.43">
     <root id="1">
       <ServerVersion>3.38.0</ServerVersion>
     </root>
@@ -1435,6 +1435,7 @@
     <key id="515" parent="482">
       <ColNames>recipe_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>recipe_id</UnderlyingIndexColNames>
     </key>
     <column id="516" parent="483" name="breaking_id">
       <AutoIncrement>1</AutoIncrement>
@@ -1478,6 +1479,7 @@
     <key id="524" parent="483">
       <ColNames>breaking_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>breaking_id</UnderlyingIndexColNames>
     </key>
     <column id="525" parent="484" name="fishing_id">
       <AutoIncrement>1</AutoIncrement>
@@ -1502,6 +1504,7 @@
     <key id="529" parent="484">
       <ColNames>fishing_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>fishing_id</UnderlyingIndexColNames>
     </key>
     <column id="530" parent="485" name="generation_id">
       <AutoIncrement>1</AutoIncrement>
@@ -1531,6 +1534,7 @@
     <key id="535" parent="485">
       <ColNames>generation_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>generation_id</UnderlyingIndexColNames>
     </key>
     <column id="536" parent="486" name="generation_id">
       <AutoIncrement>1</AutoIncrement>
@@ -1572,6 +1576,7 @@
     <key id="544" parent="486">
       <ColNames>generation_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>generation_id</UnderlyingIndexColNames>
     </key>
     <column id="545" parent="487" name="obtaining_id">
       <AutoIncrement>1</AutoIncrement>
@@ -1601,6 +1606,7 @@
     <key id="550" parent="487">
       <ColNames>obtaining_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>obtaining_id</UnderlyingIndexColNames>
     </key>
     <column id="551" parent="488" name="item_name">
       <DataType>TEXT|0s</DataType>
@@ -1661,6 +1667,7 @@
     <key id="563" parent="489">
       <ColNames>trading_id</ColNames>
       <Primary>1</Primary>
+      <UnderlyingIndexColNames>trading_id</UnderlyingIndexColNames>
     </key>
     <column id="564" parent="490" name="type">
       <DataType>TEXT|0s</DataType>

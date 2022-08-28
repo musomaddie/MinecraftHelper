@@ -72,7 +72,7 @@ def crafting(item_name, remaining_items):
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
     return redirect(
-        url_for("add.add_crafting", item_name=item_name, remaining_items=remaining_items))
+        url_for("add.crafting", item_name=item_name, remaining_items=remaining_items))
 
 
 @bp.route("/add_fishing/<item_name>/<remaining_items>", methods=["GET", "POST"])
