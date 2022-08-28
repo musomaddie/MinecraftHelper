@@ -3,13 +3,18 @@ import ast
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_breaking_to_db, add_fishing_to_db, add_nat_biome_to_db, add_natural_gen_to_db,
+    add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
+    add_natural_gen_to_db,
     add_trading_to_db, get_db, reset_entire_db, reset_table)
 
 ITEMS_GROUPS_TN = "item_to_group"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
 
 bp = Blueprint("add", __name__)
+
+
+def _get_value_if_exists(this_request, key):
+    return this_request.form[key] if key in this_request.form else ""
 
 
 def select_next_item(cur):
@@ -38,10 +43,36 @@ def breaking(item_name, remaining_items):
         return render_template("add_breaking.html", item_name=item_name)
     requires_tool = request.form["requires_tool"]
     requires_silk = request.form["requires_silk"]
-    fastest_tool = request.form["fastest_tool"] if "fastest_tool" in request.form else ""
+    fastest_tool = _get_value_if_exists(request, "fastest_tool")
     add_breaking_to_db(get_db(), item_name, requires_tool, requires_silk, fastest_tool)
     flash(f"Successfully added {item_name} to the breaking table")
     return move_next_page(item_name, remaining_items)
+
+
+@bp.route("/add_crafting/<item_name>/<remaining_items>", methods=["GET", "POST"])
+def crafting(item_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_crafting.html", item_name=item_name)
+    cs1 = _get_value_if_exists(request, "cs1")
+    cs2 = _get_value_if_exists(request, "cs2")
+    cs3 = _get_value_if_exists(request, "cs3")
+    cs4 = _get_value_if_exists(request, "cs4")
+    cs5 = _get_value_if_exists(request, "cs5")
+    cs6 = _get_value_if_exists(request, "cs6")
+    cs7 = _get_value_if_exists(request, "cs7")
+    cs8 = _get_value_if_exists(request, "cs8")
+    cs9 = _get_value_if_exists(request, "cs9")
+    num_created = int(request.form["n_created"])
+    works_four = _get_value_if_exists(request, "works_four")
+    exact_positioning = _get_value_if_exists(request, "exact_positioning")
+    add_crafting_recipe_to_db(
+        get_db(), item_name, [cs1, cs2, cs3, cs4, cs5, cs6, cs7, cs8, cs9], num_created, works_four,
+        exact_positioning)
+    flash(f"Successfully added {item_name} to crafting")
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for("add.add_crafting", item_name=item_name, remaining_items=remaining_items))
 
 
 @bp.route("/add_fishing/<item_name>/<remaining_items>", methods=["GET", "POST"])
@@ -84,14 +115,14 @@ def natural_generation_biome(item_name, remaining_items):
 
 
 @bp.route("/add_trading/<item_name>/<remaining_items>", methods=["GET", "POST"])
-def add_trading(item_name, remaining_items):
+def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
     villager_type = request.form["villager_type"]
     emerald_price = int(request.form["emerald_price"])
-    village_level = request.form["villager_level"] if "villager_level" in request.form else ""
-    other_item = request.form["other_item"] if "other_item" in request.form else ""
-    add_trading_to_db(get_db(), item_name, villager_type, village_level, emerald_price, other_item)
+    villager_level = _get_value_if_exists(request, "villager_level")
+    other_item = _get_value_if_exists(request, "other_item")
+    add_trading_to_db(get_db(), item_name, villager_type, villager_level, emerald_price, other_item)
     flash(f"Successfully added {item_name} to trading table.")
     return move_next_page(item_name, remaining_items)
 

@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Adding crafting information for {{item_name}}</h1>
+<form method="post">
+    <p><i>For recipes that can be made in the four x four crafting grid please ensure that
+        the items are before the blue line (and tick the relevant box) </i></p>
+    <table style="border-collapse: collapse">
+        <tr style="height: 100px;">
+            <td style="border-top: 2px solid;
+                       border-left: 2px solid;
+                       border-right: 1px dashed;
+                       border-bottom: 1px dashed;
+                       text-align: center;">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs1" name="cs1"/>
+            </td>
+            <td style="border-top: 2px solid;
+                       border-right: blue 3px solid;
+                       border-bottom: 1px dashed;
+                       text-align: center;">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs2" name="cs2"/>
+            </td>
+            <td style="border-top: 2px solid;
+                       border-right: 2px solid;
+                       border-bottom: 1px dashed;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs3" name="cs3"/>
+            </td>
+        </tr>
+        <tr style="height: 100px;">
+            <td style="border-left: 2px solid;
+                       border-right: 1px dashed;
+                       border-bottom: 1px dashed;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs4" name="cs4"/>
+            </td>
+            <td style="border-right: blue 3px solid;
+                       border-bottom: 1px dashed;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs5" name="cs5"/>
+            </td>
+            <td style="border-right: 2px solid;
+                       border-bottom: 1px dashed;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs6" name="cs6"/>
+            </td>
+        </tr>
+        <tr style="height: 100px;">
+            <td style="border-left: 2px solid;
+                       border-right: 1px dashed;
+                       border-bottom: 2px solid;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs7" name="cs7"/>
+            </td>
+            <td style="border-right: blue 3px solid;
+                       border-bottom: 2px solid;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs8" name="cs8"/>
+            </td>
+            <td style="border-right: 2px solid;
+                       border-bottom: 2px solid;
+                       text-align: center; ">
+                <input style="border: none; width: 90%; height: 90px;"
+                       type="text" id="cs9" name="cs9"/>
+            </td>
+        </tr>
+    </table>
+    <ul>
+        <li>
+            <label for="n_created"> How many of {{item_name}} does this create? </label>
+            <input type="number" id="n_created" name="n_created" required/>
+        </li>
+        <li>
+            <label for="works_four_checkbox"> Does this work in the 4x4 crafting grid? </label>
+            <input type="checkbox" id="works_four_checkbox" name="works_four"/>
+        </li>
+        <li>
+            <label for="exact_pos_checkbox"> Does this require the exact positioning in the
+                crafting grid? </label>
+            <input type="checkbox" id="exact_pos_checkbox" name="exact_positioning"/>
+        </li>
+    </ul>
+    <input type="submit" value="Submit & add another crafting recipe" name="another"/>
+    <input type="submit" value="Submit & move to the next obtainment method" name="next"/>
+</form>
+
+{% endblock %}
