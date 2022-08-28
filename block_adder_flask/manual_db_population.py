@@ -6,7 +6,7 @@ from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
     add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
-    reset_entire_db,
+    get_group, reset_entire_db,
     reset_table)
 
 ITEMS_GROUPS_TN = "item_to_group"
@@ -140,11 +140,16 @@ def trading(item_name, remaining_items):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
+    group_name = get_group(item_name)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
+            group_name=group_name,
             item_name=item_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
+    if "update_group" in request.form:
+        print("I should be updating the group here!")
+        return redirect(url_for("add.add_item", item_name=item_name))
     methods = []
     if "breaking" in request.form.keys():
         methods.append("add.breaking")

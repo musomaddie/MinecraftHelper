@@ -183,6 +183,13 @@ def reset_entire_db():
     conn.commit()
 
 
+def get_group(item_name):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('''SELECT item_group FROM item_to_group WHERE item_name = ?''', (item_name,))
+    return cur.fetchone()["item_group"]
+
+
 @click.command("init-db")
 def init_db_command():
     """ Clear all existing tables. (besides item list)"""

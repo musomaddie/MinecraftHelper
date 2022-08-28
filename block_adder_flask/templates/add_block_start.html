@@ -1,6 +1,21 @@
 {% extends "layout.html" %}
 {% block body %}
 <h2> Adding information for <a href={{block_url}}> {{item_name}} </a></h2>
+<h3> The group name is {{group_name}} </h3>
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                <label for="group_name">The group name <b>SHOULD</b> be</label>
+            </td>
+            <td class="left_padding">
+                <input type="text" id="group_name" name="group_name_replacement"/>
+            </td>
+        </tr>
+    </table>
+    <input class="submit_button" type="submit" value="Update group" name="update_group"/>
+</form>
+<br>
 <h3> How to obtain this block? </h3>
 <form method="post">
     <table class="alignment">
@@ -64,4 +79,5 @@
     </table>
     <input class="submit_button" type="submit" value="Next"></input>
 </form>
+
 {% endblock %}

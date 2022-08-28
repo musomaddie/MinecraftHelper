@@ -33,6 +33,19 @@ def test_get_close_db(app):
     assert "closed" in str(e.value)
 
 
+def test_get_group(app):
+    with app.app_context():
+        assert d.get_group(ITEM_NAME) == "Testing Group"
+
+
+def test_get_group_no_group(app):
+    with app.app_context():
+        db = d.get_db()
+        cur = db.cursor()
+        cur.execute('''INSERT INTO item_to_group(item_name) VALUES ("ITEM_NAME_2")''')
+        assert d.get_group("ITEM_NAME_2") is None
+
+
 def test_add_to_obtaining_table(app):
     with app.app_context():
         db = d.get_db()
