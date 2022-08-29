@@ -1,0 +1,9 @@
+{
+  "name": "Example Item",
+  "group": "Example Group",
+  "breaking": {
+    "requires tool": true,
+    "requires silk": true,
+    "fastest tool": "Tool Name"
+  }
+}

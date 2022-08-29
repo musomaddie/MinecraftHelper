@@ -54,7 +54,17 @@ def test_add_to_item_list(tmp_json_file_no_items):
      ("", {"group": "Json Group"}, "Json Group"),
      ("DB Group", {"group": "Json Group"}, "Json Group")])
 def test_get_updated_group_name(from_db, json_data, expected_name):
-    assert pop.get_updated_group_name(from_db, json_data) == expected_name
+    assert pop._get_updated_group_name(from_db, json_data) == expected_name
+
+
+@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}._get_file_contents")
+def test_append_json(mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
+    mock_get_file_contents.return_value = {"name": ITEM_NAME}
+    pop._append_json_file("test key", {"item 1": 45, "item 2": True}, tmp_json_file_no_items)
+
+    mock_update_json_file.assert_called_once_with(
+        {"name": ITEM_NAME, "test key": {"item 1": 45, "item 2": True}}, tmp_json_file_no_items)
 
 
 # ##################################################################################################
@@ -108,7 +118,7 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}.get_updated_group_name")
+@patch(f"{FILE_LOC}._get_updated_group_name")
 @patch(f"{FILE_LOC}._update_json_file")
 def test_add_item_update_group(
         mock_update_file,
@@ -140,7 +150,7 @@ def test_add_item_update_group(
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}.get_updated_group_name")
+@patch(f"{FILE_LOC}._get_updated_group_name")
 @patch(f"{FILE_LOC}._update_json_file")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_add_item_post(
@@ -156,3 +166,39 @@ def test_add_item_post(
         ITEM_NAME,
         ["add.breaking", "add.crafting", "add.fishing", "add.trading", "add.natural_generation",
          "add.natural_generation_biome", "add.natural_gen_structure"])
+
+
+# ##################################################################################################
+#                            breaking                                                              #
+# ##################################################################################################
+@pytest.mark.parametrize(
+    ("requires_tool", "expected_tool", "requires_silk", "expected_silk",
+     "has_tool", "fastest_tool"),
+    [("tool_no", False, "silk_no", False, False, ""),
+     ("tool_no", False, "silk_no", False, True, "Fastest Tool"),
+     ("tool_yes", True, "silk_no", False, False, ""),
+     ("tool_yes", True, "silk_no", False, True, "Fastest Tool"),
+     ("tool_no", False, "silk_yes", True, False, ""),
+     ("tool_no", False, "silk_yes", True, True, ""),
+     ("tool_yes", True, "silk_yes", True, False, ""),
+     ("tool_yes", True, "silk_yes", True, True, "")])
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_breaking(
+        mock_move_next_page, mock_flash, mock_append_json_file,
+        requires_tool, expected_tool, requires_silk, expected_silk, has_tool, fastest_tool, client):
+    form_data = {"requires_tool": requires_tool, "requires_silk": requires_silk, }
+    expected_data = {
+        "requires tool": expected_tool,
+        "requires silk": expected_silk,
+        "fastest tool": fastest_tool if has_tool else ""
+    }
+    if has_tool:
+        form_data["fastest_tool"] = fastest_tool
+    response = client.post(f"/add_breaking/{ITEM_NAME}/['breaking']", data=form_data)
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "breaking", expected_data, f"block_adder_flask/item_information/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, "['breaking']")

@@ -5,7 +5,7 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
+    add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
     add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
     get_group)
@@ -27,6 +27,12 @@ def _update_json_file(value: dict, filename: str):
         json.dump(value, f)
 
 
+def _append_json_file(future_key: str, value: dict, filename: str):
+    current_content = _get_file_contents(filename)
+    current_content[future_key] = value
+    _update_json_file(current_content, filename)
+
+
 def _get_all_items_json_file(filename=JSON_ITEM_LIST):
     with open(filename) as f:
         return json.load(f)["items"]
@@ -46,7 +52,7 @@ def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
     _update_json_file(existing_json, filename)
 
 
-def get_updated_group_name(from_db: str, json_data: dict) -> str:
+def _get_updated_group_name(from_db: str, json_data: dict) -> str:
     if "group" in json_data:
         return json_data["group"]
     return from_db
@@ -74,11 +80,12 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    add_breaking_to_db(
-        get_db(), item_name,
-        request.form["requires_tool"],
-        request.form["requires_silk"],
-        _get_value_if_exists(request, "fastest_tool"))
+    _append_json_file(
+        "breaking",
+        {"requires tool": request.form["requires_tool"] == "tool_yes",
+         "requires silk": request.form["requires_silk"] == "silk_yes",
+         "fastest tool": _get_value_if_exists(request, "fastest_tool")},
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added {item_name} to the breaking table")
     return move_next_page(item_name, remaining_items)
 
@@ -182,7 +189,7 @@ def item(item_name):
     else:
         existing_json_data["name"] = item_name
         _update_json_file(existing_json_data, item_file_name_full)
-    group_name = get_updated_group_name(get_group(item_name), existing_json_data)
+    group_name = _get_updated_group_name(get_group(item_name), existing_json_data)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
