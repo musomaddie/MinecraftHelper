@@ -1,4 +1,6 @@
 import ast
+import json
+from os.path import isfile, join
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
@@ -6,11 +8,12 @@ from block_adder_flask.db_for_flask import (
     add_breaking_to_db, add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
     add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
-    get_group, reset_entire_db,
-    reset_table)
+    get_group)
 
 ITEMS_GROUPS_TN = "item_to_group"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
+JSON_DIR = "block_adder_flask/item_information"
+JSON_ITEM_LIST = "block_adder_flask/item_information/item_list.json"
 
 bp = Blueprint("add", __name__)
 
@@ -19,13 +22,42 @@ def _get_value_if_exists(this_request, key):
     return this_request.form[key] if key in this_request.form else ""
 
 
+def _update_json_file(value: dict, filename: str):
+    with open(filename, "w") as f:
+        json.dump(value, f)
+
+
+def _get_all_items_json_file(filename=JSON_ITEM_LIST):
+    with open(filename) as f:
+        return json.load(f)["items"]
+
+
+def _get_file_contents(filename: str):
+    with open(filename) as f:
+        return json.load(f)
+
+
+def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
+    existing_json = {"items": []}
+    with open(filename) as f:
+        existing_json = json.load(f)
+    if item_name not in existing_json:
+        existing_json["items"].append(item_name)
+    _update_json_file(existing_json, filename)
+
+
+def get_updated_group_name(from_db: str, json_data: dict) -> str:
+    if "group" in json_data:
+        return json_data["group"]
+    return from_db
+
+
 def select_next_item(cur):
     cur.execute(f"SELECT * FROM {ITEMS_GROUPS_TN}")
     item_name_list = [block["item_name"] for block in cur.fetchall()]
-    cur.execute(f"SELECT item_name FROM item_obtaining_method")
-    saved_items = set([row["item_name"] for row in cur.fetchall()])
-    item_name_list = [name for name in item_name_list if name not in saved_items]
-    return redirect(url_for("add.item", item_name=item_name_list[0]))
+    saved_items = set([f.replace(".json", "") for f in _get_all_items_json_file()])
+    next_item = [name for name in item_name_list if name not in saved_items][0]
+    return redirect(url_for("add.item", next_item))
 
 
 def move_next_page(item_name, remaining_items):
@@ -140,16 +172,33 @@ def trading(item_name, remaining_items):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
-    group_name = get_group(item_name)
+    item_file_name = item_name + ".json"
+    item_file_name_full = f"{JSON_DIR}/{item_file_name}"
+    existing_json_data = {}
+    if isfile(join(JSON_DIR, item_file_name)):
+        # TODO: rewrite to use reading helper
+        existing_json_data = _get_file_contents(item_file_name_full)
+        _add_to_item_list(item_name)
+    else:
+        existing_json_data["name"] = item_name
+        _update_json_file(existing_json_data, item_file_name_full)
+    group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
             group_name=group_name,
             item_name=item_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
+
     if "update_group" in request.form:
-        print("I should be updating the group here!")
-        return redirect(url_for("add.add_item", item_name=item_name))
+        existing_json_data["group"] = request.form["group_name_replacement"]
+        _update_json_file(existing_json_data, item_file_name_full)
+        return render_template(
+            "add_block_start.html",
+            group_name=group_name,
+            item_name=item_name,
+            block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
+
     methods = []
     if "breaking" in request.form.keys():
         methods.append("add.breaking")
@@ -168,17 +217,17 @@ def item(item_name):
     return move_next_page(item_name, methods)
 
 
-@bp.route("/start_new")
-def start_new():
-    reset_entire_db()
-    return "I am starting new"
+# @bp.route("/start_new")
+# def start_new():
+#     reset_entire_db()
+#     return "I am starting new"
 
 
-@bp.route("/new_table/<table_name>")
-def new_table(table_name):
-    conn = get_db()
-    reset_table(conn, conn.cursor(), table_name)
-    return f"Added {table_name} to database"
+# @bp.route("/new_table/<table_name>")
+# def new_table(table_name):
+#     conn = get_db()
+#     reset_table(conn, conn.cursor(), table_name)
+#     return f"Added {table_name} to database"
 
 
 @bp.route("/")
