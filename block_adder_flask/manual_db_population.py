@@ -5,7 +5,7 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_crafting_recipe_to_db, add_fishing_to_db, add_nat_biome_to_db,
+    add_fishing_to_db, add_nat_biome_to_db,
     add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
     get_group)
@@ -29,7 +29,12 @@ def _update_json_file(value: dict, filename: str):
 
 def _append_json_file(future_key: str, value: dict, filename: str):
     current_content = _get_file_contents(filename)
-    current_content[future_key] = value
+    if future_key in current_content:
+        if type(current_content[future_key]) != list:
+            current_content[future_key] = [current_content[future_key]]
+        current_content[future_key].append(value)
+    else:
+        current_content[future_key] = value
     _update_json_file(current_content, filename)
 
 
@@ -94,18 +99,21 @@ def breaking(item_name, remaining_items):
 def crafting(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_crafting.html", item_name=item_name)
-    add_crafting_recipe_to_db(
-        get_db(),
-        item_name,
-        [_get_value_if_exists(request, "cs1"), _get_value_if_exists(request, "cs2"),
-         _get_value_if_exists(request, "cs3"), _get_value_if_exists(request, "cs4"),
-         _get_value_if_exists(request, "cs5"), _get_value_if_exists(request, "cs6"),
-         _get_value_if_exists(request, "cs7"), _get_value_if_exists(request, "cs8"),
-         _get_value_if_exists(request, "cs9")],
-        int(request.form["n_created"]),
-        _get_value_if_exists(request, "works_four"),
-        _get_value_if_exists(request, "exact_positioning")
-    )
+    # _append_json_file(
+    #     "crafting"
+    # )
+    # add_crafting_recipe_to_db(
+    #     get_db(),
+    #     item_name,
+    #     [_get_value_if_exists(request, "cs1"), _get_value_if_exists(request, "cs2"),
+    #      _get_value_if_exists(request, "cs3"), _get_value_if_exists(request, "cs4"),
+    #      _get_value_if_exists(request, "cs5"), _get_value_if_exists(request, "cs6"),
+    #      _get_value_if_exists(request, "cs7"), _get_value_if_exists(request, "cs8"),
+    #      _get_value_if_exists(request, "cs9")],
+    #     int(request.form["n_created"]),
+    #     _get_value_if_exists(request, "works_four"),
+    #     _get_value_if_exists(request, "exact_positioning")
+    # )
     flash(f"Successfully added {item_name} to crafting")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)

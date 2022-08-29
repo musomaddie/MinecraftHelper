@@ -62,9 +62,24 @@ def test_get_updated_group_name(from_db, json_data, expected_name):
 def test_append_json(mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
     mock_get_file_contents.return_value = {"name": ITEM_NAME}
     pop._append_json_file("test key", {"item 1": 45, "item 2": True}, tmp_json_file_no_items)
-
     mock_update_json_file.assert_called_once_with(
         {"name": ITEM_NAME, "test key": {"item 1": 45, "item 2": True}}, tmp_json_file_no_items)
+
+
+@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}._get_file_contents")
+def test_append_json_key_exists(
+        mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
+    mock_get_file_contents.return_value = {
+        "name": ITEM_NAME, "new key": {"item 1": "45", "item 2": 45}}
+    pop._append_json_file(
+        "new key", {"item 1a": "thing", "item 2a": "thing 2"},
+        tmp_json_file_no_items)
+    mock_update_json_file.assert_called_once_with(
+        {"name": ITEM_NAME, "new key":
+            [{"item 1": "45", "item 2": 45}, {"item 1a": "thing", "item 2a": "thing 2"}]},
+        tmp_json_file_no_items
+    )
 
 
 # ##################################################################################################
