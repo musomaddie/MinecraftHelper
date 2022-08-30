@@ -5,7 +5,7 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_fishing_to_db, add_nat_biome_to_db,
+    add_nat_biome_to_db,
     add_nat_structure_to_db, add_natural_gen_to_db,
     add_trading_to_db, get_db,
     get_group)
@@ -129,7 +129,8 @@ def crafting(item_name, remaining_items):
 def fishing(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", item_name=item_name)
-    add_fishing_to_db(get_db(), item_name, request.form["item_level"])
+    _append_json_file(
+        "fishing", {"treasure type": request.form["item_level"]}, f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added {item_name} to fishing")
     return move_next_page(item_name, remaining_items)
 

@@ -271,6 +271,20 @@ def test_crafting_move_next(mock_move_next_page, mock_flash, mock_append_json, c
     mock_append_json.assert_called_once_with(
         "crafting", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
-    mock_move_next_page.assert_called_once_with(
-        ITEM_NAME, "['breaking']"
-    )
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, "['breaking']")
+
+
+# ##################################################################################################
+#                            fishing                                                               #
+# ##################################################################################################
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_fishing(mock_move_next_page, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_fishing/{ITEM_NAME}/'[breaking]'", data={"item_level": "Treasure"})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "fishing", {"treasure type": "Treasure"}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, "'[breaking]'")
