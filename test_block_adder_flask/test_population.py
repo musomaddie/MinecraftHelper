@@ -9,6 +9,7 @@ import block_adder_flask.manual_db_population as pop
 ITEM_NAME = "Test Item"
 
 FILE_LOC = "block_adder_flask.manual_db_population"
+EXPECTED_JSON_DIR = "block_adder_flask/item_information"
 
 
 @fixture
@@ -108,8 +109,7 @@ def test_add_item_get_file_exists_with_mocks(
     assert response.status_code == 200
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
     mock_isfile.assert_called_once()
-    mock_get_file_contents.assert_called_once_with(
-        "block_adder_flask/item_information/Test Item.json")
+    mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_add_to_item_list.assert_called_once_with(ITEM_NAME)
 
 
@@ -126,7 +126,7 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
     mock_isfile.assert_called_once()
     mock_update_json_file.assert_called_once_with(
-        {"name": ITEM_NAME}, "block_adder_flask/item_information/Test Item.json")
+        {"name": ITEM_NAME}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
 
 
 @patch(f"{FILE_LOC}.join")
@@ -152,10 +152,10 @@ def test_add_item_update_group(
     mock_update_file.assert_has_calls(
         [call(
             {"name": "Test Item", "group": "New Group"},
-            "block_adder_flask/item_information/Test Item.json"),
+            f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"),
             call(
                 {"name": "Test Item", "group": "New Group"},
-                "block_adder_flask/item_information/Test Item.json")
+                f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
         ])
 
 
@@ -214,6 +214,63 @@ def test_breaking(
     response = client.post(f"/add_breaking/{ITEM_NAME}/['breaking']", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "breaking", expected_data, f"block_adder_flask/item_information/{ITEM_NAME}.json")
+        "breaking", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, "['breaking']")
+
+
+# ##################################################################################################
+#                            crafting                                                              #
+# ##################################################################################################
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.redirect")
+@patch(f"{FILE_LOC}.url_for")
+def test_crafting(mock_url_for, mock_redirect, mock_flash, mock_append_json_file, client):
+    form_data = {
+        "cs1": "Item 1", "cs2": "Item 2", "cs3": "Item 3", "cs4": "Item 4", "cs5": "Item 5",
+        "cs6": "Item 6", "cs7": "Item 7", "cs8": "Item 8", "cs9": "Item 9",
+        "n_created": 1, "works_four": "", "exact_positioning": ""
+    }
+    expected_data = {
+        "crafting slots":
+            ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8",
+             "Item 9"],
+        "num created": 1,
+        "works with four by four": True,
+        "requires exact positioning": True
+    }
+    response = client.post(f"/add_crafting/{ITEM_NAME}/['breaking']", data=form_data)
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "crafting", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_redirect.assert_called_once()
+    mock_url_for.assert_called_once_with(
+        "add.crafting", item_name=ITEM_NAME, remaining_items="['breaking']")
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_crafting_move_next(mock_move_next_page, mock_flash, mock_append_json, client):
+    # Also testing with a not full crafting grid and without some booleans
+    form_data = {
+        "cs1": "Item 1", "cs3": "Item 2", "cs4": "Item 3", "cs5": "Item 4",
+        "n_created": "1", "exact_positioning": "", "next": ""
+    }
+    expected_data = {
+        "crafting slots": [
+            "Item 1", "", "Item 2", "Item 3", "Item 4", "", "", "", ""],
+        "num created": 1,
+        "works with four by four": False,
+        "requires exact positioning": True
+    }
+    response = client.post(f"/add_crafting/{ITEM_NAME}/['breaking']", data=form_data)
+    assert response.status_code == 200
+    mock_append_json.assert_called_once_with(
+        "crafting", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(
+        ITEM_NAME, "['breaking']"
+    )

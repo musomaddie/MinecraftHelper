@@ -99,21 +99,25 @@ def breaking(item_name, remaining_items):
 def crafting(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_crafting.html", item_name=item_name)
-    # _append_json_file(
-    #     "crafting"
-    # )
-    # add_crafting_recipe_to_db(
-    #     get_db(),
-    #     item_name,
-    #     [_get_value_if_exists(request, "cs1"), _get_value_if_exists(request, "cs2"),
-    #      _get_value_if_exists(request, "cs3"), _get_value_if_exists(request, "cs4"),
-    #      _get_value_if_exists(request, "cs5"), _get_value_if_exists(request, "cs6"),
-    #      _get_value_if_exists(request, "cs7"), _get_value_if_exists(request, "cs8"),
-    #      _get_value_if_exists(request, "cs9")],
-    #     int(request.form["n_created"]),
-    #     _get_value_if_exists(request, "works_four"),
-    #     _get_value_if_exists(request, "exact_positioning")
-    # )
+    _append_json_file(
+        "crafting", {
+            "crafting slots": [
+                _get_value_if_exists(request, "cs1"),
+                _get_value_if_exists(request, "cs2"),
+                _get_value_if_exists(request, "cs3"),
+                _get_value_if_exists(request, "cs4"),
+                _get_value_if_exists(request, "cs5"),
+                _get_value_if_exists(request, "cs6"),
+                _get_value_if_exists(request, "cs7"),
+                _get_value_if_exists(request, "cs8"),
+                _get_value_if_exists(request, "cs9"),
+            ],
+            "num created": int(request.form["n_created"]),
+            "works with four by four": "works_four" in request.form,
+            "requires exact positioning": "exact_positioning" in request.form
+        },
+        f"{JSON_DIR}/{item_name}.json"
+    )
     flash(f"Successfully added {item_name} to crafting")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
