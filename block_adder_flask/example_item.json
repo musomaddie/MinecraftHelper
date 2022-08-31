@@ -19,10 +19,16 @@
       "Item 9"
     ],
     "num created": 1,
-    "works with four by four": true
+    "works with four by four": true,
     "requires exact positioning": true
-  }
+  },
   "fishing": {
     "treasure type": "Junk"
+  },
+  "generated in chests": {
+    "structure": "Structure name",
+    "container": "Container (chest) description",
+    "quantity": 1,
+    "chance": 4.3
   }
 }

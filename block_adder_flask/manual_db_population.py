@@ -6,8 +6,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
     add_nat_biome_to_db,
-    add_nat_structure_to_db, add_natural_gen_to_db,
-    add_trading_to_db, get_db,
+    add_nat_structure_to_db, add_trading_to_db, get_db,
     get_group)
 
 ITEMS_GROUPS_TN = "item_to_group"
@@ -18,8 +17,10 @@ JSON_ITEM_LIST = "block_adder_flask/item_information/item_list.json"
 bp = Blueprint("add", __name__)
 
 
-def _get_value_if_exists(this_request, key):
-    return this_request.form[key] if key in this_request.form else ""
+def _get_value_if_exists(this_request, key, expected_type=str, default_value=""):
+    if expected_type == int:
+        return int(this_request.form[key]) if key in this_request.form else default_value
+    return this_request.form[key] if key in this_request.form else default_value
 
 
 def _update_json_file(value: dict, filename: str):
@@ -139,12 +140,14 @@ def fishing(item_name, remaining_items):
 def natural_generation(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_natural_generation.html", item_name=item_name)
-    add_natural_gen_to_db(
-        get_db(), item_name,
-        request.form["structure"],
-        request.form["container"],
-        int(request.form["quantity_fd"]),
-        int(request.form["chance"]))
+    _append_json_file(
+        "generated in chests",
+        {"structure": request.form["structure"],
+         "container": _get_value_if_exists(request, "container"),
+         "quantity": int(request.form["quantity_fd"]),
+         "chance": _get_value_if_exists(request, "chance", expected_type=int, default_value=100)
+         },
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added {item_name} to natural generation table")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -170,6 +173,7 @@ def natural_gen_structure(item_name, remaining_items):
         return render_template("add_nat_structure.html")
     add_nat_structure_to_db(
         get_db(), item_name, request.form["structure_name"])
+    # TODO: add rooms as an optional
     flash(f"Successfully added {item_name} to natural structure generation")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)

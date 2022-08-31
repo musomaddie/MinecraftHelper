@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<h2> Adding natural generation information for {{item_name}}</h2>
+<h2> Adding generation inside chests' information for {{item_name}}</h2>
 <form method="post">
     <table>
         <tr>
@@ -13,10 +13,10 @@
         </tr>
         <tr>
             <td>
-                <label for="container">Which container? </label>
+                <label for="container">Container description? </label>
             </td>
             <td class="left_padding">
-                <input type="text" id="container" name="container" required/>
+                <input type="text" id="container" name="container"/>
             </td>
         </tr>
         <tr>
@@ -32,7 +32,7 @@
                 <label for="chance">How likely? </label>
             </td>
             <td class="left_padding">
-                <input type="number" id="chance" name="chance" required/>
+                <input type="number" id="chance" name="chance"/>
             </td>
         </tr>
     </table>
