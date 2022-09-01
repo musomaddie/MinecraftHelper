@@ -91,7 +91,7 @@ def breaking(item_name, remaining_items):
          "requires silk": request.form["requires_silk"] == "silk_yes",
          "fastest tool": _get_value_if_exists(request, "fastest_tool")},
         f"{JSON_DIR}/{item_name}.json")
-    flash(f"Successfully added {item_name} to the breaking table")
+    flash(f"Successfully added breaking information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
 
@@ -118,7 +118,7 @@ def crafting(item_name, remaining_items):
         },
         f"{JSON_DIR}/{item_name}.json"
     )
-    flash(f"Successfully added {item_name} to crafting")
+    flash(f"Successfully added crafting information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
     return redirect(
@@ -131,7 +131,7 @@ def fishing(item_name, remaining_items):
         return render_template("add_fishing.html", item_name=item_name)
     _append_json_file(
         "fishing", {"treasure type": request.form["item_level"]}, f"{JSON_DIR}/{item_name}.json")
-    flash(f"Successfully added {item_name} to fishing")
+    flash(f"Successfully added fishing information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
 
@@ -147,7 +147,7 @@ def natural_generation(item_name, remaining_items):
          "chance": _get_value_if_exists(request, "chance", expected_type=int, default_value=100)
          },
         f"{JSON_DIR}/{item_name}.json")
-    flash(f"Successfully added {item_name} to natural generation table")
+    flash(f"Successfully added natural generation in chests information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
     return redirect(
@@ -163,7 +163,7 @@ def natural_generation_biome(item_name, remaining_items):
         return render_template("add_nat_biome.html")
     _append_json_file(
         "generated in biome", {"biome name": request.form["biome"]}, f"{JSON_DIR}/{item_name}.json")
-    flash(f"Successfully added {item_name} to biome")
+    flash(f"Successfully added generation in biome information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
 
@@ -174,7 +174,7 @@ def natural_gen_structure(item_name, remaining_items):
     _append_json_file(
         "generated as part of structure",
         {"structure name": request.form["structure_name"]}, f"{JSON_DIR}/{item_name}.json")
-    flash(f"Successfully added {item_name} to natural structure generation")
+    flash(f"Successfully added generation as part of structure information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
     return redirect(
@@ -194,7 +194,7 @@ def trading(item_name, remaining_items):
          "other item required": _get_value_if_exists(request, "other_item")},
         f"{JSON_DIR}/{item_name}.json"
     )
-    flash(f"Successfully added {item_name} to trading table.")
+    flash(f"Successfully added trading information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
 
@@ -221,11 +221,7 @@ def item(item_name):
     if "update_group" in request.form:
         existing_json_data["group"] = request.form["group_name_replacement"]
         _update_json_file(existing_json_data, item_file_name_full)
-        return render_template(
-            "add_block_start.html",
-            group_name=group_name,
-            item_name=item_name,
-            block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
+        return redirect(url_for("add.item", item_name=item_name))
 
     methods = []
     if "breaking" in request.form.keys():
@@ -242,6 +238,7 @@ def item(item_name):
         methods.append("add.natural_generation_biome")
     if "nat_struct" in request.form.keys():
         methods.append("add.natural_gen_structure")
+    # TODO: add post generation (i.e. leaves)
     return move_next_page(item_name, methods)
 
 
