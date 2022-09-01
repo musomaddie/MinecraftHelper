@@ -5,7 +5,7 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_nat_structure_to_db, add_trading_to_db, get_db,
+    add_trading_to_db, get_db,
     get_group)
 
 ITEMS_GROUPS_TN = "item_to_group"
@@ -171,9 +171,9 @@ def natural_generation_biome(item_name, remaining_items):
 def natural_gen_structure(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_structure.html")
-    add_nat_structure_to_db(
-        get_db(), item_name, request.form["structure_name"])
-    # TODO: add rooms as an optional
+    _append_json_file(
+        "generated as part of structure",
+        {"structure name": request.form["structure_name"]}, f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added {item_name} to natural structure generation")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)

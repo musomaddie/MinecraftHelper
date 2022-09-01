@@ -361,3 +361,43 @@ def test_natural_generation_biome(
         f"/add_natural_biome/{ITEM_NAME}/{REMAINING_ITEMS}", data={"biome": "Test Biome"})
     mock_flash.assert_called_once()
     mock_move_next_page(ITEM_NAME, REMAINING_ITEMS)
+
+
+# ##################################################################################################
+#                            natural gen structure                                                 #
+# ##################################################################################################
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.redirect")
+@patch(f"{FILE_LOC}.url_for")
+def test_natural_gen_structure(
+        mock_url_for, mock_redirect, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_natural_gen_structure/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"structure_name": "Test Structure"})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "generated as part of structure",
+        {"structure name": "Test Structure"},
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_redirect.assert_called_once()
+    mock_url_for.assert_called_once_with(
+        "add.natural_gen_structure", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_natural_gen_structure_with_next(
+        mock_move_next_page, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_natural_gen_structure/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"structure_name": "Test Structure", "next": True})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "generated as part of structure",
+        {"structure name": "Test Structure"},
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
