@@ -68,7 +68,7 @@ def select_next_item(cur):
     item_name_list = [block["item_name"] for block in cur.fetchall()]
     saved_items = set([f.replace(".json", "") for f in _get_all_items_json_file()])
     next_item = [name for name in item_name_list if name not in saved_items][0]
-    return redirect(url_for("add.item", next_item))
+    return redirect(url_for("add.item", item_name=next_item))
 
 
 def move_next_page(item_name, remaining_items):
