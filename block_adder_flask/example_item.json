@@ -30,5 +30,8 @@
     "container": "Container (chest) description",
     "quantity": 1,
     "chance": 4.3
+  },
+  "generated in biome": {
+    "biome name": "Biome name"
   }
 }

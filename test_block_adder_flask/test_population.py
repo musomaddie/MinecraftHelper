@@ -346,3 +346,18 @@ def test_natural_generation_move_next(
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
+
+
+# ##################################################################################################
+#                            biome generation                                                      #
+# ##################################################################################################
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_natural_generation_biome(
+        mock_move_next_page, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_natural_biome/{ITEM_NAME}/{REMAINING_ITEMS}", data={"biome": "Test Biome"})
+    mock_flash.assert_called_once()
+    mock_move_next_page(ITEM_NAME, REMAINING_ITEMS)

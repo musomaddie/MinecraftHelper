@@ -5,7 +5,6 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_nat_biome_to_db,
     add_nat_structure_to_db, add_trading_to_db, get_db,
     get_group)
 
@@ -162,7 +161,8 @@ def natural_generation(item_name, remaining_items):
 def natural_generation_biome(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
-    add_nat_biome_to_db(get_db(), item_name, request.form["biome"])
+    _append_json_file(
+        "generated in biome", {"biome name": request.form["biome"]}, f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added {item_name} to biome")
     return move_next_page(item_name, remaining_items)
 
