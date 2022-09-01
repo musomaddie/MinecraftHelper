@@ -401,3 +401,35 @@ def test_natural_gen_structure_with_next(
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
+
+
+@pytest.mark.parametrize(
+    ("villager_level", "has_villager_level", "other_item_required", "has_other"),
+    [("Test Level", True, "Other Item", True),
+     ("Test Level", True, "", False),
+     ("", False, "Other Item", True),
+     ("", False, "", False)])
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_trading(
+        mock_move_next_page, mock_flash, mock_append_json_file,
+        villager_level, has_villager_level, other_item_required, has_other, client):
+    form_data = {"villager_type": "Test Villager", "emerald_price": "1"}
+    expected_data = {
+        "villager type": "Test Villager",
+        "villager level": villager_level,
+        "emerald price": 1,
+        "other item required": other_item_required}
+    if has_other:
+        form_data["other_item"] = other_item_required
+    if has_villager_level:
+        form_data["villager_level"] = villager_level
+    print(form_data)
+
+    response = client.post(f"/add_trading/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "trading", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)

@@ -36,5 +36,11 @@
   },
   "generated as part of structure": {
     "structure name": "Structure name"
+  },
+  "trading": {
+    "villager type": "Villager type",
+    "villager level": "Villager level",
+    "emerald price": 1,
+    "other item required": "Another item"
   }
 }

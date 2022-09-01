@@ -5,7 +5,7 @@ from os.path import isfile, join
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from block_adder_flask.db_for_flask import (
-    add_trading_to_db, get_db,
+    get_db,
     get_group)
 
 ITEMS_GROUPS_TN = "item_to_group"
@@ -186,10 +186,14 @@ def natural_gen_structure(item_name, remaining_items):
 def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
-    add_trading_to_db(
-        get_db(), item_name,
-        request.form["villager_type"], _get_value_if_exists(request, "villager_level"),
-        int(request.form["emerald_price"]), _get_value_if_exists(request, "other_item"))
+    _append_json_file(
+        "trading",
+        {"villager type": request.form["villager_type"],
+         "villager level": _get_value_if_exists(request, "villager_level"),
+         "emerald price": int(request.form["emerald_price"]),
+         "other item required": _get_value_if_exists(request, "other_item")},
+        f"{JSON_DIR}/{item_name}.json"
+    )
     flash(f"Successfully added {item_name} to trading table.")
     return move_next_page(item_name, remaining_items)
 
