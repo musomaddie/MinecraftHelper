@@ -23,7 +23,7 @@ def create_app(test_config=None):
     from . import db_for_flask
     db_for_flask.init_app(app)
 
-    from . import manual_db_population
-    app.register_blueprint(manual_db_population.bp)
+    from . import manual_population
+    app.register_blueprint(manual_population.bp)
 
     return app

@@ -63,6 +63,20 @@ def _get_updated_group_name(from_db: str, json_data: dict) -> str:
     return from_db
 
 
+def _save_to_group(group_name, item_name):
+    if group_name == "":
+        return
+    group_dir = f"{JSON_DIR}/groups"
+    group_fn_full = f"{group_dir}/{group_name}.json"
+    if isfile(join(group_dir, group_name)):
+        existing_group_items = _get_file_contents(group_fn_full)
+        existing_group_items["items"].append(item_name)
+        _update_json_file(existing_group_items, group_fn_full)
+    else:
+        group_items = {"group name": group_name, "items": [item_name]}
+        _update_json_file(group_items, group_fn_full)
+
+
 def select_next_item(cur):
     cur.execute(f"SELECT * FROM {ITEMS_GROUPS_TN}")
     item_name_list = [block["item_name"] for block in cur.fetchall()]
@@ -228,6 +242,7 @@ def item(item_name):
         existing_json_data["name"] = item_name
         _update_json_file(existing_json_data, item_file_name_full)
     group_name = _get_updated_group_name(get_group(item_name), existing_json_data)
+    _save_to_group(group_name, item_name)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
@@ -236,6 +251,7 @@ def item(item_name):
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 
     if "update_group" in request.form:
+        # TODO: remove this item from the old group
         existing_json_data["group"] = request.form["group_name_replacement"]
         _update_json_file(existing_json_data, item_file_name_full)
         return redirect(url_for("add.item", item_name=item_name))
