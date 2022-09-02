@@ -136,7 +136,11 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
 @patch(f"{FILE_LOC}.get_group")
 @patch(f"{FILE_LOC}._get_updated_group_name")
 @patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.url_for")
+@patch(f"{FILE_LOC}.redirect")
 def test_add_item_update_group(
+        mock_redirect,
+        mock_url_for,
         mock_update_file,
         mock_get_group_name,
         mock_get_group,
@@ -158,6 +162,8 @@ def test_add_item_update_group(
                 {"name": "Test Item", "group": "New Group"},
                 f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
         ])
+    mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
+    mock_redirect.assert_called_once()
 
 
 @patch(f"{FILE_LOC}.join")
@@ -425,11 +431,36 @@ def test_trading(
         form_data["other_item"] = other_item_required
     if has_villager_level:
         form_data["villager_level"] = villager_level
-    print(form_data)
 
     response = client.post(f"/add_trading/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "trading", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
+
+
+@pytest.mark.parametrize(
+    ("has_part", "part_of", "has_generated", "generated"),
+    [(True, "Test Part Of", True, "Test Generated"),
+     (True, "Test Part Of", False, ""),
+     (False, "", True, "Test Generated"),
+     (False, "", False, "")])
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_post_gen(
+        mock_move_next_page, mock_flash, mock_append_json_file, has_part, part_of,
+        has_generated, generated, client):
+    form_data = {}
+    if has_part:
+        form_data["part_of"] = part_of
+    if has_generated:
+        form_data["generated_from"] = generated
+    expected_data = {"part of": part_of, "generated from": generated}
+    response = client.post(f"/add_post_generation/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "post generation", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)

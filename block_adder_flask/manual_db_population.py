@@ -198,13 +198,27 @@ def trading(item_name, remaining_items):
     return move_next_page(item_name, remaining_items)
 
 
+@bp.route("/add_post_generation/<item_name>/<remaining_items>", methods=["GET", "POST"])
+def post_generation(item_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_post_generation.html", item_name=item_name)
+    _append_json_file(
+        "post generation",
+        {"part of": _get_value_if_exists(request, "part_of"),
+         "generated from": _get_value_if_exists(request, "generated_from")},
+        f"{JSON_DIR}/{item_name}.json")
+    flash(f"Successfully added post generation information for {item_name}")
+    return move_next_page(item_name, remaining_items)
+
+
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
+    # TODO: handle groups more sensibly - so I can find what is in each group without having to
+    #  open every file.
     if isfile(join(JSON_DIR, item_file_name)):
-        # TODO: rewrite to use reading helper
         existing_json_data = _get_file_contents(item_file_name_full)
         _add_to_item_list(item_name)
     else:
@@ -238,21 +252,10 @@ def item(item_name):
         methods.append("add.natural_generation_biome")
     if "nat_struct" in request.form.keys():
         methods.append("add.natural_gen_structure")
+    if "post_gen" in request.form.keys():
+        methods.append("add.post_generation")
     # TODO: add post generation (i.e. leaves)
     return move_next_page(item_name, methods)
-
-
-# @bp.route("/start_new")
-# def start_new():
-#     reset_entire_db()
-#     return "I am starting new"
-
-
-# @bp.route("/new_table/<table_name>")
-# def new_table(table_name):
-#     conn = get_db()
-#     reset_table(conn, conn.cursor(), table_name)
-#     return f"Added {table_name} to database"
 
 
 @bp.route("/")

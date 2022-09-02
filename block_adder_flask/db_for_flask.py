@@ -6,6 +6,7 @@ from flask import current_app, g
 DB_S = "block_adder_flask/db/scripts/schema/"
 DB_INSERT_FN = "block_adder_flask/db/scripts/insert_into/"
 
+
 def get_db():
     if "db" not in g:
         # print("Connecting for the first time")
@@ -24,6 +25,15 @@ def close_db(e=None):
     db = g.pop("db", None)
     if db is not None:
         db.close()
+
+
+def reset_entire_db():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DROP TABLE IF EXISTS item_to_group")
+    with open(f"{DB_S}item_to_group.sql") as f:
+        conn.executescript(f.read())
+    conn.commit()
 
 
 def get_group(item_name):

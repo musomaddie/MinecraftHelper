@@ -42,5 +42,9 @@
     "villager level": "Villager level",
     "emerald price": 1,
     "other item required": "Another item"
+  },
+  "post generation": {
+    "part of": "",
+    "generated from": ""
   }
 }
