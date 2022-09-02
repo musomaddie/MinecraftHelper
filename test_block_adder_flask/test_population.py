@@ -82,6 +82,31 @@ def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_conte
         f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
 
+@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}._update_json_file")
+def test_remove_from_group(mock_update_json_file, mock_get_file_contents):
+    mock_get_file_contents.return_value = {
+        "group name": GROUP_NAME, "items": ["Existing Item", ITEM_NAME]}
+    pop._remove_from_group(GROUP_NAME, ITEM_NAME)
+    mock_update_json_file.assert_called_once_with(
+        {"group name": GROUP_NAME, "items": ["Existing Item"]},
+        f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
+
+@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.os.remove")
+def test_remove_from_group_only_item(mock_remove, mock_get_file_contents):
+    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
+    pop._remove_from_group(GROUP_NAME, ITEM_NAME)
+    mock_remove.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
+
+@patch(f"{FILE_LOC}._get_file_contents")
+def test_remove_from_group_no_group(mock_get_file_contents):
+    pop._remove_from_group("", ITEM_NAME)
+    mock_get_file_contents.assert_not_called()
+
+
 @pytest.mark.parametrize(
     ("from_db", "json_data", "expected_name"),
     [("DB Group", {}, "DB Group"),
@@ -168,23 +193,23 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
         {"name": ITEM_NAME}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
 
 
-@patch(f"{FILE_LOC}.join")
 @patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.get_group")
 @patch(f"{FILE_LOC}._get_updated_group_name")
 @patch(f"{FILE_LOC}._update_json_file")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
 @patch(f"{FILE_LOC}._save_to_group")
+@patch(f"{FILE_LOC}._remove_from_group")
 def test_add_item_update_group(
-        mock_save_to_group, mock_redirect, mock_url_for, mock_update_file, mock_get_group_name,
-        mock_get_group, mock_open, mock_isfile, mock_join, client):
+        mock_remove_from_group, mock_save_to_group, mock_redirect, mock_url_for,
+        mock_update_file, mock_get_group_name, mock_get_group, mock_isfile, client):
     mock_isfile.return_value = False
     response = client.post(
         f"/add_item/{ITEM_NAME}",
         data={"update_group": True, "group_name_replacement": "New Group"})
     assert response.status_code == 200
+    mock_remove_from_group.assert_called_once_with("", ITEM_NAME)
     mock_save_to_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_get_group.assert_called_once_with(ITEM_NAME)
     mock_update_file.assert_has_calls(

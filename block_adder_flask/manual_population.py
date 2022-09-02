@@ -1,5 +1,6 @@
 import ast
 import json
+import os
 from os.path import isfile, join
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -75,6 +76,18 @@ def _save_to_group(group_name, item_name):
     else:
         group_items = {"group name": group_name, "items": [item_name]}
         _update_json_file(group_items, group_fn_full)
+
+
+def _remove_from_group(group_name, item_name):
+    if group_name == "":
+        return
+    group_fn_full = f"{JSON_DIR}/groups/{group_name}.json"
+    existing_group_info = _get_file_contents(group_fn_full)
+    existing_group_info["items"].remove(item_name)
+    if len(existing_group_info["items"]) == 0:
+        os.remove(group_fn_full)
+    else:
+        _update_json_file(existing_group_info, group_fn_full)
 
 
 def select_next_item(cur):
@@ -251,7 +264,8 @@ def item(item_name):
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 
     if "update_group" in request.form:
-        # TODO: remove this item from the old group
+        _remove_from_group(
+            existing_json_data["group"] if "group" in existing_json_data else "", item_name)
         existing_json_data["group"] = request.form["group_name_replacement"]
         _update_json_file(existing_json_data, item_file_name_full)
         return redirect(url_for("add.item", item_name=item_name))
