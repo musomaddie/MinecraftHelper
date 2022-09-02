@@ -92,7 +92,10 @@ def breaking(item_name, remaining_items):
          "fastest tool": _get_value_if_exists(request, "fastest_tool")},
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added breaking information for {item_name}")
-    return move_next_page(item_name, remaining_items)
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for("add.breaking", item_name=item_name, remaining_items=remaining_items))
 
 
 @bp.route("/add_crafting/<item_name>/<remaining_items>", methods=["GET", "POST"])
@@ -254,7 +257,6 @@ def item(item_name):
         methods.append("add.natural_gen_structure")
     if "post_gen" in request.form.keys():
         methods.append("add.post_generation")
-    # TODO: add post generation (i.e. leaves)
     return move_next_page(item_name, methods)
 
 

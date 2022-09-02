@@ -206,9 +206,10 @@ def test_add_item_post(
      ("tool_yes", True, "silk_yes", True, True, "")])
 @patch(f"{FILE_LOC}._append_json_file")
 @patch(f"{FILE_LOC}.flash")
-@patch(f"{FILE_LOC}.move_next_page")
+@patch(f"{FILE_LOC}.url_for")
+@patch(f"{FILE_LOC}.redirect")
 def test_breaking(
-        mock_move_next_page, mock_flash, mock_append_json_file,
+        mock_redirect, mock_url_for, mock_flash, mock_append_json_file,
         requires_tool, expected_tool, requires_silk, expected_silk, has_tool, fastest_tool, client):
     form_data = {"requires_tool": requires_tool, "requires_silk": requires_silk, }
     expected_data = {
@@ -222,6 +223,23 @@ def test_breaking(
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "breaking", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_url_for.assert_called_once_with(
+        "add.breaking", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_breaking_next(mock_move_next_page, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_breaking/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"requires_tool": False, "requires_silk": False, "next": ""})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "breaking",
+        {"requires tool": False, "requires silk": False, "fastest tool": ""},
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
 
