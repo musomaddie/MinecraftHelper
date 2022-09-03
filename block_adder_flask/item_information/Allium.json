@@ -1,0 +1,20 @@
+{
+  "name": "Allium",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false
+  },
+  "trading": {
+    "villager type": "Wandering Trader",
+    "villager level": "",
+    "emerald price": 1,
+    "other item required": ""
+  },
+  "generated in biome": {
+    "biome name": "Flower Forest"
+  },
+  "post generation": {
+    "part of": "",
+    "generated from": "Bone Meal"
+  }
+}

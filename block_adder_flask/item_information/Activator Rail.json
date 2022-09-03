@@ -1,0 +1,30 @@
+{
+  "name": "Activator Rail",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false,
+    "fastest tool": "axe"
+  },
+  "crafting": {
+    "crafting slots": [
+      "Iron Ingot",
+      "Stick",
+      "Iron Ingot",
+      "Iron Ingot",
+      "Redstone Torch",
+      "Iron Ingot",
+      "Iron Ingot",
+      "Stick",
+      "Iron Ingot"
+    ],
+    "num created": 6,
+    "works with four by four": false,
+    "requires exact positioning": true
+  },
+  "generated in chests": {
+    "structure": "Mineshaft",
+    "container": "Chest",
+    "quantity": 1,
+    "chance": 27
+  }
+}
