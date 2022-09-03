@@ -71,6 +71,8 @@ def _save_to_group(group_name, item_name):
     group_fn_full = f"{group_dir}/{group_name}.json"
     if isfile(join(group_dir, group_name)):
         existing_group_items = _get_file_contents(group_fn_full)
+        if item_name in existing_group_items["items"]:
+            return
         existing_group_items["items"].append(item_name)
         _update_json_file(existing_group_items, group_fn_full)
     else:

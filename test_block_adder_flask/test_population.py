@@ -63,6 +63,16 @@ def test_save_to_group_new_group(mock_update_json_file, mock_isfile):
 
 
 @patch(f"{FILE_LOC}.isfile")
+@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}._update_json_file")
+def test_save_to_group_already_in_group(mock_update_json_file, mock_get_file_contents, mock_isfile):
+    mock_isfile.return_value = True
+    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
+    pop._save_to_group(GROUP_NAME, ITEM_NAME)
+    mock_update_json_file.assert_not_called()
+
+
+@patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}._update_json_file")
 def test_save_to_group_empty_group_name(mock_update_json_file, mock_isfile):
     pop._save_to_group("", ITEM_NAME)
