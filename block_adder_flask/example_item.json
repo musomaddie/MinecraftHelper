@@ -3,8 +3,9 @@
   "group": "Example Group",
   "breaking": {
     "requires tool": true,
+    "specific tool": "Tool name - OPTIONAL",
     "requires silk": true,
-    "fastest tool": "Tool Name"
+    "fastest tool": "Tool Name - OPTIONAL"
   },
   "crafting": {
     "crafting slots": [

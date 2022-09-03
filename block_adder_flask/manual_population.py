@@ -114,12 +114,15 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    _append_json_file(
-        "breaking",
-        {"requires tool": request.form["requires_tool"] == "tool_yes",
-         "requires silk": request.form["requires_silk"] == "silk_yes",
-         "fastest tool": _get_value_if_exists(request, "fastest_tool")},
-        f"{JSON_DIR}/{item_name}.json")
+    tool_required = request.form["requires_tool"] != "tool_no"
+    json_data = {"requires tool": tool_required}
+    if tool_required:
+        if request.form["requires_tool"] == "tool_specific":
+            json_data["required tool"] = request.form["specific_tool"]
+    json_data["requires silk"] = request.form["requires_silk"] == "silk_yes"
+    if "fastest_tool" in request.form:
+        json_data["fastest tool"] = request.form["fastest_specific_tool"]
+    _append_json_file("breaking", json_data, f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added breaking information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -174,7 +177,8 @@ def natural_generation(item_name, remaining_items):
     _append_json_file(
         "generated in chests",
         {"structure": request.form["structure"],
-         "container": _get_value_if_exists(request, "container"),
+         "container": _get_value_if_exists(request, "container"),  # TODO: only have container in
+         # JSON if it is populated
          "quantity": int(request.form["quantity_fd"]),
          "chance": _get_value_if_exists(request, "chance", expected_type=int, default_value=100)
          },
@@ -218,6 +222,7 @@ def natural_gen_structure(item_name, remaining_items):
 def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
+    # TODO: only contain populated fields in JSON
     _append_json_file(
         "trading",
         {"villager type": request.form["villager_type"],

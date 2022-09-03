@@ -261,37 +261,45 @@ def test_add_item_post(
 # ##################################################################################################
 #                            breaking                                                              #
 # ##################################################################################################
+
 @pytest.mark.parametrize(
-    ("requires_tool", "expected_tool", "requires_silk", "expected_silk",
-     "has_tool", "fastest_tool"),
-    [("tool_no", False, "silk_no", False, False, ""),
-     ("tool_no", False, "silk_no", False, True, "Fastest Tool"),
-     ("tool_yes", True, "silk_no", False, False, ""),
-     ("tool_yes", True, "silk_no", False, True, "Fastest Tool"),
-     ("tool_no", False, "silk_yes", True, False, ""),
-     ("tool_no", False, "silk_yes", True, True, ""),
-     ("tool_yes", True, "silk_yes", True, False, ""),
-     ("tool_yes", True, "silk_yes", True, True, "")])
+    ("tool_form_value", "specific_tool", "silk_form_value", "fastest_tool"),
+    [("tool_no", "", "silk_no", ""),
+     ("tool_yes", "", "silk_no", ""),
+     ("tool_specific", "pickaxe", "silk_no", ""),
+     ("tool_no", "", "silk_no", "axe"),
+     ("tool_yes", "", "silk_no", "axe"),
+     ("tool_specific", "pickaxe", "silk_no", "axe"),
+     ("tool_no", "", "silk_yes", ""),
+     ("tool_yes", "", "silk_yes", ""),
+     ("tool_specific", "pickaxe", "silk_yes", ""),
+     ("tool_no", "", "silk_yes", "axe"),
+     ("tool_yes", "", "silk_yes", "axe"),
+     ("tool_specific", "pickaxe", "silk_yes", "axe")])
 @patch(f"{FILE_LOC}._append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
 def test_breaking(
         mock_redirect, mock_url_for, mock_flash, mock_append_json_file,
-        requires_tool, expected_tool, requires_silk, expected_silk, has_tool, fastest_tool, client):
-    form_data = {"requires_tool": requires_tool, "requires_silk": requires_silk, }
-    expected_data = {
-        "requires tool": expected_tool,
-        "requires silk": expected_silk,
-        "fastest tool": fastest_tool if has_tool else ""
-    }
-    if has_tool:
-        form_data["fastest_tool"] = fastest_tool
+        tool_form_value, specific_tool, silk_form_value, fastest_tool, client):
+    form_data = {"requires_tool": tool_form_value,
+                 "specific_tool": specific_tool,
+                 "requires_silk": silk_form_value,
+                 "fastest_specific_tool": fastest_tool}
+    expected_data = {"requires tool": tool_form_value != "tool_no"}
+    if specific_tool != "":
+        expected_data["required tool"] = specific_tool
+    expected_data["requires silk"] = silk_form_value == "silk_yes"
+    if fastest_tool != "":
+        form_data["fastest_tool"] = ""
+        expected_data["fastest tool"] = fastest_tool
     response = client.post(f"/add_breaking/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "breaking", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
+    mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
         "add.breaking", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
 
@@ -302,11 +310,11 @@ def test_breaking(
 def test_breaking_next(mock_move_next_page, mock_flash, mock_append_json_file, client):
     response = client.post(
         f"/add_breaking/{ITEM_NAME}/{REMAINING_ITEMS}",
-        data={"requires_tool": False, "requires_silk": False, "next": ""})
+        data={"requires_tool": "tool_no", "requires_silk": "silk_no", "next": ""})
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "breaking",
-        {"requires tool": False, "requires silk": False, "fastest tool": ""},
+        {"requires tool": False, "requires silk": False},
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
