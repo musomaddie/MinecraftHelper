@@ -69,7 +69,7 @@ def _get_updated_group_name(from_db: str, json_data: dict) -> str:
 
 
 def _save_to_group(group_name, item_name):
-    if group_name == "":
+    if group_name == "" or group_name is None:
         return
     group_dir = f"{JSON_DIR}/groups"
     group_fn_full = f"{group_dir}/{group_name}.json"
@@ -85,7 +85,8 @@ def _save_to_group(group_name, item_name):
 
 
 def _remove_from_group(group_name, item_name):
-    if group_name == "":
+    # TODO: add tests (and for save group above)
+    if group_name == "" or group_name is None:
         return
     group_fn_full = f"{JSON_DIR}/groups/{group_name}.json"
     existing_group_info = _get_file_contents(group_fn_full)
