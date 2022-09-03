@@ -25,7 +25,7 @@ def _get_value_if_exists(this_request, key, expected_type=str, default_value="")
 
 def _update_json_file(value: dict, filename: str):
     with open(filename, "w") as f:
-        json.dump(value, f)
+        json.dump(value, f, indent=2)
 
 
 def _append_json_file(future_key: str, key_value_condition: list, filename: str):

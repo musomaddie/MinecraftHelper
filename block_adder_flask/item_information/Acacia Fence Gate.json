@@ -1,1 +1,28 @@
-{"name": "Acacia Fence Gate", "group": "Wooden Fence Gate", "breaking": {"requires tool": false, "requires silk": false, "fastest tool": "axe"}, "crafting": {"crafting slots": ["Stick", "Acacia Planks", "Stick", "Stick", "Acacia Planks", "Stick", "", "", ""], "num created": 1, "works with four by four": false, "requires exact positioning": false}, "generated as part of structure": {"structure name": "Savanna villages"}}
+{
+  "name": "Acacia Fence Gate",
+  "group": "Wooden Fence Gate",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false,
+    "fastest tool": "axe"
+  },
+  "crafting": {
+    "crafting slots": [
+      "Stick",
+      "Acacia Planks",
+      "Stick",
+      "Stick",
+      "Acacia Planks",
+      "Stick",
+      "",
+      "",
+      ""
+    ],
+    "num created": 1,
+    "works with four by four": false,
+    "requires exact positioning": false
+  },
+  "generated as part of structure": {
+    "structure name": "Savanna villages"
+  }
+}

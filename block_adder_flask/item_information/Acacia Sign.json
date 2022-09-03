@@ -1,1 +1,24 @@
-{"name": "Acacia Sign", "breaking": {"requires tool": false, "requires silk": false, "fastest tool": "axe"}, "crafting": {"crafting slots": ["Acacia Planks", "Acacia Planks", "Acacia Planks", "Acacia Planks", "Acacia Planks", "Acacia Planks", "", "Stick", ""], "num created": 3, "works with four by four": false, "requires exact positioning": true}}
+{
+  "name": "Acacia Sign",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false,
+    "fastest tool": "axe"
+  },
+  "crafting": {
+    "crafting slots": [
+      "Acacia Planks",
+      "Acacia Planks",
+      "Acacia Planks",
+      "Acacia Planks",
+      "Acacia Planks",
+      "Acacia Planks",
+      "",
+      "Stick",
+      ""
+    ],
+    "num created": 3,
+    "works with four by four": false,
+    "requires exact positioning": true
+  }
+}

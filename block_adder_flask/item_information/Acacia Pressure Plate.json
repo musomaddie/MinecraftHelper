@@ -1,1 +1,27 @@
-{"name": "Acacia Pressure Plate", "breaking": {"requires tool": false, "requires silk": false, "fastest tool": "axe"}, "crafting": {"crafting slots": ["Acacia Planks", "Acacia Planks", "", "", "", "", "", "", ""], "num created": 1, "works with four by four": true, "requires exact positioning": false}, "generated as part of structure": {"structure name": "Savanna Village"}}
+{
+  "name": "Acacia Pressure Plate",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false,
+    "fastest tool": "axe"
+  },
+  "crafting": {
+    "crafting slots": [
+      "Acacia Planks",
+      "Acacia Planks",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "num created": 1,
+    "works with four by four": true,
+    "requires exact positioning": false
+  },
+  "generated as part of structure": {
+    "structure name": "Savanna Village"
+  }
+}
