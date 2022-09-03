@@ -200,7 +200,7 @@ def natural_generation(item_name, remaining_items):
         [("structure", request.form["structure"]),
          ("container", _get_value_if_exists(request, "container"), "container" in request.form),
          ("quantity", int(request.form["quantity_fd"])),
-         ("chance", _get_value_if_exists(request, "chance", expected_type=int, default_value=100),
+         ("chance", float(_get_value_if_exists(request, "chance", default_value=100)),
           "chance" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added natural generation in chests information for {item_name}")
@@ -222,7 +222,12 @@ def natural_generation_biome(item_name, remaining_items):
         [("biome name", request.form["biome"])],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added generation in biome information for {item_name}")
-    return move_next_page(item_name, remaining_items)
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for(
+            "add.natural_generation_biome",
+            item_name=item_name, remaining_items=remaining_items))
 
 
 @bp.route("/add_natural_gen_structure/<item_name>/<remaining_items>", methods=["GET", "POST"])

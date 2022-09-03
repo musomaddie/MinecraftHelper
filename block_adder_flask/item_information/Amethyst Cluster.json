@@ -1,0 +1,10 @@
+{
+  "name": "Amethyst Cluster",
+  "breaking": {
+    "requires tool": true,
+    "requires silk": true
+  },
+  "generated as part of structure": {
+    "structure name": "Amethyst Geode"
+  }
+}
