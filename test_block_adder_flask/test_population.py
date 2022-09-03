@@ -235,7 +235,7 @@ def test_add_item_update_group(
         f"/add_item/{ITEM_NAME}",
         data={"update_group": True, "group_name_replacement": "New Group"})
     assert response.status_code == 200
-    mock_remove_from_group.assert_called_once_with("", ITEM_NAME)
+    mock_remove_from_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_save_to_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_get_group.assert_called_once_with(ITEM_NAME)
     mock_update_file.assert_has_calls(
@@ -319,6 +319,23 @@ def test_breaking(
     mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
         "add.breaking", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.url_for")
+@patch(f"{FILE_LOC}.redirect")
+def test_breaking_other(mock_redirect, mock_url_for, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_breaking_other/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"other_block": "Other Block", "percent_dropping": 10.12, "fortune": ""})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "breaking other", [
+            ("other block name", "Other Block"),
+            ("likelihood of dropping", 10.12, True),
+            ("helped with fortune", True)],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
 
 
 @patch(f"{FILE_LOC}._append_json_file")
@@ -426,10 +443,6 @@ def test_natural_generation(
         mock_redirect, mock_url_for, mock_flash, mock_append_json_file,
         has_container, expected_container, has_chance, expected_chance, client):
     form_data = {"structure": "Structure 1", "quantity_fd": 1}
-    # expected_data = {"structure": "Structure 1",
-    #                  "container": "",
-    #                  "quantity": 1,
-    #                  "chance": 100}
     if has_container:
         form_data["container"] = expected_container
     if has_chance:

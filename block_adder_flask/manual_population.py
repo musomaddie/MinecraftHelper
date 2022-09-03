@@ -118,7 +118,6 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    print(request.form)
     _append_json_file(
         "breaking",
         [("requires tool", request.form["requires_tool"] != "tool_no"),
@@ -133,6 +132,24 @@ def breaking(item_name, remaining_items):
         return move_next_page(item_name, remaining_items)
     return redirect(
         url_for("add.breaking", item_name=item_name, remaining_items=remaining_items))
+
+
+@bp.route("/add_breaking_other/<item_name>/<remaining_items>", methods=["GET", "POST"])
+def breaking_other(item_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_breaking_other.html", item_name=item_name)
+    _append_json_file(
+        "breaking other",
+        [("other block name", request.form["other_block"]),
+         ("likelihood of dropping", float(_get_value_if_exists(request, "percent_dropping")),
+          "percent_dropping" in request.form),
+         ("helped with fortune", "fortune" in request.form)],
+        f"{JSON_DIR}/{item_name}.json")
+    flash(f"Successfully added breaking other information for {item_name}")
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for("add.breaking_other", item_name=item_name, remaining_items=remaining_items))
 
 
 @bp.route("/add_crafting/<item_name>/<remaining_items>", methods=["GET", "POST"])
@@ -285,6 +302,8 @@ def item(item_name):
     methods = []
     if "breaking" in request.form.keys():
         methods.append("add.breaking")
+    if "breaking_other" in request.form.keys():
+        methods.append("add.breaking_other")
     if "crafting" in request.form.keys():
         methods.append("add.crafting")
     if "fishing" in request.form.keys():
