@@ -16,6 +16,10 @@ td {
     padding-left: 25px;
 }
 
+.right_align {
+    text-align: end;
+}
+
 .submit_button {
     background-color: #7542e3;
     margin-top: 15px;

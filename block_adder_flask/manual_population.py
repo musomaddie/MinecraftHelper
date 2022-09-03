@@ -118,6 +118,7 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
+    print(request.form)
     _append_json_file(
         "breaking",
         [("requires tool", request.form["requires_tool"] != "tool_no"),
@@ -276,8 +277,7 @@ def item(item_name):
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 
     if "update_group" in request.form:
-        _remove_from_group(
-            existing_json_data["group"] if "group" in existing_json_data else "", item_name)
+        _remove_from_group(group_name, item_name)
         existing_json_data["group"] = request.form["group_name_replacement"]
         _update_json_file(existing_json_data, item_file_name_full)
         return redirect(url_for("add.item", item_name=item_name))
