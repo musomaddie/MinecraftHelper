@@ -130,7 +130,8 @@ def test_get_updated_group_name(from_db, json_data, expected_name):
 @patch(f"{FILE_LOC}._get_file_contents")
 def test_append_json(mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
     mock_get_file_contents.return_value = {"name": ITEM_NAME}
-    pop._append_json_file("test key", {"item 1": 45, "item 2": True}, tmp_json_file_no_items)
+    pop._append_json_file(
+        "test key", [("item 1", 45), ("item 2", True)], tmp_json_file_no_items)
     mock_update_json_file.assert_called_once_with(
         {"name": ITEM_NAME, "test key": {"item 1": 45, "item 2": True}}, tmp_json_file_no_items)
 
@@ -142,13 +143,28 @@ def test_append_json_key_exists(
     mock_get_file_contents.return_value = {
         "name": ITEM_NAME, "new key": {"item 1": "45", "item 2": 45}}
     pop._append_json_file(
-        "new key", {"item 1a": "thing", "item 2a": "thing 2"},
+        "new key",
+        [("item 1a", "thing"), ("item 2a", "thing2")],
         tmp_json_file_no_items)
     mock_update_json_file.assert_called_once_with(
         {"name": ITEM_NAME, "new key":
-            [{"item 1": "45", "item 2": 45}, {"item 1a": "thing", "item 2a": "thing 2"}]},
+            [{"item 1": "45", "item 2": 45}, {"item 1a": "thing", "item 2a": "thing2"}]},
         tmp_json_file_no_items
     )
+
+
+@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}._get_file_contents")
+def test_append_json_condition_false(
+        mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
+    mock_get_file_contents.return_value = {"name": ITEM_NAME}
+    pop._append_json_file(
+        "test key", [("item 1", "no condition"), ("item 2", "true condition", True),
+                     ("item 3", "false condition", False)], tmp_json_file_no_items)
+    mock_update_json_file.assert_called_once_with(
+        {"name": ITEM_NAME, "test key":
+            {"item 1": "no condition", "item 2": "true condition"}},
+        tmp_json_file_no_items)
 
 
 # ##################################################################################################
@@ -287,17 +303,18 @@ def test_breaking(
                  "specific_tool": specific_tool,
                  "requires_silk": silk_form_value,
                  "fastest_specific_tool": fastest_tool}
-    expected_data = {"requires tool": tool_form_value != "tool_no"}
-    if specific_tool != "":
-        expected_data["required tool"] = specific_tool
-    expected_data["requires silk"] = silk_form_value == "silk_yes"
     if fastest_tool != "":
         form_data["fastest_tool"] = ""
-        expected_data["fastest tool"] = fastest_tool
     response = client.post(f"/add_breaking/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "breaking", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        "breaking", [
+            ("requires tool", tool_form_value != "tool_no"),
+            ("required tool", specific_tool, specific_tool != ""),
+            ("requires silk", silk_form_value != "silk_no"),
+            ("fastest tool", fastest_tool, fastest_tool != "")],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"
+    )
     mock_flash.assert_called_once()
     mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
@@ -310,11 +327,13 @@ def test_breaking(
 def test_breaking_next(mock_move_next_page, mock_flash, mock_append_json_file, client):
     response = client.post(
         f"/add_breaking/{ITEM_NAME}/{REMAINING_ITEMS}",
-        data={"requires_tool": "tool_no", "requires_silk": "silk_no", "next": ""})
+        data={"requires_tool": "tool_no", "requires_silk": "silk_no",
+              "specific_tool": "", "fastest_specific_tool": "", "next": ""})
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "breaking",
-        {"requires tool": False, "requires silk": False},
+        [("requires tool", False), ("required tool", "", False),
+         ("requires silk", False), ("fastest tool", "", False)],
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
@@ -333,14 +352,13 @@ def test_crafting(mock_url_for, mock_redirect, mock_flash, mock_append_json_file
         "cs6": "Item 6", "cs7": "Item 7", "cs8": "Item 8", "cs9": "Item 9",
         "n_created": 1, "works_four": "", "exact_positioning": ""
     }
-    expected_data = {
-        "crafting slots":
-            ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8",
-             "Item 9"],
-        "num created": 1,
-        "works with four by four": True,
-        "requires exact positioning": True
-    }
+    expected_data = [
+        ("crafting slots",
+         ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8",
+          "Item 9"]),
+        ("num created", 1),
+        ("works with four by four", True),
+        ("requires exact positioning", True)]
     response = client.post(f"/add_crafting/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
@@ -360,13 +378,11 @@ def test_crafting_move_next(mock_move_next_page, mock_flash, mock_append_json, c
         "cs1": "Item 1", "cs3": "Item 2", "cs4": "Item 3", "cs5": "Item 4",
         "n_created": "1", "exact_positioning": "", "next": ""
     }
-    expected_data = {
-        "crafting slots": [
-            "Item 1", "", "Item 2", "Item 3", "Item 4", "", "", "", ""],
-        "num created": 1,
-        "works with four by four": False,
-        "requires exact positioning": True
-    }
+    expected_data = [
+        ("crafting slots", ["Item 1", "", "Item 2", "Item 3", "Item 4", "", "", "", ""]),
+        ("num created", 1),
+        ("works with four by four", False),
+        ("requires exact positioning", True)]
     response = client.post(f"/add_crafting/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json.assert_called_once_with(
@@ -386,7 +402,7 @@ def test_fishing(mock_move_next_page, mock_flash, mock_append_json_file, client)
         f"/add_fishing/{ITEM_NAME}/{REMAINING_ITEMS}", data={"item_level": "Treasure"})
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "fishing", {"treasure type": "Treasure"}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        "fishing", [("treasure type", "Treasure")], f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
 
@@ -410,21 +426,24 @@ def test_natural_generation(
         mock_redirect, mock_url_for, mock_flash, mock_append_json_file,
         has_container, expected_container, has_chance, expected_chance, client):
     form_data = {"structure": "Structure 1", "quantity_fd": 1}
-    expected_data = {"structure": "Structure 1",
-                     "container": "",
-                     "quantity": 1,
-                     "chance": 100}
+    # expected_data = {"structure": "Structure 1",
+    #                  "container": "",
+    #                  "quantity": 1,
+    #                  "chance": 100}
     if has_container:
         form_data["container"] = expected_container
-        expected_data["container"] = expected_container
     if has_chance:
         form_data["chance"] = expected_chance
-        expected_data["chance"] = expected_chance
 
     response = client.post(f"/add_natural_generation/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "generated in chests", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        "generated in chests",
+        [("structure", "Structure 1"),
+         ("container", expected_container, has_container),
+         ("quantity", 1),
+         ("chance", expected_chance, has_chance)],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_url_for.assert_called_once_with(
         "add.natural_generation", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
@@ -442,7 +461,8 @@ def test_natural_generation_move_next(
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "generated in chests",
-        {"structure": "Structure 1", "container": "", "quantity": 2, "chance": 100},
+        [("structure", "Structure 1"), ("container", "", False),
+         ("quantity", 2), ("chance", 100, False)],
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
@@ -459,6 +479,10 @@ def test_natural_generation_biome(
         mock_move_next_page, mock_flash, mock_append_json_file, client):
     response = client.post(
         f"/add_natural_biome/{ITEM_NAME}/{REMAINING_ITEMS}", data={"biome": "Test Biome"})
+    assert response.status_code == 200
+    mock_append_json_file.assert_called_once_with(
+        "generated in biome", [("biome name", "Test Biome")],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page(ITEM_NAME, REMAINING_ITEMS)
 
@@ -479,7 +503,7 @@ def test_natural_gen_structure(
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "generated as part of structure",
-        {"structure name": "Test Structure"},
+        [("structure name", "Test Structure")],
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_redirect.assert_called_once()
     mock_url_for.assert_called_once_with(
@@ -497,7 +521,7 @@ def test_natural_gen_structure_with_next(
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
         "generated as part of structure",
-        {"structure name": "Test Structure"},
+        [("structure name", "Test Structure")],
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
@@ -516,11 +540,11 @@ def test_trading(
         mock_move_next_page, mock_flash, mock_append_json_file,
         villager_level, has_villager_level, other_item_required, has_other, client):
     form_data = {"villager_type": "Test Villager", "emerald_price": "1"}
-    expected_data = {
-        "villager type": "Test Villager",
-        "villager level": villager_level,
-        "emerald price": 1,
-        "other item required": other_item_required}
+    # expected_data = {
+    #     "villager type": "Test Villager",
+    #     "villager level": villager_level,
+    #     "emerald price": 1,
+    #     "other item required": other_item_required}
     if has_other:
         form_data["other_item"] = other_item_required
     if has_villager_level:
@@ -529,7 +553,12 @@ def test_trading(
     response = client.post(f"/add_trading/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "trading", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        "trading",
+        [("villager type", "Test Villager"),
+         ("villager level", villager_level, has_villager_level),
+         ("emerald price", 1),
+         ("other item required", other_item_required, has_other)],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
 
@@ -551,10 +580,13 @@ def test_post_gen(
         form_data["part_of"] = part_of
     if has_generated:
         form_data["generated_from"] = generated
-    expected_data = {"part of": part_of, "generated from": generated}
+    # expected_data = {"part of": part_of, "generated from": generated}
     response = client.post(f"/add_post_generation/{ITEM_NAME}/{REMAINING_ITEMS}", data=form_data)
     assert response.status_code == 200
     mock_append_json_file.assert_called_once_with(
-        "post generation", expected_data, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        "post generation",
+        [("part of", part_of, has_part),
+         ("generated from", generated, has_generated)],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)

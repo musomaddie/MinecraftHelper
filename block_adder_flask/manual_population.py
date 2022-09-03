@@ -28,14 +28,18 @@ def _update_json_file(value: dict, filename: str):
         json.dump(value, f)
 
 
-def _append_json_file(future_key: str, value: dict, filename: str):
+def _append_json_file(future_key: str, key_value_condition: list, filename: str):
     current_content = _get_file_contents(filename)
+    json_dict = {}
+    for option in key_value_condition:
+        if len(option) == 2 or option[2]:
+            json_dict[option[0]] = option[1]
     if future_key in current_content:
         if type(current_content[future_key]) != list:
             current_content[future_key] = [current_content[future_key]]
-        current_content[future_key].append(value)
+        current_content[future_key].append(json_dict)
     else:
-        current_content[future_key] = value
+        current_content[future_key] = json_dict
     _update_json_file(current_content, filename)
 
 
@@ -114,15 +118,15 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    tool_required = request.form["requires_tool"] != "tool_no"
-    json_data = {"requires tool": tool_required}
-    if tool_required:
-        if request.form["requires_tool"] == "tool_specific":
-            json_data["required tool"] = request.form["specific_tool"]
-    json_data["requires silk"] = request.form["requires_silk"] == "silk_yes"
-    if "fastest_tool" in request.form:
-        json_data["fastest tool"] = request.form["fastest_specific_tool"]
-    _append_json_file("breaking", json_data, f"{JSON_DIR}/{item_name}.json")
+    _append_json_file(
+        "breaking",
+        [("requires tool", request.form["requires_tool"] != "tool_no"),
+         ("required tool", request.form["specific_tool"],
+          request.form["requires_tool"] == "tool_specific"),
+         ("requires silk", request.form["requires_silk"] == "silk_yes"),
+         ("fastest tool", request.form["fastest_specific_tool"],
+          "fastest_tool" in request.form)],
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added breaking information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -135,24 +139,21 @@ def crafting(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_crafting.html", item_name=item_name)
     _append_json_file(
-        "crafting", {
-            "crafting slots": [
-                _get_value_if_exists(request, "cs1"),
-                _get_value_if_exists(request, "cs2"),
-                _get_value_if_exists(request, "cs3"),
-                _get_value_if_exists(request, "cs4"),
-                _get_value_if_exists(request, "cs5"),
-                _get_value_if_exists(request, "cs6"),
-                _get_value_if_exists(request, "cs7"),
-                _get_value_if_exists(request, "cs8"),
-                _get_value_if_exists(request, "cs9"),
-            ],
-            "num created": int(request.form["n_created"]),
-            "works with four by four": "works_four" in request.form,
-            "requires exact positioning": "exact_positioning" in request.form
-        },
-        f"{JSON_DIR}/{item_name}.json"
-    )
+        "crafting",
+        [("crafting slots", [
+            _get_value_if_exists(request, "cs1"),
+            _get_value_if_exists(request, "cs2"),
+            _get_value_if_exists(request, "cs3"),
+            _get_value_if_exists(request, "cs4"),
+            _get_value_if_exists(request, "cs5"),
+            _get_value_if_exists(request, "cs6"),
+            _get_value_if_exists(request, "cs7"),
+            _get_value_if_exists(request, "cs8"),
+            _get_value_if_exists(request, "cs9")]),
+         ("num created", int(request.form["n_created"])),
+         ("works with four by four", "works_four" in request.form),
+         ("requires exact positioning", "exact_positioning" in request.form)],
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added crafting information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -165,7 +166,7 @@ def fishing(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", item_name=item_name)
     _append_json_file(
-        "fishing", {"treasure type": request.form["item_level"]}, f"{JSON_DIR}/{item_name}.json")
+        "fishing", [("treasure type", request.form["item_level"])], f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added fishing information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
@@ -176,12 +177,11 @@ def natural_generation(item_name, remaining_items):
         return render_template("add_natural_generation.html", item_name=item_name)
     _append_json_file(
         "generated in chests",
-        {"structure": request.form["structure"],
-         "container": _get_value_if_exists(request, "container"),  # TODO: only have container in
-         # JSON if it is populated
-         "quantity": int(request.form["quantity_fd"]),
-         "chance": _get_value_if_exists(request, "chance", expected_type=int, default_value=100)
-         },
+        [("structure", request.form["structure"]),
+         ("container", _get_value_if_exists(request, "container"), "container" in request.form),
+         ("quantity", int(request.form["quantity_fd"])),
+         ("chance", _get_value_if_exists(request, "chance", expected_type=int, default_value=100),
+          "chance" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added natural generation in chests information for {item_name}")
     if "next" in request.form.keys():
@@ -198,7 +198,9 @@ def natural_generation_biome(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
     _append_json_file(
-        "generated in biome", {"biome name": request.form["biome"]}, f"{JSON_DIR}/{item_name}.json")
+        "generated in biome",
+        [("biome name", request.form["biome"])],
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added generation in biome information for {item_name}")
     return move_next_page(item_name, remaining_items)
 
@@ -209,7 +211,8 @@ def natural_gen_structure(item_name, remaining_items):
         return render_template("add_nat_structure.html")
     _append_json_file(
         "generated as part of structure",
-        {"structure name": request.form["structure_name"]}, f"{JSON_DIR}/{item_name}.json")
+        [("structure name", request.form["structure_name"])],
+        f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added generation as part of structure information for {item_name}")
     if "next" in request.form.keys():
         return move_next_page(item_name, remaining_items)
@@ -222,13 +225,14 @@ def natural_gen_structure(item_name, remaining_items):
 def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
-    # TODO: only contain populated fields in JSON
     _append_json_file(
         "trading",
-        {"villager type": request.form["villager_type"],
-         "villager level": _get_value_if_exists(request, "villager_level"),
-         "emerald price": int(request.form["emerald_price"]),
-         "other item required": _get_value_if_exists(request, "other_item")},
+        [("villager type", request.form["villager_type"]),
+         ("villager level", _get_value_if_exists(request, "villager_level"),
+          "villager_level" in request.form),
+         ("emerald price", int(request.form["emerald_price"])),
+         ("other item required", _get_value_if_exists(request, "other_item"),
+          "other_item" in request.form)],
         f"{JSON_DIR}/{item_name}.json"
     )
     flash(f"Successfully added trading information for {item_name}")
@@ -241,8 +245,9 @@ def post_generation(item_name, remaining_items):
         return render_template("add_post_generation.html", item_name=item_name)
     _append_json_file(
         "post generation",
-        {"part of": _get_value_if_exists(request, "part_of"),
-         "generated from": _get_value_if_exists(request, "generated_from")},
+        [("part of", _get_value_if_exists(request, "part_of"), "part_of" in request.form),
+         ("generated from", _get_value_if_exists(request, "generated_from"),
+          "generated_from" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added post generation information for {item_name}")
     return move_next_page(item_name, remaining_items)
