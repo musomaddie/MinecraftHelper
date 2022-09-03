@@ -81,6 +81,14 @@ def test_save_to_group_empty_group_name(mock_update_json_file, mock_isfile):
 
 
 @patch(f"{FILE_LOC}.isfile")
+@patch(f"{FILE_LOC}._update_json_file")
+def test_save_to_group_none_group_name(mock_update_json_file, mock_isfile):
+    pop._save_to_group(None, ITEM_NAME)
+    mock_isfile.assert_not_called()
+    mock_update_json_file.assert_not_called()
+
+
+@patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}._get_file_contents")
 @patch(f"{FILE_LOC}._update_json_file")
 def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_contents, mock_isfile):
@@ -117,10 +125,17 @@ def test_remove_from_group_no_group(mock_get_file_contents):
     mock_get_file_contents.assert_not_called()
 
 
+@patch(f"{FILE_LOC}._get_file_contents")
+def test_remove_from_group_none_group_name(mock_get_file_contents):
+    pop._remove_from_group(None, ITEM_NAME)
+    mock_get_file_contents.assert_not_called()
+
+
 @pytest.mark.parametrize(
     ("from_db", "json_data", "expected_name"),
     [("DB Group", {}, "DB Group"),
      ("", {"group": "Json Group"}, "Json Group"),
+     (None, {}, ""),
      ("DB Group", {"group": "Json Group"}, "Json Group")])
 def test_get_updated_group_name(from_db, json_data, expected_name):
     assert pop._get_updated_group_name(from_db, json_data) == expected_name
