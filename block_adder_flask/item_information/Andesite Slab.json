@@ -1,0 +1,56 @@
+{
+  "name": "Andesite Slab",
+  "group": "Stone Slab",
+  "breaking": [
+    {
+      "requires tool": true,
+      "required tool": "pickaxe",
+      "requires silk": false,
+      "fastest tool": "pickaxe"
+    },
+    {
+      "requires tool": true,
+      "required tool": "pickaxe",
+      "requires silk": false,
+      "fastest tool": "pickaxe"
+    }
+  ],
+  "crafting": [
+    {
+      "crafting slots": [
+        "",
+        "",
+        "",
+        "Andesite",
+        "Andesite",
+        "Andesite",
+        "",
+        "",
+        ""
+      ],
+      "num created": 6,
+      "works with four by four": false,
+      "requires exact positioning": false
+    },
+    {
+      "crafting slots": [
+        "Andesite",
+        "Andesite",
+        "Andesite",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "num created": 6,
+      "works with four by four": false,
+      "requires exact positioning": false
+    }
+  ],
+  "stonecutter": {
+    "block required": "Andesite",
+    "quantity made": "2"
+  }
+}

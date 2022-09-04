@@ -57,7 +57,7 @@ def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
     existing_json = {"items": []}
     with open(filename) as f:
         existing_json = json.load(f)
-    if item_name not in existing_json:
+    if item_name not in existing_json["items"]:
         existing_json["items"].append(item_name)
     _update_json_file(existing_json, filename)
 
@@ -278,6 +278,23 @@ def post_generation(item_name, remaining_items):
     return move_next_page(item_name, remaining_items)
 
 
+@bp.route("/add_stonecutter/<item_name>/<remaining_items>", methods=["GET", "POST"])
+def stonecutter(item_name, remaining_items):
+    if request.method == "GET":
+        return render_template("add_stonecutter.html", item_name=item_name)
+    _append_json_file(
+        "stonecutter",
+        [("block required", request.form["other_block"]),
+         ("quantity made", request.form["quantity"])],
+        f"{JSON_DIR}/{item_name}.json")
+    flash(f"Successfully added stonecutter information for {item_name}")
+    if "next" in request.form.keys():
+        return move_next_page(item_name, remaining_items)
+    return redirect(
+        url_for(
+            "add.natural_gen_structure", item_name=item_name, remaining_items=remaining_items))
+
+
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
     item_file_name = item_name + ".json"
@@ -325,6 +342,8 @@ def item(item_name):
         methods.append("add.natural_gen_structure")
     if "post_gen" in request.form.keys():
         methods.append("add.post_generation")
+    if "stonecutter" in request.form.keys():
+        methods.append("add.stonecutter")
     return move_next_page(item_name, methods)
 
 

@@ -51,6 +51,16 @@ def test_add_to_item_list(tmp_json_file_no_items):
         assert created_json["items"][0] == ITEM_NAME
 
 
+@patch(f"{FILE_LOC}.open")
+@patch(f"{FILE_LOC}.json.load")
+@patch(f"{FILE_LOC}._update_json_file")
+def test_add_to_item_list_already_present(mock_update_json_file, mock_json_load, mock_open):
+    mock_json_load.return_value = {"items": [ITEM_NAME]}
+    pop._add_to_item_list(ITEM_NAME)
+    mock_update_json_file.assert_called_once_with(
+        {"items": [ITEM_NAME]}, f"{EXPECTED_JSON_DIR}/item_list.json")
+
+
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}._update_json_file")
 def test_save_to_group_new_group(mock_update_json_file, mock_isfile):
@@ -634,5 +644,34 @@ def test_post_gen(
         [("part of", part_of, has_part),
          ("generated from", generated, has_generated)],
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.redirect")
+@patch(f"{FILE_LOC}.url_for")
+def test_stonecutter(mock_url_for, mock_redirect, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_stonecutter/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"other_block": "Test Item 2", "quantity": 1})
+    mock_append_json_file.assert_called_once_with(
+        "stonecutter", [("block required", "Test Item 2", "quantity", 1)],
+        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_flash.assert_called_once()
+    mock_url_for.assert_called_once_with(
+        "add.stonecutter", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
+    mock_redirect.assert_called_once()
+
+
+@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.flash")
+@patch(f"{FILE_LOC}.move_next_page")
+def test_stonecutter(mock_move_next_page, mock_flash, mock_append_json_file, client):
+    response = client.post(
+        f"/add_stonecutter/{ITEM_NAME}/{REMAINING_ITEMS}",
+        data={"other_block": "Test Item 2", "quantity": 1, "next": ""})
+    mock_append_json_file.assert_called_once()
     mock_flash.assert_called_once()
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)

@@ -1,0 +1,28 @@
+{
+  "name": "Andesite",
+  "breaking": {
+    "requires tool": true,
+    "required tool": "pickaxe",
+    "requires silk": false,
+    "fastest tool": "pickaxe"
+  },
+  "crafting": {
+    "crafting slots": [
+      "Diorite",
+      "Cobblestone",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "num created": 2,
+    "works with four by four": true,
+    "requires exact positioning": false
+  },
+  "generated in biome": {
+    "biome name": "Overworld"
+  }
+}
