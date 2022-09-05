@@ -8,6 +8,7 @@
     <meta charset="UTF-8">
     <title>Add Information </title>
 </head>
+
 <body>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -18,7 +19,20 @@
 </ul>
 {% endif %}
 {% endwith %}
+
 <h1>Adding Minecraft Block Helper </h1>
+
+{% if show_group %}
+Load default values from existing group: {{group_name}}
+<form method="post">
+    <input class="group submit_button" type="submit"
+           id="existing_group_sub"
+           name="load_from_existing_group"
+           value="Load values from existing group"/>
+</form>
+<br>
+{% endif %}
+
 {% block body %}{% endblock %}
 </body>
 </html>

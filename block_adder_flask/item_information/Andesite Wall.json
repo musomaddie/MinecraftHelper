@@ -1,6 +1,5 @@
 {
-  "name": "Andesite Stairs",
-  "group": "Stone Stairs",
+  "name": "Andesite Wall",
   "breaking": {
     "requires tool": true,
     "required tool": "pickaxe",
@@ -9,19 +8,19 @@
   },
   "crafting": {
     "crafting slots": [
-      "Andesite",
+      "Andesite Wall",
+      "Andesite Wall",
+      "Andesite Wall",
+      "Andesite Wall",
+      "Andesite Wall",
+      "Andesite Wall",
       "",
       "",
-      "Andesite ",
-      "Andesite",
-      "",
-      "Andesite",
-      "Andesite",
-      "Andesite"
+      ""
     ],
-    "num created": 4,
+    "num created": 6,
     "works with four by four": false,
-    "requires exact positioning": true
+    "requires exact positioning": false
   },
   "stonecutter": {
     "block required": "Andesite",

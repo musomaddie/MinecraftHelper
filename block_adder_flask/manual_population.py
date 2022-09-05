@@ -297,11 +297,10 @@ def stonecutter(item_name, remaining_items):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
+    # TODO: if an item group already exists add shortcuts to help load it.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
-    # TODO: handle groups more sensibly - so I can find what is in each group without having to
-    #  open every file.
     if isfile(join(JSON_DIR, item_file_name)):
         existing_json_data = _get_file_contents(item_file_name_full)
         _add_to_item_list(item_name)
@@ -310,10 +309,12 @@ def item(item_name):
         _update_json_file(existing_json_data, item_file_name_full)
     group_name = _get_updated_group_name(get_group(item_name), existing_json_data)
     _save_to_group(group_name, item_name)
+    should_show_group = group_name is not None and group_name != "" and group_name != "None"
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
             group_name=group_name,
+            show_group=should_show_group,
             item_name=item_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 

@@ -1,6 +1,5 @@
 {
-  "name": "Andesite Stairs",
-  "group": "Stone Stairs",
+  "name": "Anvil",
   "breaking": {
     "requires tool": true,
     "required tool": "pickaxe",
@@ -9,22 +8,21 @@
   },
   "crafting": {
     "crafting slots": [
-      "Andesite",
+      "Iron Block",
+      "Iron Block",
+      "Iron Block",
       "",
+      "Iron Ingot",
       "",
-      "Andesite ",
-      "Andesite",
-      "",
-      "Andesite",
-      "Andesite",
-      "Andesite"
+      "Iron Ingot",
+      "Iron Ingot",
+      "Iron Ingot"
     ],
-    "num created": 4,
+    "num created": 1,
     "works with four by four": false,
     "requires exact positioning": true
   },
-  "stonecutter": {
-    "block required": "Andesite",
-    "quantity made": "1"
+  "generated as part of structure": {
+    "structure name": "Woodland Mansion"
   }
 }

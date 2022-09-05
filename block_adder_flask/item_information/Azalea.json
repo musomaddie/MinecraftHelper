@@ -1,0 +1,20 @@
+{
+  "name": "Azalea",
+  "group": "None",
+  "breaking": {
+    "requires tool": false,
+    "requires silk": false
+  },
+  "breaking other": {
+    "other block name": "Azalea Leaves",
+    "likelihood of dropping": 5.0,
+    "helped with fortune": true
+  },
+  "generated in biome": {
+    "biome name": "Lush Caves"
+  },
+  "post generation": {
+    "part of": "Moss",
+    "generated from": "Bone Meal"
+  }
+}
