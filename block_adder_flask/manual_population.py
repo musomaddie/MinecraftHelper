@@ -8,6 +8,10 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from block_adder_flask.db_for_flask import (
     get_db,
     get_group)
+from block_adder_flask.get_group_info import get_updated_group_name, save_to_group
+from block_adder_flask.json_utils import (
+    append_json_file, get_all_items_json_file,
+    get_file_contents, update_json_file)
 
 ITEMS_GROUPS_TN = "item_to_group"
 URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
@@ -23,87 +27,33 @@ def _get_value_if_exists(this_request, key, expected_type=str, default_value="")
     return this_request.form[key] if key in this_request.form else default_value
 
 
-def _update_json_file(value: dict, filename: str):
-    with open(filename, "w") as f:
-        json.dump(value, f, indent=2)
-
-
-def _append_json_file(future_key: str, key_value_condition: list, filename: str):
-    current_content = _get_file_contents(filename)
-    json_dict = {}
-    for option in key_value_condition:
-        if len(option) == 2 or option[2]:
-            json_dict[option[0]] = option[1]
-    if future_key in current_content:
-        if type(current_content[future_key]) != list:
-            current_content[future_key] = [current_content[future_key]]
-        current_content[future_key].append(json_dict)
-    else:
-        current_content[future_key] = json_dict
-    _update_json_file(current_content, filename)
-
-
-def _get_all_items_json_file(filename=JSON_ITEM_LIST):
-    with open(filename) as f:
-        return json.load(f)["items"]
-
-
-def _get_file_contents(filename: str):
-    with open(filename) as f:
-        return json.load(f)
-
-
 def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
     existing_json = {"items": []}
     with open(filename) as f:
         existing_json = json.load(f)
     if item_name not in existing_json["items"]:
         existing_json["items"].append(item_name)
-    _update_json_file(existing_json, filename)
-
-
-def _get_updated_group_name(from_db: str, json_data: dict) -> str:
-    if "group" in json_data:
-        return json_data["group"]
-    if from_db is None:
-        return ""
-    return from_db
-
-
-def _save_to_group(group_name, item_name):
-    if group_name == "" or group_name is None:
-        return
-    group_dir = f"{JSON_DIR}/groups"
-    group_fn_full = f"{group_dir}/{group_name}.json"
-    if isfile(join(group_dir, group_name)):
-        existing_group_items = _get_file_contents(group_fn_full)
-        if item_name in existing_group_items["items"]:
-            return
-        existing_group_items["items"].append(item_name)
-        _update_json_file(existing_group_items, group_fn_full)
-    else:
-        group_items = {"group name": group_name, "items": [item_name]}
-        _update_json_file(group_items, group_fn_full)
+    update_json_file(existing_json, filename)
 
 
 def _remove_from_group(group_name, item_name):
     if group_name == "" or group_name is None:
         return
     group_fn_full = f"{JSON_DIR}/groups/{group_name}.json"
-    existing_group_info = _get_file_contents(group_fn_full)
+    existing_group_info = get_file_contents(group_fn_full)
     existing_group_info["items"].remove(item_name)
     if len(existing_group_info["items"]) == 0:
         os.remove(group_fn_full)
     else:
-        _update_json_file(existing_group_info, group_fn_full)
+        update_json_file(existing_group_info, group_fn_full)
 
 
 def select_next_item(cur):
     cur.execute(f"SELECT * FROM {ITEMS_GROUPS_TN}")
     item_name_list = [block["item_name"] for block in cur.fetchall()]
-    saved_items = set([f.replace(".json", "") for f in _get_all_items_json_file()])
+    saved_items = set([f.replace(".json", "") for f in get_all_items_json_file()])
     next_item = [name for name in item_name_list if name not in saved_items][0]
-    return redirect(url_for("add.item", item_name=next_item))
+    return redirect(url_for("add.item", item_name=next_item, default_values=[]))
 
 
 def move_next_page(item_name, remaining_items):
@@ -120,7 +70,7 @@ def move_next_page(item_name, remaining_items):
 def breaking(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "breaking",
         [("requires tool", request.form["requires_tool"] != "tool_no"),
          ("required tool", request.form["specific_tool"],
@@ -140,7 +90,7 @@ def breaking(item_name, remaining_items):
 def breaking_other(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_breaking_other.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "breaking other",
         [("other block name", request.form["other_block"]),
          ("likelihood of dropping", float(_get_value_if_exists(request, "percent_dropping")),
@@ -158,7 +108,7 @@ def breaking_other(item_name, remaining_items):
 def crafting(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_crafting.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "crafting",
         [("crafting slots", [
             _get_value_if_exists(request, "cs1"),
@@ -185,7 +135,7 @@ def crafting(item_name, remaining_items):
 def fishing(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_fishing.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "fishing", [("treasure type", request.form["item_level"])], f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added fishing information for {item_name}")
     return move_next_page(item_name, remaining_items)
@@ -195,7 +145,7 @@ def fishing(item_name, remaining_items):
 def natural_generation(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_natural_generation.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "generated in chests",
         [("structure", request.form["structure"]),
          ("container", _get_value_if_exists(request, "container"), "container" in request.form),
@@ -217,7 +167,7 @@ def natural_generation(item_name, remaining_items):
 def natural_generation_biome(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_biome.html")
-    _append_json_file(
+    append_json_file(
         "generated in biome",
         [("biome name", request.form["biome"])],
         f"{JSON_DIR}/{item_name}.json")
@@ -234,7 +184,7 @@ def natural_generation_biome(item_name, remaining_items):
 def natural_gen_structure(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_nat_structure.html")
-    _append_json_file(
+    append_json_file(
         "generated as part of structure",
         [("structure name", request.form["structure_name"])],
         f"{JSON_DIR}/{item_name}.json")
@@ -250,7 +200,7 @@ def natural_gen_structure(item_name, remaining_items):
 def trading(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_trading.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "trading",
         [("villager type", request.form["villager_type"]),
          ("villager level", _get_value_if_exists(request, "villager_level"),
@@ -268,7 +218,7 @@ def trading(item_name, remaining_items):
 def post_generation(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_post_generation.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "post generation",
         [("part of", _get_value_if_exists(request, "part_of"), "part_of" in request.form),
          ("generated from", _get_value_if_exists(request, "generated_from"),
@@ -282,7 +232,7 @@ def post_generation(item_name, remaining_items):
 def stonecutter(item_name, remaining_items):
     if request.method == "GET":
         return render_template("add_stonecutter.html", item_name=item_name)
-    _append_json_file(
+    append_json_file(
         "stonecutter",
         [("block required", request.form["other_block"]),
          ("quantity made", request.form["quantity"])],
@@ -295,21 +245,22 @@ def stonecutter(item_name, remaining_items):
             "add.natural_gen_structure", item_name=item_name, remaining_items=remaining_items))
 
 
-@bp.route("/add_item/<item_name>", methods=["GET", "POST"])
-def item(item_name):
+@bp.route("/add_item/<item_name>/<default_values_from_group>", methods=["GET", "POST"])
+def item(item_name, default_values_from_group):
     # TODO: if an item group already exists add shortcuts to help load it.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
     if isfile(join(JSON_DIR, item_file_name)):
-        existing_json_data = _get_file_contents(item_file_name_full)
+        existing_json_data = get_file_contents(item_file_name_full)
         _add_to_item_list(item_name)
     else:
         existing_json_data["name"] = item_name
-        _update_json_file(existing_json_data, item_file_name_full)
-    group_name = _get_updated_group_name(get_group(item_name), existing_json_data)
-    _save_to_group(group_name, item_name)
+        update_json_file(existing_json_data, item_file_name_full)
+    group_name = get_updated_group_name(get_group(item_name), existing_json_data)
+    save_to_group(group_name, item_name)
     should_show_group = group_name is not None and group_name != "" and group_name != "None"
+    default_values_from_group = ast.literal_eval(default_values_from_group)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
@@ -321,8 +272,11 @@ def item(item_name):
     if "update_group" in request.form:
         _remove_from_group(group_name, item_name)
         existing_json_data["group"] = request.form["group_name_replacement"]
-        _update_json_file(existing_json_data, item_file_name_full)
-        return redirect(url_for("add.item", item_name=item_name))
+        update_json_file(existing_json_data, item_file_name_full)
+        return redirect(url_for("add.item", item_name=item_name, default_values_from_group=[]))
+
+    if "load_from_existing_group" in request.form:
+        return redirect(url_for("add.item", item_name=item_name, default_values_from_group=[]))
 
     methods = []
     if "breaking" in request.form.keys():

@@ -1,8 +1,6 @@
-import json
 from unittest.mock import call, patch
 
 import pytest
-from _pytest.fixtures import fixture
 
 import block_adder_flask.manual_population as pop
 
@@ -12,48 +10,22 @@ GROUP_NAME = "Test Group"
 FILE_LOC = "block_adder_flask.manual_population"
 EXPECTED_JSON_DIR = "block_adder_flask/item_information"
 REMAINING_ITEMS = "['breaking']"
-
-
-@fixture
-def tmp_json_file_no_items(tmpdir):
-    filename = tmpdir.join("test.json")
-    with open(filename, "w") as f:
-        json.dump({"items": []}, f)
-    return filename
-
-
-def test_update_json_file(tmpdir):
-    file = tmpdir.join("test.json")
-    pop._update_json_file({"Testing": True}, file)
-    with open(file) as f:
-        result = json.load(f)
-    assert result["Testing"]
-
-
-def test_get_all_json_files_no_files(tmp_json_file_no_items):
-    assert len(pop._get_all_items_json_file(tmp_json_file_no_items)) == 0
-
-
-def test_get_all_json_files_with_data(tmpdir):
-    file = tmpdir.join("testing_all_items.json")
-    with open(file, "w") as f:
-        json.dump({"items": ["T1"]}, f)
-    result = pop._get_all_items_json_file(file)
-    assert len(result) == 1
-    assert result[0] == "T1"
-
-
-def test_add_to_item_list(tmp_json_file_no_items):
-    pop._add_to_item_list(ITEM_NAME, tmp_json_file_no_items)
-    with open(tmp_json_file_no_items) as f:
-        created_json = json.load(f)
-        assert len(created_json["items"]) == 1
-        assert created_json["items"][0] == ITEM_NAME
+DEFAULT_VALUES_FROM_GROUP = "[]"
 
 
 @patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.json.load")
-@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.update_json_file")
+def test_add_to_item_list(mock_update_json_file, mock_json_load, mock_open):
+    mock_json_load.return_value = {"items": []}
+    pop._add_to_item_list(ITEM_NAME)
+    mock_update_json_file.assert_called_once_with(
+        {"items": [ITEM_NAME]}, f"{EXPECTED_JSON_DIR}/item_list.json")
+
+
+@patch(f"{FILE_LOC}.open")
+@patch(f"{FILE_LOC}.json.load")
+@patch(f"{FILE_LOC}.update_json_file")
 def test_add_to_item_list_already_present(mock_update_json_file, mock_json_load, mock_open):
     mock_json_load.return_value = {"items": [ITEM_NAME]}
     pop._add_to_item_list(ITEM_NAME)
@@ -61,57 +33,8 @@ def test_add_to_item_list_already_present(mock_update_json_file, mock_json_load,
         {"items": [ITEM_NAME]}, f"{EXPECTED_JSON_DIR}/item_list.json")
 
 
-@patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._update_json_file")
-def test_save_to_group_new_group(mock_update_json_file, mock_isfile):
-    mock_isfile.return_value = False
-    pop._save_to_group(GROUP_NAME, ITEM_NAME)
-    mock_update_json_file.assert_called_once_with(
-        {"group name": GROUP_NAME, "items": [ITEM_NAME]},
-        f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json"
-    )
-
-
-@patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._get_file_contents")
-@patch(f"{FILE_LOC}._update_json_file")
-def test_save_to_group_already_in_group(mock_update_json_file, mock_get_file_contents, mock_isfile):
-    mock_isfile.return_value = True
-    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
-    pop._save_to_group(GROUP_NAME, ITEM_NAME)
-    mock_update_json_file.assert_not_called()
-
-
-@patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._update_json_file")
-def test_save_to_group_empty_group_name(mock_update_json_file, mock_isfile):
-    pop._save_to_group("", ITEM_NAME)
-    mock_isfile.assert_not_called()
-    mock_update_json_file.assert_not_called()
-
-
-@patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._update_json_file")
-def test_save_to_group_none_group_name(mock_update_json_file, mock_isfile):
-    pop._save_to_group(None, ITEM_NAME)
-    mock_isfile.assert_not_called()
-    mock_update_json_file.assert_not_called()
-
-
-@patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._get_file_contents")
-@patch(f"{FILE_LOC}._update_json_file")
-def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_contents, mock_isfile):
-    mock_isfile.return_value = True
-    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": ["existing item"]}
-    pop._save_to_group(GROUP_NAME, ITEM_NAME)
-    mock_update_json_file.assert_called_once_with(
-        {"group name": GROUP_NAME, "items": ["existing item", ITEM_NAME]},
-        f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
-
-
-@patch(f"{FILE_LOC}._get_file_contents")
-@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.get_file_contents")
+@patch(f"{FILE_LOC}.update_json_file")
 def test_remove_from_group(mock_update_json_file, mock_get_file_contents):
     mock_get_file_contents.return_value = {
         "group name": GROUP_NAME, "items": ["Existing Item", ITEM_NAME]}
@@ -121,7 +44,7 @@ def test_remove_from_group(mock_update_json_file, mock_get_file_contents):
         f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
 
-@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}.os.remove")
 def test_remove_from_group_only_item(mock_remove, mock_get_file_contents):
     mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
@@ -129,67 +52,17 @@ def test_remove_from_group_only_item(mock_remove, mock_get_file_contents):
     mock_remove.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
 
-@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.get_file_contents")
 def test_remove_from_group_no_group(mock_get_file_contents):
     pop._remove_from_group("", ITEM_NAME)
     mock_get_file_contents.assert_not_called()
 
 
-@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.get_file_contents")
 def test_remove_from_group_none_group_name(mock_get_file_contents):
     pop._remove_from_group(None, ITEM_NAME)
     mock_get_file_contents.assert_not_called()
 
-
-@pytest.mark.parametrize(
-    ("from_db", "json_data", "expected_name"),
-    [("DB Group", {}, "DB Group"),
-     ("", {"group": "Json Group"}, "Json Group"),
-     (None, {}, ""),
-     ("DB Group", {"group": "Json Group"}, "Json Group")])
-def test_get_updated_group_name(from_db, json_data, expected_name):
-    assert pop._get_updated_group_name(from_db, json_data) == expected_name
-
-
-@patch(f"{FILE_LOC}._update_json_file")
-@patch(f"{FILE_LOC}._get_file_contents")
-def test_append_json(mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
-    mock_get_file_contents.return_value = {"name": ITEM_NAME}
-    pop._append_json_file(
-        "test key", [("item 1", 45), ("item 2", True)], tmp_json_file_no_items)
-    mock_update_json_file.assert_called_once_with(
-        {"name": ITEM_NAME, "test key": {"item 1": 45, "item 2": True}}, tmp_json_file_no_items)
-
-
-@patch(f"{FILE_LOC}._update_json_file")
-@patch(f"{FILE_LOC}._get_file_contents")
-def test_append_json_key_exists(
-        mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
-    mock_get_file_contents.return_value = {
-        "name": ITEM_NAME, "new key": {"item 1": "45", "item 2": 45}}
-    pop._append_json_file(
-        "new key",
-        [("item 1a", "thing"), ("item 2a", "thing2")],
-        tmp_json_file_no_items)
-    mock_update_json_file.assert_called_once_with(
-        {"name": ITEM_NAME, "new key":
-            [{"item 1": "45", "item 2": 45}, {"item 1a": "thing", "item 2a": "thing2"}]},
-        tmp_json_file_no_items
-    )
-
-
-@patch(f"{FILE_LOC}._update_json_file")
-@patch(f"{FILE_LOC}._get_file_contents")
-def test_append_json_condition_false(
-        mock_get_file_contents, mock_update_json_file, tmp_json_file_no_items):
-    mock_get_file_contents.return_value = {"name": ITEM_NAME}
-    pop._append_json_file(
-        "test key", [("item 1", "no condition"), ("item 2", "true condition", True),
-                     ("item 3", "false condition", False)], tmp_json_file_no_items)
-    mock_update_json_file.assert_called_once_with(
-        {"name": ITEM_NAME, "test key":
-            {"item 1": "no condition", "item 2": "true condition"}},
-        tmp_json_file_no_items)
 
 
 # ##################################################################################################
@@ -198,10 +71,10 @@ def test_append_json_condition_false(
 
 @patch(f"{FILE_LOC}.join")
 @patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}._add_to_item_list")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}._save_to_group")
+@patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_file_exists_with_mocks(
         mock_save_to_group,
         mock_get_group,
@@ -212,11 +85,11 @@ def test_add_item_get_file_exists_with_mocks(
         client):
     # if isfile(join(JSON_DIR, item_file_name)):
     #     # TODO: rewrite to use reading helper
-    #     existing_json_data = _get_file_contents(item_file_name_full)
+    #     existing_json_data = get_file_contents(item_file_name_full)
     #     _add_to_item_list(item_name)
     mock_isfile.return_value = True
     mock_get_group.return_value = "Testing Group"
-    response = client.get(f"/add_item/{ITEM_NAME}")
+    response = client.get(f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}")
     assert response.status_code == 200
     mock_save_to_group.assert_called_once_with("Testing Group", ITEM_NAME)
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
@@ -227,15 +100,15 @@ def test_add_item_get_file_exists_with_mocks(
 
 @patch(f"{FILE_LOC}.join")
 @patch(f"{FILE_LOC}.isfile")
-@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}._save_to_group")
+@patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_doesnt_already_exist_with_mocks(
         mock_save_to_group, mock_get_group, mock_update_json_file, mock_isfile, mock_join,
         app, client):
     mock_isfile.return_value = False
     mock_get_group.return_value = "Testing Group"
-    response = client.get(f"/add_item/{ITEM_NAME}")
+    response = client.get(f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}")
     assert response.status_code == 200
     mock_save_to_group.assert_called_once_with("Testing Group", ITEM_NAME)
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
@@ -246,18 +119,18 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
 
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}._get_updated_group_name")
-@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.get_updated_group_name")
+@patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
-@patch(f"{FILE_LOC}._save_to_group")
+@patch(f"{FILE_LOC}.save_to_group")
 @patch(f"{FILE_LOC}._remove_from_group")
 def test_add_item_update_group(
         mock_remove_from_group, mock_save_to_group, mock_redirect, mock_url_for,
         mock_update_file, mock_get_group_name, mock_get_group, mock_isfile, client):
     mock_isfile.return_value = False
     response = client.post(
-        f"/add_item/{ITEM_NAME}",
+        f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}",
         data={"update_group": True, "group_name_replacement": "New Group"})
     assert response.status_code == 200
     mock_remove_from_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
@@ -271,25 +144,36 @@ def test_add_item_update_group(
                 {"name": "Test Item", "group": "New Group"},
                 f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
         ])
-    mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
-    mock_redirect.assert_called_once()
+    mock_url_for.assert_called_once_with(
+        "add.item", item_name=ITEM_NAME,
+        default_values_from_group=[])
 
 
 @patch(f"{FILE_LOC}.join")
-@patch(f"{FILE_LOC}._get_file_contents")
+@patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}._add_to_item_list")
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}._get_updated_group_name")
-@patch(f"{FILE_LOC}._update_json_file")
+@patch(f"{FILE_LOC}.get_updated_group_name")
+@patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.move_next_page")
+@patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_post(
-        mock_move_next_page, mock_update_json_file, mock_get_updated_group_name, mock_get_group,
-        mock_open, mock_isfile, mock_add_to_item_list, mock_file_contents, mock_join, client):
+        mock_save_to_group,
+        mock_move_next_page,
+        mock_update_json_file,
+        mock_get_updated_group_name,
+        mock_get_group,
+        mock_open,
+        mock_isfile,
+        mock_add_to_item_list,
+        mock_file_contents,
+        mock_join,
+        client):
     mock_isfile = False
     response = client.post(
-        f"/add_item/{ITEM_NAME}",
+        f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}",
         data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": "",
               "crafting": "", "nat_struct": ""})
     assert response.status_code == 200
@@ -317,7 +201,7 @@ def test_add_item_post(
      ("tool_no", "", "silk_yes", "axe"),
      ("tool_yes", "", "silk_yes", "axe"),
      ("tool_specific", "pickaxe", "silk_yes", "axe")])
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
@@ -346,7 +230,7 @@ def test_breaking(
         "add.breaking", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
@@ -363,7 +247,7 @@ def test_breaking_other(mock_redirect, mock_url_for, mock_flash, mock_append_jso
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_breaking_next(mock_move_next_page, mock_flash, mock_append_json_file, client):
@@ -384,7 +268,7 @@ def test_breaking_next(mock_move_next_page, mock_flash, mock_append_json_file, c
 # ##################################################################################################
 #                            crafting                                                              #
 # ##################################################################################################
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.redirect")
 @patch(f"{FILE_LOC}.url_for")
@@ -411,7 +295,7 @@ def test_crafting(mock_url_for, mock_redirect, mock_flash, mock_append_json_file
         "add.crafting", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_crafting_move_next(mock_move_next_page, mock_flash, mock_append_json, client):
@@ -436,7 +320,7 @@ def test_crafting_move_next(mock_move_next_page, mock_flash, mock_append_json, c
 # ##################################################################################################
 #                            fishing                                                               #
 # ##################################################################################################
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_fishing(mock_move_next_page, mock_flash, mock_append_json_file, client):
@@ -460,7 +344,7 @@ def test_fishing(mock_move_next_page, mock_flash, mock_append_json_file, client)
      (False, "", True, 50),
      (False, "", False, 100)]
 )
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
@@ -488,7 +372,7 @@ def test_natural_generation(
     mock_redirect.assert_called_once()
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_natural_generation_move_next(
@@ -510,7 +394,7 @@ def test_natural_generation_move_next(
 #                            biome generation                                                      #
 # ##################################################################################################
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
@@ -529,7 +413,7 @@ def test_natural_generation_biome(
     mock_redirect.assert_called_once()
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_natural_generation_biome_next(
@@ -547,7 +431,7 @@ def test_natural_generation_biome_next(
 #                            natural gen structure                                                 #
 # ##################################################################################################
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.redirect")
 @patch(f"{FILE_LOC}.url_for")
@@ -566,7 +450,7 @@ def test_natural_gen_structure(
         "add.natural_gen_structure", item_name=ITEM_NAME, remaining_items=REMAINING_ITEMS)
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_natural_gen_structure_with_next(
@@ -589,7 +473,7 @@ def test_natural_gen_structure_with_next(
      ("Test Level", True, "", False),
      ("", False, "Other Item", True),
      ("", False, "", False)])
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_trading(
@@ -625,7 +509,7 @@ def test_trading(
      (True, "Test Part Of", False, ""),
      (False, "", True, "Test Generated"),
      (False, "", False, "")])
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_post_gen(
@@ -648,7 +532,7 @@ def test_post_gen(
     mock_move_next_page.assert_called_once_with(ITEM_NAME, REMAINING_ITEMS)
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.redirect")
 @patch(f"{FILE_LOC}.url_for")
@@ -665,7 +549,7 @@ def test_stonecutter(mock_url_for, mock_redirect, mock_flash, mock_append_json_f
     mock_redirect.assert_called_once()
 
 
-@patch(f"{FILE_LOC}._append_json_file")
+@patch(f"{FILE_LOC}.append_json_file")
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_stonecutter(mock_move_next_page, mock_flash, mock_append_json_file, client):
