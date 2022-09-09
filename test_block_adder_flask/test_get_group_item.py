@@ -83,3 +83,34 @@ def test_should_show_group_button_only_item_in_group(mock_get_file_contents):
 def test_should_show_group_button_true(mock_get_file_contents):
     mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME, "Item 2"]}
     assert gg.should_show_group_button(GROUP_NAME, ITEM_NAME)
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+@patch(f"{FILE_LOC}.update_json_file")
+def test_remove_from_group(mock_update_json_file, mock_get_file_contents):
+    mock_get_file_contents.return_value = {
+        "group name": GROUP_NAME, "items": ["Existing Item", ITEM_NAME]}
+    gg.remove_from_group(GROUP_NAME, ITEM_NAME)
+    mock_update_json_file.assert_called_once_with(
+        {"group name": GROUP_NAME, "items": ["Existing Item"]},
+        f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+@patch(f"{FILE_LOC}.os.remove")
+def test_remove_from_group_only_item(mock_remove, mock_get_file_contents):
+    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
+    gg.remove_from_group(GROUP_NAME, ITEM_NAME)
+    mock_remove.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_remove_from_group_no_group(mock_get_file_contents):
+    gg.remove_from_group("", ITEM_NAME)
+    mock_get_file_contents.assert_not_called()
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_remove_from_group_none_group_name(mock_get_file_contents):
+    gg.remove_from_group(None, ITEM_NAME)
+    mock_get_file_contents.assert_not_called()

@@ -1,6 +1,5 @@
 import ast
 import json
-import os
 from os.path import isfile, join
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -8,7 +7,8 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from block_adder_flask.db_for_flask import (
     get_db,
     get_group)
-from block_adder_flask.get_group_info import get_updated_group_name, save_to_group
+from block_adder_flask.get_group_info import (
+    get_updated_group_name, remove_from_group, save_to_group, should_show_group_button)
 from block_adder_flask.json_utils import (
     append_json_file, get_all_items_json_file,
     get_file_contents, update_json_file)
@@ -34,18 +34,6 @@ def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
     if item_name not in existing_json["items"]:
         existing_json["items"].append(item_name)
     update_json_file(existing_json, filename)
-
-
-def _remove_from_group(group_name, item_name):
-    if group_name == "" or group_name is None:
-        return
-    group_fn_full = f"{JSON_DIR}/groups/{group_name}.json"
-    existing_group_info = get_file_contents(group_fn_full)
-    existing_group_info["items"].remove(item_name)
-    if len(existing_group_info["items"]) == 0:
-        os.remove(group_fn_full)
-    else:
-        update_json_file(existing_group_info, group_fn_full)
 
 
 def select_next_item(cur):
@@ -259,7 +247,7 @@ def item(item_name, default_values_from_group):
         update_json_file(existing_json_data, item_file_name_full)
     group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     save_to_group(group_name, item_name)
-    should_show_group = group_name is not None and group_name != "" and group_name != "None"
+    should_show_group = should_show_group_button(group_name, item_name)
     default_values_from_group = ast.literal_eval(default_values_from_group)
     if request.method == "GET":
         return render_template(
@@ -270,7 +258,7 @@ def item(item_name, default_values_from_group):
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 
     if "update_group" in request.form:
-        _remove_from_group(group_name, item_name)
+        remove_from_group(group_name, item_name)
         existing_json_data["group"] = request.form["group_name_replacement"]
         update_json_file(existing_json_data, item_file_name_full)
         return redirect(url_for("add.item", item_name=item_name, default_values_from_group=[]))

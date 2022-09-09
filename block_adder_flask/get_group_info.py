@@ -1,3 +1,4 @@
+import os
 from os.path import isfile, join
 
 from block_adder_flask.json_utils import get_file_contents, update_json_file
@@ -33,3 +34,15 @@ def should_show_group_button(group_name, this_item_name):
         return False
     group_items = get_file_contents(f"{JSON_DIR}/{group_name}.json")["items"]
     return len(group_items) > 1
+
+
+def remove_from_group(group_name, item_name):
+    if group_name == "" or group_name is None:
+        return
+    group_fn_full = f"{JSON_DIR}/groups/{group_name}.json"
+    existing_group_info = get_file_contents(group_fn_full)
+    existing_group_info["items"].remove(item_name)
+    if len(existing_group_info["items"]) == 0:
+        os.remove(group_fn_full)
+    else:
+        update_json_file(existing_group_info, group_fn_full)
