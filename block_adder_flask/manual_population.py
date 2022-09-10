@@ -47,6 +47,12 @@ def move_next_page(item_name):
     return redirect(url_for(session["remaining_methods"].pop(0), item_name=item_name))
 
 
+def continue_work(item_name, repeat_current, current_method_name):
+    if repeat_current:
+        return redirect(url_for(current_method_name, item_name=item_name))
+    return move_next_page(item_name)
+
+
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
     if request.method == "GET":
@@ -61,11 +67,7 @@ def breaking(item_name):
           "fastest_tool" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added breaking information for {item_name}")
-    # TODO: move to a helper
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(
-        url_for("add.breaking", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.breaking")
 
 
 @bp.route("/add_breaking_other/<item_name>", methods=["GET", "POST"])
@@ -80,9 +82,7 @@ def breaking_other(item_name):
          ("helped with fortune", "fortune" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added breaking other information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(url_for("add.breaking_other", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.breaking_other")
 
 
 @bp.route("/add_crafting/<item_name>", methods=["GET", "POST"])
@@ -106,10 +106,7 @@ def crafting(item_name):
          ("requires exact positioning", "exact_positioning" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added crafting information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(
-        url_for("add.crafting", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.crafting")
 
 
 @bp.route("/add_fishing/<item_name>", methods=["GET", "POST"])
@@ -119,7 +116,7 @@ def fishing(item_name):
     append_json_file(
         "fishing", [("treasure type", request.form["item_level"])], f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added fishing information for {item_name}")
-    return move_next_page(item_name)
+    return continue_work(item_name, "another" in request.form.keys(), "add.fishing")
 
 
 @bp.route("/add_natural_generation/<item_name>", methods=["GET", "POST"])
@@ -135,9 +132,7 @@ def natural_generation(item_name):
           "chance" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added natural generation in chests information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(url_for("add.natural_generation", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.natural_generation")
 
 
 @bp.route("/add_natural_biome/<item_name>", methods=["GET", "POST"])
@@ -149,9 +144,8 @@ def natural_generation_biome(item_name):
         [("biome name", request.form["biome"])],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added generation in biome information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(url_for("add.natural_generation_biome", item_name=item_name))
+    return continue_work(
+        item_name, "another" in request.form.keys(), "add.natural_generation_biome")
 
 
 @bp.route("/add_natural_gen_structure/<item_name>", methods=["GET", "POST"])
@@ -163,10 +157,7 @@ def natural_gen_structure(item_name):
         [("structure name", request.form["structure_name"])],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added generation as part of structure information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(
-        url_for("add.natural_gen_structure", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.natural_gen_structure")
 
 
 @bp.route("/add_trading/<item_name>", methods=["GET", "POST"])
@@ -184,7 +175,7 @@ def trading(item_name):
         f"{JSON_DIR}/{item_name}.json"
     )
     flash(f"Successfully added trading information for {item_name}")
-    return move_next_page(item_name)
+    return continue_work(item_name, "another" in request.form.keys(), "add.trading")
 
 
 @bp.route("/add_post_generation/<item_name>", methods=["GET", "POST"])
@@ -198,7 +189,7 @@ def post_generation(item_name):
           "generated_from" in request.form)],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added post generation information for {item_name}")
-    return move_next_page(item_name)
+    return continue_work(item_name, "another" in request.form.keys(), "add.post_generation")
 
 
 @bp.route("/add_stonecutter/<item_name>", methods=["GET", "POST"])
@@ -208,13 +199,10 @@ def stonecutter(item_name):
     append_json_file(
         "stonecutter",
         [("block required", request.form["other_block"]),
-         ("quantity made", request.form["quantity"])],
+         ("quantity made", int(request.form["quantity"]))],
         f"{JSON_DIR}/{item_name}.json")
     flash(f"Successfully added stonecutter information for {item_name}")
-    if "next" in request.form.keys():
-        return move_next_page(item_name)
-    return redirect(
-        url_for("add.natural_gen_structure", item_name=item_name))
+    return continue_work(item_name, "another" in request.form.keys(), "add.stonecutter")
 
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
