@@ -8,7 +8,7 @@ from block_adder_flask.db_for_flask import (
     get_db,
     get_group)
 from block_adder_flask.get_group_info import (
-    get_updated_group_name, remove_from_group, save_to_group, should_show_group_button)
+    AlreadyEnteredGroupInformation, get_updated_group_name, remove_from_group, save_to_group)
 from block_adder_flask.json_utils import (
     append_json_file, get_all_items_json_file,
     get_file_contents, update_json_file)
@@ -41,7 +41,7 @@ def select_next_item(cur):
     item_name_list = [block["item_name"] for block in cur.fetchall()]
     saved_items = set([f.replace(".json", "") for f in get_all_items_json_file()])
     next_item = [name for name in item_name_list if name not in saved_items][0]
-    return redirect(url_for("add.item", item_name=next_item, default_values=[]))
+    return redirect(url_for("add.item", item_name=next_item))
 
 
 def move_next_page(item_name, remaining_items):
@@ -233,8 +233,8 @@ def stonecutter(item_name, remaining_items):
             "add.natural_gen_structure", item_name=item_name, remaining_items=remaining_items))
 
 
-@bp.route("/add_item/<item_name>/<default_values_from_group>", methods=["GET", "POST"])
-def item(item_name, default_values_from_group):
+@bp.route("/add_item/<item_name>", methods=["GET", "POST"])
+def item(item_name):
     # TODO: if an item group already exists add shortcuts to help load it.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
@@ -247,13 +247,12 @@ def item(item_name, default_values_from_group):
         update_json_file(existing_json_data, item_file_name_full)
     group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     save_to_group(group_name, item_name)
-    should_show_group = should_show_group_button(group_name, item_name)
-    default_values_from_group = ast.literal_eval(default_values_from_group)
+    group_info = AlreadyEnteredGroupInformation(group_name, item_name)
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
             group_name=group_name,
-            show_group=should_show_group,
+            show_group=group_info.should_show,
             item_name=item_name,
             block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
 
@@ -261,10 +260,10 @@ def item(item_name, default_values_from_group):
         remove_from_group(group_name, item_name)
         existing_json_data["group"] = request.form["group_name_replacement"]
         update_json_file(existing_json_data, item_file_name_full)
-        return redirect(url_for("add.item", item_name=item_name, default_values_from_group=[]))
+        return redirect(url_for("add.item", item_name=item_name))
 
     if "load_from_existing_group" in request.form:
-        return redirect(url_for("add.item", item_name=item_name, default_values_from_group=[]))
+        return redirect(url_for("add.item", item_name=item_name))
 
     methods = []
     if "breaking" in request.form.keys():

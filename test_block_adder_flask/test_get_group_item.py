@@ -1,10 +1,11 @@
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import pytest
 
 import block_adder_flask.get_group_info as gg
 
 ITEM_NAME = "Test Item"
+OTHER_ITEM_NAME = "Test Other Item"
 GROUP_NAME = "Test Group"
 EXPECTED_JSON_DIR = "block_adder_flask/item_information"
 FILE_LOC = "block_adder_flask.get_group_info"
@@ -16,18 +17,81 @@ MOCK_ITEM_CONTENTS = {
 }
 
 
+def create_group_info(mock_get_file_contents):
+    mock_get_file_contents.side_effect = [
+        {"group name": GROUP_NAME, "items": [ITEM_NAME, OTHER_ITEM_NAME]},
+        MOCK_ITEM_CONTENTS
+    ]
+    return gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+
+
+@pytest.mark.parametrize(
+    ("item_list", "expected_other_items", "expected_should_show"),
+    [([ITEM_NAME], [], False),
+     ([ITEM_NAME, OTHER_ITEM_NAME], [OTHER_ITEM_NAME], True)]
+)
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_already_entered_group_info_init(
+        mock_get_file_contents, item_list, expected_other_items, expected_should_show):
+    mock_get_file_contents.side_effect = [{"group name": GROUP_NAME, "items": item_list},
+                                          MOCK_ITEM_CONTENTS]
+    group_info = gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+    assert group_info.group_name == GROUP_NAME
+    assert group_info.current_item == ITEM_NAME
+    assert group_info.other_items == expected_other_items
+    assert group_info.should_show == expected_should_show
+    if expected_should_show:
+        assert group_info.other_item_info == MOCK_ITEM_CONTENTS
+        mock_get_file_contents.assert_has_calls(
+            [call(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json"),
+             call(f"{EXPECTED_JSON_DIR}/{OTHER_ITEM_NAME}.json")
+             ])
+    else:
+        assert group_info.other_item_info == {}
+        mock_get_file_contents.assert_called_once_with(
+            f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
+
+@pytest.mark.parametrize("group_name", [None, "", "None"])
+def test_should_show_group_button_missing_group_name(group_name):
+    g = gg.AlreadyEnteredGroupInformation(group_name, ITEM_NAME)
+    assert not g.should_show
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_should_show_group_button_only_item_in_group(mock_get_file_contents):
+    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
+    g = gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+    assert not g.should_show
+
+
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_should_show_group_button_true(mock_get_file_contents):
+    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME, "Item 2"]}
+    g = gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+    assert g.should_show
+
+
 @pytest.mark.parametrize("group_items", [[ITEM_NAME, "Test Item 2"], ["Test Item 2", ITEM_NAME]])
 @patch(f"{FILE_LOC}.get_file_contents")
-def test_get_different_item_from_group(mock_get_file_contents, group_items):
+def test_get_group_items(mock_get_file_contents, group_items):
     mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": group_items}
-    assert gg._get_different_item_from_group(GROUP_NAME, ITEM_NAME) == "Test Item 2"
+    g = gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+    assert g.other_items == ["Test Item 2"]
 
 
 @patch(f"{FILE_LOC}.get_file_contents")
-@patch(f"{FILE_LOC}._get_different_item_from_group")
-def test_get_obtaining_methods_in_group(mock_get_different_item, mock_get_file_contents):
-    mock_get_file_contents.return_value = MOCK_ITEM_CONTENTS
-    assert gg.get_obtaining_methods_in_group(GROUP_NAME, ITEM_NAME) == ["breaking", "crafting"]
+def test_get_obtaining_methods(mock_get_file_contents):
+    group_info = create_group_info(mock_get_file_contents)
+    assert group_info.get_obtaining_methods() == ["breaking", "crafting"]
+
+
+# @patch(f"{FILE_LOC}.get_file_contents")
+# @patch(f"{FILE_LOC}._get_different_item_from_group")
+# def test_get_obtaining_methods_in_group(mock_get_different_item, mock_get_file_contents):
+#     mock_get_file_contents.return_value = MOCK_ITEM_CONTENTS
+#     g = gg.AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME)
+#     assert gg.get_obtaining_methods_in_group(GROUP_NAME, ITEM_NAME) == ["breaking", "crafting"]
 
 
 @patch(f"{FILE_LOC}.get_file_contents")
@@ -108,24 +172,6 @@ def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_conte
     mock_update_json_file.assert_called_once_with(
         {"group name": GROUP_NAME, "items": ["existing item", ITEM_NAME]},
         f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
-
-
-@pytest.mark.parametrize("group_name", [None, "", "None"])
-def test_should_show_group_button_missing_group_name(group_name):
-    assert not gg.should_show_group_button(group_name, "")
-
-
-@patch(f"{FILE_LOC}.get_file_contents")
-def test_should_show_group_button_only_item_in_group(mock_get_file_contents):
-    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME]}
-    assert not gg.should_show_group_button(GROUP_NAME, ITEM_NAME)
-
-
-@patch(f"{FILE_LOC}.get_file_contents")
-def test_should_show_group_button_true(mock_get_file_contents):
-    mock_get_file_contents.return_value = {"group name": GROUP_NAME, "items": [ITEM_NAME, "Item 2"]}
-    assert gg.should_show_group_button(GROUP_NAME, ITEM_NAME)
-
 
 @pytest.mark.parametrize(
     ("from_db", "json_data", "expected_name"),

@@ -43,11 +43,11 @@ def test_add_to_item_list_already_present(mock_update_json_file, mock_json_load,
 @patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}._add_to_item_list")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}.should_show_group_button")
+@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
 @patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_file_exists(
         mock_save_to_group,
-        mock_should_show_group,
+        mock_already_existing_group,
         mock_get_group,
         mock_add_to_item_list,
         mock_get_file_contents,
@@ -56,10 +56,11 @@ def test_add_item_get_file_exists(
         client):
     mock_isfile.return_value = True
     mock_get_group.return_value = GROUP_NAME
-    response = client.get(f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}")
+    mock_already_existing_group.should_show = True
+    response = client.get(f"/add_item/{ITEM_NAME}")
     assert response.status_code == 200
     mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
-    mock_should_show_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
+    mock_already_existing_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
     mock_isfile.assert_called_once()
     mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
@@ -70,16 +71,16 @@ def test_add_item_get_file_exists(
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.get_group")
-@patch(f"{FILE_LOC}.should_show_group_button")
+@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
 @patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_doesnt_already_exist_with_mocks(
-        mock_save_to_group, mock_should_show_group, mock_get_group,
+        mock_save_to_group, mock_already_existing_group, mock_get_group,
         mock_update_json_file, mock_isfile, mock_join, app, client):
     mock_isfile.return_value = False
     mock_get_group.return_value = GROUP_NAME
-    response = client.get(f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}")
+    response = client.get(f"/add_item/{ITEM_NAME}")
     assert response.status_code == 200
-    mock_should_show_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
+    mock_already_existing_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
     mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
     mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
     mock_isfile.assert_called_once()
@@ -93,20 +94,20 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
 @patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
-@patch(f"{FILE_LOC}.should_show_group_button")
+@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
 @patch(f"{FILE_LOC}.save_to_group")
 @patch(f"{FILE_LOC}.remove_from_group")
 def test_add_item_update_group(
-        mock_remove_from_group, mock_save_to_group, mock_should_show_group, mock_redirect,
+        mock_remove_from_group, mock_save_to_group, mock_already_existing_group, mock_redirect,
         mock_url_for, mock_update_file, mock_get_group_name, mock_get_group, mock_isfile, client):
     mock_isfile.return_value = False
     response = client.post(
-        f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}",
+        f"/add_item/{ITEM_NAME}",
         data={"update_group": True, "group_name_replacement": "New Group"})
     assert response.status_code == 200
     mock_remove_from_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_save_to_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
-    mock_should_show_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
+    mock_already_existing_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_get_group.assert_called_once_with(ITEM_NAME)
     mock_update_file.assert_has_calls(
         [call(
@@ -116,9 +117,7 @@ def test_add_item_update_group(
                 {"name": "Test Item", "group": "New Group"},
                 f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
         ])
-    mock_url_for.assert_called_once_with(
-        "add.item", item_name=ITEM_NAME,
-        default_values_from_group=[])
+    mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
 
 
 @patch(f"{FILE_LOC}.join")
@@ -128,7 +127,7 @@ def test_add_item_update_group(
 @patch(f"{FILE_LOC}.open")
 @patch(f"{FILE_LOC}.get_group")
 @patch(f"{FILE_LOC}.get_updated_group_name")
-@patch(f"{FILE_LOC}.should_show_group_button")
+@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
 @patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.move_next_page")
 @patch(f"{FILE_LOC}.save_to_group")
@@ -136,7 +135,7 @@ def test_add_item_post(
         mock_save_to_group,
         mock_move_next_page,
         mock_update_json_file,
-        mock_should_show_group_button,
+        mock_already_existing_group,
         mock_get_updated_group_name,
         mock_get_group,
         mock_open,
@@ -147,7 +146,7 @@ def test_add_item_post(
         client):
     mock_isfile = False
     response = client.post(
-        f"/add_item/{ITEM_NAME}/{DEFAULT_VALUES_FROM_GROUP}",
+        f"/add_item/{ITEM_NAME}",
         data={"trading": "", "nat_gen": "", "breaking": "", "fishing": "", "nat_biome": "",
               "crafting": "", "nat_struct": ""})
     assert response.status_code == 200
