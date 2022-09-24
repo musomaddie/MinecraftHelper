@@ -53,6 +53,7 @@ def continue_work(item_name, repeat_current, current_method_name):
     return move_next_page(item_name)
 
 
+
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
     if request.method == "GET":
@@ -219,14 +220,17 @@ def item(item_name):
         update_json_file(existing_json_data, item_file_name_full)
     group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     save_to_group(group_name, item_name)
-    group_info = AlreadyEnteredGroupInformation(group_name, item_name)
+    group_info = AlreadyEnteredGroupInformation.create_first_time(group_name, item_name)
+    item_url = f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}"
+    session["group_info"] = group_info.__dict__
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
             group_name=group_name,
-            show_group=group_info.should_show,
+            show_group=True,
+            pre_checked=group_info.get_default_obtainment_methods(),
             item_name=item_name,
-            block_url=f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}")
+            block_url=item_url)
 
     if "update_group" in request.form:
         remove_from_group(group_name, item_name)
@@ -235,7 +239,14 @@ def item(item_name):
         return redirect(url_for("add.item", item_name=item_name))
 
     if "load_from_existing_group" in request.form:
-        return redirect(url_for("add.item", item_name=item_name))
+        return render_template(
+            "add_block_start.html",
+            group_name=group_name,
+            show_group=True,
+            pre_checked=group_info.get_obtaining_methods(),
+            item_name=item_name,
+            block_url=item_url
+        )
 
     methods = []
     if "breaking" in request.form.keys():

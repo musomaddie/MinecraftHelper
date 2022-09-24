@@ -26,4 +26,7 @@ def create_app(test_config=None):
     from . import manual_population
     app.register_blueprint(manual_population.bp)
 
+    from . import get_group_info
+    app.register_blueprint(get_group_info.bp, url_prefix="/preexisting_group")
+
     return app
