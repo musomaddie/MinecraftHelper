@@ -53,7 +53,6 @@ def continue_work(item_name, repeat_current, current_method_name):
     return move_next_page(item_name)
 
 
-
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
     if request.method == "GET":
@@ -228,7 +227,6 @@ def item(item_name):
             "add_block_start.html",
             group_name=group_name,
             show_group=True,
-            pre_checked=group_info.get_default_obtainment_methods(),
             item_name=item_name,
             block_url=item_url)
 
@@ -243,7 +241,6 @@ def item(item_name):
             "add_block_start.html",
             group_name=group_name,
             show_group=True,
-            pre_checked=group_info.get_obtaining_methods(),
             item_name=item_name,
             block_url=item_url
         )

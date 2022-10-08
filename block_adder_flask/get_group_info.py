@@ -1,7 +1,7 @@
 import os
 from os.path import isfile, join
 
-from flask import Blueprint, session
+from flask import Blueprint
 
 from block_adder_flask.json_utils import get_file_contents, update_json_file
 
@@ -66,10 +66,17 @@ class AlreadyEnteredGroupInformation:
         self.should_show = should_show
         self.other_item_info = other_item_info
 
+    def get_obtaining_methods(self):
+        if not self.should_show:
+            return []
+        key_list = list(self.other_item_info.keys())
+        key_list.remove("name")
+        key_list.remove("group")
+        return key_list
+
     @staticmethod
     def get_group_items(group_name, current_item):
         item_list = get_file_contents(f"{JSON_DIR}/groups/{group_name}.json")["items"]
-        print(item_list)
         item_list.remove(current_item)
         return item_list
 
@@ -78,10 +85,13 @@ class AlreadyEnteredGroupInformation:
         builder = GroupInfoBuilder(group_name, current_item)
         if group_name is None or group_name == "" or group_name == "None":
             return builder.build()
+        print(group_name)
         builder.set_other_items(
             AlreadyEnteredGroupInformation.get_group_items(group_name, current_item))
-        builder.set_should_show(True)
-        builder.set_other_item_info(get_file_contents(f"{JSON_DIR}/{builder.other_items[0]}.json"))
+        builder.set_should_show(len(builder.other_items) > 0)
+        builder.set_other_item_info(
+            {} if len(builder.other_items) == 0
+            else get_file_contents(f"{JSON_DIR}/{builder.other_items[0]}.json"))
         return builder.build()
 
     @staticmethod
@@ -95,10 +105,11 @@ class AlreadyEnteredGroupInformation:
 
 @bp.route("/obtaining", methods=["GET"])
 def get_preexisting_obtaining_methods():
-    print('starting group')
-    if "group_info" in session:
-        return AlreadyEnteredGroupInformation.create_from_dict(session["group_info"])
-    return []
+    return ["breaking_checkbox", "trading_checkbox"]
+    # if "group_info" in session:
+    #     return AlreadyEnteredGroupInformation.create_from_dict(
+    #         session["group_info"]).get_obtaining_methods()
+    # return []
 
 
 def remove_from_group(group_name, item_name):

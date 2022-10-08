@@ -45,8 +45,12 @@ def test_group_init_builder():
 @pytest.fixture
 def existing_group_info():
     return AlreadyEnteredGroupInformation(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True,
-        {"group name": GROUP_NAME, "items": [ITEM_NAME, OTHER_ITEM_NAME]})
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS)
+
+
+@pytest.fixture
+def existing_group_info_hidden():
+    return AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME, [], False, {})
 
 
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
@@ -76,6 +80,35 @@ def test_create_from_dict(mock_existing_group_info):
     )
     mock_existing_group_info.assert_called_once_with(
         GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS)
+
+
+def test_get_obtaining_methods(existing_group_info):
+    result = existing_group_info.get_obtaining_methods()
+    assert type(result) == list
+    assert len(result) == 2
+    assert "breaking" in result
+    assert "crafting" in result
+
+
+def test_get_obtaining_methods_not_should_show(existing_group_info_hidden):
+    result = existing_group_info_hidden.get_obtaining_methods()
+    assert len(result) == 0
+
+
+@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+def test_get_preexisting_obtaining_methods_missing_session(mock_existing_group_info, client):
+    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
+        response = client.get("/preexisting_group/obtaining")
+        assert response.status_code == 200
+        assert response.text == "[]\n"
+
+
+def test_get_preexisting_obtaining_methods(existing_group_info, client):
+    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
+        mock_session["group_info"] = existing_group_info.__dict__
+        response = client.get("/preexisting_group/obtaining")
+        assert response.status_code == 200
+        assert response.text == '["breaking","crafting"]\n'
 
 
 @patch(f"{FILE_LOC}.get_file_contents")
@@ -158,6 +191,7 @@ def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_conte
     mock_update_json_file.assert_called_once_with(
         {"group name": GROUP_NAME, "items": ["existing item", ITEM_NAME]},
         f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+
 
 @pytest.mark.parametrize(
     ("from_db", "json_data", "expected_name"),
