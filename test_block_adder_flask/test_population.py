@@ -71,10 +71,8 @@ def test_add_item_get_file_exists(
         assert len(mock_session) == 1
         assert "group_info" in mock_session
         mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
-        mock_already_existing_group.assert_has_calls(
-            [call.create_first_time(GROUP_NAME, ITEM_NAME),
-             call.create_first_time().get_default_obtainment_methods()]
-        )
+        assert call.create_first_time(
+            GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
         mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
         mock_isfile.assert_called_once()
         mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
@@ -96,10 +94,9 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
         assert response.status_code == 200
         assert len(mock_session) == 1
         assert "group_info" in mock_session
-        mock_already_existing_group.assert_has_calls(
-            [call.create_first_time(GROUP_NAME, ITEM_NAME),
-             call.create_first_time().get_default_obtainment_methods()])
         mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
+        assert call.create_first_time(
+            GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
         mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
         mock_isfile.assert_called_once()
         mock_update_json_file.assert_called_once_with(
@@ -140,6 +137,10 @@ def test_add_item_update_group(
                     f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
             ])
         mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
+
+
+# Add test handling case where the use group values button is clicked -> here I should assert the
+# full values on the mock inside the getter as well (if approriate).
 
 
 @patch(f"{FILE_LOC}.join")

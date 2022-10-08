@@ -1,4 +1,4 @@
-from unittest.mock import ANY, call, patch
+from unittest.mock import call, patch
 
 import pytest
 
@@ -16,6 +16,10 @@ MOCK_ITEM_CONTENTS = {
     "group": GROUP_NAME,
     "breaking": {"sub key 1": "data", "sub key 2": ""},
     "crafting": {"more data"}
+}
+GROUP_MOCK_JSON_CONTENTS = {
+    "group name": GROUP_NAME,
+    "items": [ITEM_NAME, OTHER_ITEM_NAME]
 }
 
 
@@ -45,12 +49,12 @@ def test_group_init_builder():
 @pytest.fixture
 def existing_group_info():
     return AlreadyEnteredGroupInformation(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS)
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
 
 
 @pytest.fixture
 def existing_group_info_hidden():
-    return AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME, [], False, {})
+    return AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME, [], False, {}, False)
 
 
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
@@ -60,26 +64,29 @@ def test_get_group_item(mock_get_file_contents, existing_group_info):
     mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
 
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
-@patch(f"{FILE_LOC}.get_file_contents")
-def test_create_first_time(mock_get_file_contents, mock_existing_group_info):
-    AlreadyEnteredGroupInformation.create_first_time(GROUP_NAME, ITEM_NAME)
-    mock_existing_group_info.assert_has_calls(
-        [call.get_group_items(GROUP_NAME, ITEM_NAME),
-         call.get_group_items().__getitem__(0),
-         ANY,
-         call(GROUP_NAME, ITEM_NAME, ANY, True, ANY)]
-    )
+@patch(f"{FILE_LOC}.get_file_contents", return_value=GROUP_MOCK_JSON_CONTENTS)
+def test_create_first_time(mock_get_file_contents):
+    result = AlreadyEnteredGroupInformation.create_first_time(GROUP_NAME, ITEM_NAME)
+    mock_get_file_contents.assert_has_calls(
+        [call(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json"),
+         call(f"{EXPECTED_JSON_DIR}/{OTHER_ITEM_NAME}.json")])
+    assert result.group_name == GROUP_NAME
+    assert result.current_item == ITEM_NAME
+    assert result.other_items == [OTHER_ITEM_NAME]
+    assert result.should_show
+    assert not result.use_group_items
 
 
 @patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
 def test_create_from_dict(mock_existing_group_info):
     AlreadyEnteredGroupInformation.create_from_dict(
         {"group_name": GROUP_NAME, "current_item": ITEM_NAME, "should_show": True,
-         "other_items": [OTHER_ITEM_NAME], "other_item_info": MOCK_ITEM_CONTENTS}
+         "other_items": [OTHER_ITEM_NAME], "other_item_info": MOCK_ITEM_CONTENTS,
+         "use_group_items": False
+         }
     )
     mock_existing_group_info.assert_called_once_with(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS)
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
 
 
 def test_get_obtaining_methods(existing_group_info):
@@ -93,22 +100,6 @@ def test_get_obtaining_methods(existing_group_info):
 def test_get_obtaining_methods_not_should_show(existing_group_info_hidden):
     result = existing_group_info_hidden.get_obtaining_methods()
     assert len(result) == 0
-
-
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
-def test_get_preexisting_obtaining_methods_missing_session(mock_existing_group_info, client):
-    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
-        response = client.get("/preexisting_group/obtaining")
-        assert response.status_code == 200
-        assert response.text == "[]\n"
-
-
-def test_get_preexisting_obtaining_methods(existing_group_info, client):
-    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
-        mock_session["group_info"] = existing_group_info.__dict__
-        response = client.get("/preexisting_group/obtaining")
-        assert response.status_code == 200
-        assert response.text == '["breaking","crafting"]\n'
 
 
 @patch(f"{FILE_LOC}.get_file_contents")

@@ -228,6 +228,7 @@ def item(item_name):
             group_name=group_name,
             show_group=True,
             item_name=item_name,
+            already_checked=group_info.get_obtaining_methods(),
             block_url=item_url)
 
     if "update_group" in request.form:
@@ -237,13 +238,9 @@ def item(item_name):
         return redirect(url_for("add.item", item_name=item_name))
 
     if "load_from_existing_group" in request.form:
-        return render_template(
-            "add_block_start.html",
-            group_name=group_name,
-            show_group=True,
-            item_name=item_name,
-            block_url=item_url
-        )
+        group_info.use_values_button_clicked()
+        session["group_info"] = group_info.__dict__
+        return redirect(url_for("add.item", item_name=item_name))
 
     methods = []
     if "breaking" in request.form.keys():

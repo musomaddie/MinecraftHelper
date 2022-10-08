@@ -25,6 +25,7 @@ class GroupInfoBuilder:
     other_items: list[str]
     should_show: bool
     other_item_info: dict
+    use_group_items: bool
 
     def __init__(self, group_name: str, current_item: str) -> None:
         self.group_name = group_name
@@ -32,6 +33,7 @@ class GroupInfoBuilder:
         self.other_items = []
         self.should_show = False
         self.other_item_info = {}
+        self.use_group_items = False
 
     def build(self) -> 'AlreadyEnteredGroupInformation':
         return AlreadyEnteredGroupInformation(
@@ -39,7 +41,9 @@ class GroupInfoBuilder:
             self.current_item,
             self.other_items,
             self.should_show,
-            self.other_item_info)
+            self.other_item_info,
+            self.use_group_items
+        )
 
     def set_other_items(self, other_items: list):
         self.other_items = other_items
@@ -50,6 +54,9 @@ class GroupInfoBuilder:
     def set_other_item_info(self, other_item_info: dict):
         self.other_item_info = other_item_info
 
+    def set_use_group_items(self, use_group_items):
+        self.use_group_items = use_group_items
+
 
 class AlreadyEnteredGroupInformation:
 
@@ -58,13 +65,27 @@ class AlreadyEnteredGroupInformation:
     other_items: list[str]
     should_show: bool
     other_item_info: dict
+    use_group_items: bool
 
-    def __init__(self, group_name, current_item, other_items, should_show, other_item_info):
+    def __init__(
+            self,
+            group_name,
+            current_item,
+            other_items,
+            should_show,
+            other_item_info,
+            use_group_items):
         self.group_name = group_name
         self.current_item = current_item
         self.other_items = other_items
         self.should_show = should_show
         self.other_item_info = other_item_info
+        self.use_group_items = use_group_items
+
+    def use_values_button_clicked(self):
+        if self.should_show:
+            return self.use_group_items
+        self.use_group_items = True
 
     def get_obtaining_methods(self):
         if not self.should_show:
@@ -85,7 +106,6 @@ class AlreadyEnteredGroupInformation:
         builder = GroupInfoBuilder(group_name, current_item)
         if group_name is None or group_name == "" or group_name == "None":
             return builder.build()
-        print(group_name)
         builder.set_other_items(
             AlreadyEnteredGroupInformation.get_group_items(group_name, current_item))
         builder.set_should_show(len(builder.other_items) > 0)
@@ -100,6 +120,7 @@ class AlreadyEnteredGroupInformation:
         builder.set_should_show(d["should_show"])
         builder.set_other_items(d["other_items"])
         builder.set_other_item_info(d["other_item_info"])
+        builder.set_use_group_items(d["use_group_items"])
         return builder.build()
 
 

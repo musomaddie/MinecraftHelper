@@ -7,6 +7,11 @@
     "requires silk": true,
     "fastest tool": "Tool Name - OPTIONAL"
   },
+  "breaking other": {
+    "other block name": "Leaves",
+    "likelihood of dropping": 5.0,
+    "helped with fortune": true
+  },
   "crafting": {
     "crafting slots": [
       "Item 1",
@@ -47,5 +52,9 @@
   "post generation": {
     "part of": "",
     "generated from": ""
+  },
+  "stonecutter": {
+    "block required": "Andesite",
+    "quantity made": "1"
   }
 }
