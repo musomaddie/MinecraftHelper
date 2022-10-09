@@ -7,14 +7,16 @@ from block_adder_flask.json_utils import get_file_contents, update_json_file
 
 JSON_DIR = "block_adder_flask/item_information"
 
-ALL_OBTAINMENT_METHODS = ["breaking",
-                          "breaking other",
-                          "crafting",
-                          "trading"
-                          "generated in chests", "generated in biome",
-                          "generated as part of structure",
-                          "post generation",
-                          "stonecutter"]
+OBTAINMENT_METHODS_TITLE_TO_IDS = {
+    "breaking": "breaking_checkbox",
+    "breaking other": "breaking_other_checkbox",
+    "crafting": "crafting_checkbox",
+    "fishing": "fishing_checkbox",
+    "trading": "trading_checkbox",
+    "generated as part of structure": "nat_struct_checkbox",
+    "post generation": "post_gen_checkbox",
+    "stonecutter": "stonecutter_checkbox"
+}
 
 bp = Blueprint("group_info", __name__)
 
@@ -94,7 +96,7 @@ class ExistingGroupInfo:
             key_list = list(self.other_item_info.keys())
             key_list.remove("name")
             key_list.remove("group")
-            return key_list
+            return {OBTAINMENT_METHODS_TITLE_TO_IDS[key] for key in key_list}
         return []
 
     def update_group_in_session(self):
