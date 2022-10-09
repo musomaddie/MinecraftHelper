@@ -3,7 +3,7 @@ from unittest.mock import call, patch
 import pytest
 
 from block_adder_flask.get_group_info import (
-    AlreadyEnteredGroupInformation, GroupInfoBuilder,
+    ExistingGroupInfo, GroupInfoBuilder,
     get_updated_group_name, remove_from_group, save_to_group)
 
 ITEM_NAME = "Test Item"
@@ -48,25 +48,25 @@ def test_group_init_builder():
 
 @pytest.fixture
 def existing_group_info():
-    return AlreadyEnteredGroupInformation(
+    return ExistingGroupInfo(
         GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
 
 
 @pytest.fixture
 def existing_group_info_hidden():
-    return AlreadyEnteredGroupInformation(GROUP_NAME, ITEM_NAME, [], False, {}, False)
+    return ExistingGroupInfo(GROUP_NAME, ITEM_NAME, [], False, {}, False)
 
 
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
 def test_get_group_item(mock_get_file_contents, existing_group_info):
-    assert AlreadyEnteredGroupInformation.get_group_items(GROUP_NAME, ITEM_NAME) == [
+    assert ExistingGroupInfo.get_group_items(GROUP_NAME, ITEM_NAME) == [
         OTHER_ITEM_NAME]
     mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
 
 @patch(f"{FILE_LOC}.get_file_contents", return_value=GROUP_MOCK_JSON_CONTENTS)
 def test_create_first_time(mock_get_file_contents):
-    result = AlreadyEnteredGroupInformation.create_first_time(GROUP_NAME, ITEM_NAME)
+    result = ExistingGroupInfo.create_first_time(GROUP_NAME, ITEM_NAME)
     mock_get_file_contents.assert_has_calls(
         [call(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json"),
          call(f"{EXPECTED_JSON_DIR}/{OTHER_ITEM_NAME}.json")])
@@ -77,9 +77,9 @@ def test_create_first_time(mock_get_file_contents):
     assert not result.use_group_items
 
 
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
 def test_create_from_dict(mock_existing_group_info):
-    AlreadyEnteredGroupInformation.create_from_dict(
+    ExistingGroupInfo.create_from_dict(
         {"group_name": GROUP_NAME, "current_item": ITEM_NAME, "should_show": True,
          "other_items": [OTHER_ITEM_NAME], "other_item_info": MOCK_ITEM_CONTENTS,
          "use_group_items": False

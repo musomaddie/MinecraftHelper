@@ -5,7 +5,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 
 from block_adder_flask.db_for_flask import get_db, get_group
 from block_adder_flask.get_group_info import (
-    AlreadyEnteredGroupInformation, get_updated_group_name, remove_from_group, save_to_group)
+    ExistingGroupInfo, get_updated_group_name, remove_from_group, save_to_group)
 from block_adder_flask.json_utils import (
     append_json_file, get_all_items_json_file,
     get_file_contents, update_json_file)
@@ -208,6 +208,7 @@ def stonecutter(item_name):
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
     # TODO: if an item group already exists add shortcuts to help load it.
+    # TODO: improve this so that the session is always updated when required.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
@@ -219,9 +220,8 @@ def item(item_name):
         update_json_file(existing_json_data, item_file_name_full)
     group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     save_to_group(group_name, item_name)
-    group_info = AlreadyEnteredGroupInformation.create_first_time(group_name, item_name)
+    group_info = ExistingGroupInfo.load_from_session(group_name, item_name)
     item_url = f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}"
-    session["group_info"] = group_info.__dict__
     if request.method == "GET":
         return render_template(
             "add_block_start.html",
@@ -233,13 +233,15 @@ def item(item_name):
 
     if "update_group" in request.form:
         remove_from_group(group_name, item_name)
-        existing_json_data["group"] = request.form["group_name_replacement"]
+        new_group_name = request.form["group_name_replacement"]
+        existing_json_data["group"] = new_group_name
+        save_to_group(new_group_name, item_name)
         update_json_file(existing_json_data, item_file_name_full)
+        ExistingGroupInfo.load_from_session(new_group_name, item_name).update_group_in_session()
         return redirect(url_for("add.item", item_name=item_name))
 
     if "load_from_existing_group" in request.form:
         group_info.use_values_button_clicked()
-        session["group_info"] = group_info.__dict__
         return redirect(url_for("add.item", item_name=item_name))
 
     methods = []

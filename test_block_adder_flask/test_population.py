@@ -53,7 +53,7 @@ def test_continue_work_next(mock_move_next_page):
 @patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}._add_to_item_list")
 @patch(f"{FILE_LOC}.get_group", return_value=GROUP_NAME)
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
 @patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_file_exists(
         mock_save_to_group,
@@ -84,7 +84,7 @@ def test_add_item_get_file_exists(
 @patch(f"{FILE_LOC}.isfile", return_value=False)
 @patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.get_group", return_value=GROUP_NAME)
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
 @patch(f"{FILE_LOC}.save_to_group")
 def test_add_item_get_doesnt_already_exist_with_mocks(
         mock_save_to_group, mock_already_existing_group, mock_get_group,
@@ -110,7 +110,7 @@ def test_add_item_get_doesnt_already_exist_with_mocks(
 @patch(f"{FILE_LOC}.update_json_file")
 @patch(f"{FILE_LOC}.url_for")
 @patch(f"{FILE_LOC}.redirect")
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
 @patch(f"{FILE_LOC}.save_to_group")
 @patch(f"{FILE_LOC}.remove_from_group")
 def test_add_item_update_group(
@@ -149,7 +149,7 @@ def test_add_item_update_group(
 @patch(f"{FILE_LOC}.get_group")
 @patch(f"{FILE_LOC}.get_updated_group_name")
 @patch(f"{FILE_LOC}.save_to_group")
-@patch(f"{FILE_LOC}.AlreadyEnteredGroupInformation")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
 @patch(f"{FILE_LOC}.move_next_page")
 def test_add_item_all_methods_selected(
         mock_move_next_page, mock_already_entered_info, mock_save_to_group,

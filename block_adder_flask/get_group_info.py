@@ -1,7 +1,7 @@
 import os
-from os.path import isfile, join
+from os.path import isfile
 
-from flask import Blueprint
+from flask import Blueprint, session
 
 from block_adder_flask.json_utils import get_file_contents, update_json_file
 
@@ -35,8 +35,8 @@ class GroupInfoBuilder:
         self.other_item_info = {}
         self.use_group_items = False
 
-    def build(self) -> 'AlreadyEnteredGroupInformation':
-        return AlreadyEnteredGroupInformation(
+    def build(self) -> 'ExistingGroupInfo':
+        return ExistingGroupInfo(
             self.group_name,
             self.current_item,
             self.other_items,
@@ -58,7 +58,7 @@ class GroupInfoBuilder:
         self.use_group_items = use_group_items
 
 
-class AlreadyEnteredGroupInformation:
+class ExistingGroupInfo:
 
     group_name: str
     current_item: str
@@ -81,19 +81,24 @@ class AlreadyEnteredGroupInformation:
         self.should_show = should_show
         self.other_item_info = other_item_info
         self.use_group_items = use_group_items
+        self.update_group_in_session()
 
     def use_values_button_clicked(self):
-        if self.should_show:
-            return self.use_group_items
+        if not self.should_show:
+            return
         self.use_group_items = True
+        self.update_group_in_session()
 
     def get_obtaining_methods(self):
-        if not self.should_show:
-            return []
-        key_list = list(self.other_item_info.keys())
-        key_list.remove("name")
-        key_list.remove("group")
-        return key_list
+        if self.should_show and self.use_group_items:
+            key_list = list(self.other_item_info.keys())
+            key_list.remove("name")
+            key_list.remove("group")
+            return key_list
+        return []
+
+    def update_group_in_session(self):
+        session["group_info"] = self.__dict__
 
     @staticmethod
     def get_group_items(group_name, current_item):
@@ -102,12 +107,20 @@ class AlreadyEnteredGroupInformation:
         return item_list
 
     @staticmethod
-    def create_first_time(group_name: str, current_item: str) -> 'AlreadyEnteredGroupInformation':
+    def load_from_session(group_name: str, item_name: str) -> 'ExistingGroupInfo':
+        if "group_info" in session:
+            existing = session["group_info"]
+            if item_name == existing["current_item"] and group_name == existing["group_name"]:
+                return ExistingGroupInfo.create_from_dict(session["group_info"])
+        return ExistingGroupInfo.create_first_time(group_name, item_name)
+
+    @staticmethod
+    def create_first_time(group_name: str, current_item: str) -> 'ExistingGroupInfo':
         builder = GroupInfoBuilder(group_name, current_item)
         if group_name is None or group_name == "" or group_name == "None":
             return builder.build()
         builder.set_other_items(
-            AlreadyEnteredGroupInformation.get_group_items(group_name, current_item))
+            ExistingGroupInfo.get_group_items(group_name, current_item))
         builder.set_should_show(len(builder.other_items) > 0)
         builder.set_other_item_info(
             {} if len(builder.other_items) == 0
@@ -115,7 +128,7 @@ class AlreadyEnteredGroupInformation:
         return builder.build()
 
     @staticmethod
-    def create_from_dict(d: dict) -> 'AlreadyEnteredGroupInformation':
+    def create_from_dict(d: dict) -> 'ExistingGroupInfo':
         builder = GroupInfoBuilder(d["group_name"], d["current_item"])
         builder.set_should_show(d["should_show"])
         builder.set_other_items(d["other_items"])
@@ -128,7 +141,7 @@ class AlreadyEnteredGroupInformation:
 def get_preexisting_obtaining_methods():
     return ["breaking_checkbox", "trading_checkbox"]
     # if "group_info" in session:
-    #     return AlreadyEnteredGroupInformation.create_from_dict(
+    #     return ExistingGroupInfo.create_from_dict(
     #         session["group_info"]).get_obtaining_methods()
     # return []
 
@@ -150,7 +163,7 @@ def save_to_group(group_name, item_name):
         return
     group_dir = f"{JSON_DIR}/groups"
     group_fn_full = f"{group_dir}/{group_name}.json"
-    if isfile(join(group_dir, group_name)):
+    if isfile(group_fn_full):
         existing_group_items = get_file_contents(group_fn_full)
         if item_name not in existing_group_items["items"]:
             existing_group_items["items"].append(item_name)
