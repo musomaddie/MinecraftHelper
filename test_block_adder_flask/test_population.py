@@ -65,19 +65,15 @@ def test_add_item_get_file_exists(
         mock_join,
         client):
     mock_already_existing_group.should_show = True
-    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
-        response = client.get(f"/add_item/{ITEM_NAME}")
-        assert response.status_code == 200
-        assert len(mock_session) == 1
-        assert "group_info" in mock_session
-        mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
-        assert call.create_first_time(
-            GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
-        mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
-        mock_isfile.assert_called_once()
-        mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
-        mock_add_to_item_list.assert_called_once_with(ITEM_NAME)
-        mock_get_group.assert_called_once_with(ITEM_NAME)
+    response = client.get(f"/add_item/{ITEM_NAME}")
+    assert response.status_code == 200
+    mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
+    assert call.load_from_session(GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
+    mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
+    mock_isfile.assert_called_once()
+    mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_add_to_item_list.assert_called_once_with(ITEM_NAME)
+    mock_get_group.assert_called_once_with(ITEM_NAME)
 
 
 @patch(f"{FILE_LOC}.join")
@@ -89,19 +85,15 @@ def test_add_item_get_file_exists(
 def test_add_item_get_doesnt_already_exist_with_mocks(
         mock_save_to_group, mock_already_existing_group, mock_get_group,
         mock_update_json_file, mock_isfile, mock_join, app, client):
-    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
-        response = client.get(f"/add_item/{ITEM_NAME}")
-        assert response.status_code == 200
-        assert len(mock_session) == 1
-        assert "group_info" in mock_session
-        mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
-        assert call.create_first_time(
-            GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
-        mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
-        mock_isfile.assert_called_once()
-        mock_update_json_file.assert_called_once_with(
-            {"name": ITEM_NAME}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
-        mock_get_group.assert_called_once_with(ITEM_NAME)
+    response = client.get(f"/add_item/{ITEM_NAME}")
+    assert response.status_code == 200
+    mock_save_to_group.assert_called_once_with(GROUP_NAME, ITEM_NAME)
+    assert call.load_from_session(GROUP_NAME, ITEM_NAME) in mock_already_existing_group.mock_calls
+    mock_join.assert_called_once_with("block_adder_flask/item_information", "Test Item.json")
+    mock_isfile.assert_called_once()
+    mock_update_json_file.assert_called_once_with(
+        {"name": ITEM_NAME}, f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+    mock_get_group.assert_called_once_with(ITEM_NAME)
 
 
 @patch(f"{FILE_LOC}.isfile")
@@ -117,26 +109,24 @@ def test_add_item_update_group(
         mock_remove_from_group, mock_save_to_group, mock_already_existing_group, mock_redirect,
         mock_url_for, mock_update_file, mock_get_group_name, mock_get_group, mock_isfile, client):
     mock_isfile.return_value = False
-    with patch(f"{FILE_LOC}.session", dict()) as mock_session:
-        response = client.post(
-            f"/add_item/{ITEM_NAME}",
-            data={"update_group": True, "group_name_replacement": "New Group"})
-        assert response.status_code == 200
-        mock_remove_from_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
-        mock_save_to_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
-        mock_already_existing_group.assert_has_calls(
-            [call.create_first_time(mock_get_group_name.return_value, ITEM_NAME)]
-        )
-        mock_get_group.assert_called_once_with(ITEM_NAME)
-        mock_update_file.assert_has_calls(
-            [call(
+    response = client.post(
+        f"/add_item/{ITEM_NAME}",
+        data={"update_group": True, "group_name_replacement": "New Group"})
+    assert response.status_code == 200
+    mock_remove_from_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
+    mock_save_to_group.assert_has_calls(
+        [call(mock_get_group_name.return_value, ITEM_NAME),
+         call("New Group", ITEM_NAME)])
+    mock_get_group.assert_called_once_with(ITEM_NAME)
+    mock_update_file.assert_has_calls(
+        [call(
+            {"name": "Test Item", "group": "New Group"},
+            f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"),
+            call(
                 {"name": "Test Item", "group": "New Group"},
-                f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"),
-                call(
-                    {"name": "Test Item", "group": "New Group"},
-                    f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
-            ])
-        mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
+                f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        ])
+    mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
 
 
 # Add test handling case where the use group values button is clicked -> here I should assert the
@@ -178,7 +168,7 @@ def test_add_item_all_methods_selected(
         mock_get_group.return_value, {"name": ITEM_NAME})
     mock_save_to_group.assert_called_once_with(mock_get_group_name.return_value, ITEM_NAME)
     mock_already_entered_info.assert_has_calls(
-        [call.create_first_time(mock_get_group_name.return_value, ITEM_NAME)]
+        [call.load_from_session(mock_get_group_name.return_value, ITEM_NAME)]
     )
     mock_move_next_page.assert_called_once_with(ITEM_NAME)
 

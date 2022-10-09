@@ -96,7 +96,7 @@ class ExistingGroupInfo:
             key_list = list(self.other_item_info.keys())
             key_list.remove("name")
             key_list.remove("group")
-            return {OBTAINMENT_METHODS_TITLE_TO_IDS[key] for key in key_list}
+            return [OBTAINMENT_METHODS_TITLE_TO_IDS[key] for key in key_list]
         return []
 
     def update_group_in_session(self):
