@@ -108,6 +108,14 @@ def test_get_obtaining_methods(existing_group_info, should_show, use_group_items
     assert existing_group_info.get_obtaining_methods() == expected
 
 
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
+def test_use_values_button_clicked(mock_update_session, existing_group_info):
+    assert not existing_group_info.use_group_items
+    existing_group_info.use_values_button_clicked()
+    assert existing_group_info.use_group_items
+    assert mock_update_session.called
+
+
 @patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}.update_json_file")
 def test_remove_from_group(mock_update_json_file, mock_get_file_contents):

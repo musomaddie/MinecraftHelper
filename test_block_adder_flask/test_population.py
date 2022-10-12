@@ -129,8 +129,26 @@ def test_add_item_update_group(
     mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
 
 
-# Add test handling case where the use group values button is clicked -> here I should assert the
-# full values on the mock inside the getter as well (if approriate).
+@patch(f"{FILE_LOC}.join")
+@patch(f"{FILE_LOC}.isfile", return_value=False)
+@patch(f"{FILE_LOC}.update_json_file")
+@patch(f"{FILE_LOC}.get_updated_group_name")
+@patch(f"{FILE_LOC}.get_group")
+@patch(f"{FILE_LOC}.save_to_group")
+@patch(f"{FILE_LOC}.ExistingGroupInfo")
+@patch(f"{FILE_LOC}.url_for")
+@patch(f"{FILE_LOC}.redirect")
+def test_add_item_use_group_values(
+        mock_redirect, mock_url_for, mock_existing_group_info, mock_save_to_group, mock_get_group,
+        mock_get_updated_group_name, mock_update_json_file,
+        mock_isfile, mock_join, client):
+    response = client.post(
+        f"/add_item/{ITEM_NAME}", data={"load_from_existing_group": ""}
+    )
+    assert response.status_code == 200
+    assert call.load_from_session().use_values_button_clicked() in \
+           mock_existing_group_info.mock_calls
+    mock_url_for.assert_called_once_with("add.item", item_name=ITEM_NAME)
 
 
 @patch(f"{FILE_LOC}.join")

@@ -139,15 +139,6 @@ class ExistingGroupInfo:
         return builder.build()
 
 
-@bp.route("/obtaining", methods=["GET"])
-def get_preexisting_obtaining_methods():
-    return ["breaking_checkbox", "trading_checkbox"]
-    # if "group_info" in session:
-    #     return ExistingGroupInfo.create_from_dict(
-    #         session["group_info"]).get_obtaining_methods()
-    # return []
-
-
 def remove_from_group(group_name, item_name):
     if group_name == "" or group_name is None:
         return
