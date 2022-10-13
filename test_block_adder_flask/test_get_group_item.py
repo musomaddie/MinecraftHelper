@@ -23,7 +23,8 @@ GROUP_MOCK_JSON_CONTENTS = {
 }
 
 
-def test_group_init_builder():
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
+def test_group_init_builder(mock_update_session):
     builder = GroupInfoBuilder(GROUP_NAME, ITEM_NAME)
     assert builder.group_name == GROUP_NAME
     assert builder.current_item == ITEM_NAME
@@ -44,15 +45,19 @@ def test_group_init_builder():
     assert created_group.other_items == [OTHER_ITEM_NAME]
     assert created_group.should_show
     assert created_group.other_item_info == {"name": OTHER_ITEM_NAME}
+    assert mock_update_session.called
 
 
 @pytest.fixture
-def existing_group_info():
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
+def existing_group_info(client):
     return ExistingGroupInfo(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False
+    )
 
 
 @pytest.fixture
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
 def existing_group_info_hidden():
     return ExistingGroupInfo(GROUP_NAME, ITEM_NAME, [], False, {}, False)
 
@@ -65,7 +70,8 @@ def test_get_group_item(mock_get_file_contents, existing_group_info):
 
 
 @patch(f"{FILE_LOC}.get_file_contents", return_value=GROUP_MOCK_JSON_CONTENTS)
-def test_create_first_time(mock_get_file_contents):
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
+def test_create_first_time(mock_update_session, mock_get_file_contents):
     result = ExistingGroupInfo.create_first_time(GROUP_NAME, ITEM_NAME)
     mock_get_file_contents.assert_has_calls(
         [call(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json"),
@@ -89,17 +95,25 @@ def test_create_from_dict(mock_existing_group_info):
         GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
 
 
-def test_get_obtaining_methods(existing_group_info):
-    result = existing_group_info.get_obtaining_methods()
-    assert type(result) == list
-    assert len(result) == 2
-    assert "breaking" in result
-    assert "crafting" in result
+@pytest.mark.parametrize(
+    ("should_show", "use_group_items", "expected"),
+    [(False, False, []),
+     (False, True, []),
+     (True, False, []),
+     (True, True, ["breaking_checkbox", "crafting_checkbox"])]
+)
+def test_get_obtaining_methods(existing_group_info, should_show, use_group_items, expected):
+    existing_group_info.should_show = should_show
+    existing_group_info.use_group_items = use_group_items
+    assert existing_group_info.get_obtaining_methods() == expected
 
 
-def test_get_obtaining_methods_not_should_show(existing_group_info_hidden):
-    result = existing_group_info_hidden.get_obtaining_methods()
-    assert len(result) == 0
+@patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
+def test_use_values_button_clicked(mock_update_session, existing_group_info):
+    assert not existing_group_info.use_group_items
+    existing_group_info.use_values_button_clicked()
+    assert existing_group_info.use_group_items
+    assert mock_update_session.called
 
 
 @patch(f"{FILE_LOC}.get_file_contents")

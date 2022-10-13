@@ -1,1 +1,7 @@
-{"group name": "Wooden Door", "items": ["Acacia Door"]}
+{
+  "group name": "Wooden Door",
+  "items": [
+    "Acacia Door",
+    "Birch Door"
+  ]
+}
