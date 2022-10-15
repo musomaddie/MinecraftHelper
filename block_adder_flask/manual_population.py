@@ -55,7 +55,9 @@ def continue_work(item_name, repeat_current, current_method_name):
 
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
+    # TODO: add method to select contents of default box.
     if request.method == "GET":
+        # TODO: consider including json in the url.
         return render_template("add_breaking.html", item_name=item_name)
     append_json_file(
         "breaking",

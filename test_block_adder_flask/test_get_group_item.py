@@ -11,10 +11,16 @@ OTHER_ITEM_NAME = "Test Other Item"
 GROUP_NAME = "Test Group"
 EXPECTED_JSON_DIR = "block_adder_flask/item_information"
 FILE_LOC = "block_adder_flask.get_group_info"
+# This will contain the max amount of information for each section so that there is less set up
+# to do in each test.
 MOCK_ITEM_CONTENTS = {
     "name": ITEM_NAME,
     "group": GROUP_NAME,
-    "breaking": {"sub key 1": "data", "sub key 2": ""},
+    "breaking":
+        {"requires tool": True,
+         "required tool": "pickaxe",
+         "requires silk": True,
+         "fastest tool": "pickaxe"},
     "crafting": {"more data"}
 }
 GROUP_MOCK_JSON_CONTENTS = {
@@ -27,7 +33,7 @@ GROUP_MOCK_JSON_CONTENTS = {
 @patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
 def existing_group_info(client):
     return ExistingGroupInfo(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, True
     )
 
 
@@ -63,11 +69,84 @@ def test_create_from_dict(mock_existing_group_info):
         GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, False)
 
 
+####################################################################################################
+#                                     GET_BREAKING_INFO                                            #
+####################################################################################################
+
+def test_get_breaking_info(existing_group_info):
+    assert existing_group_info.get_breaking_info() == {
+        "default_checked_ids": ["requires_tool_any", "requires_silk", "fastest_yes"],
+        "select_default": {"fastest_tool": "pickaxe", "spec_tool_select": "pickaxe"}
+    }
+
+
+@pytest.mark.parametrize(
+    ("should_show", "use_group_items", "other_item_info"),
+    [(False, False, {}),
+     (False, True, {}),
+     (True, False, {}),
+     (True, True, {})]
+)
+def test_get_breaking_info_empty_list(
+        should_show, use_group_items, other_item_info, existing_group_info):
+    existing_group_info.other_item_info = other_item_info
+    existing_group_info.should_show = should_show
+    existing_group_info.use_group_items = use_group_items
+    assert existing_group_info.get_breaking_info() == []
+
+
+def test_get_breaking_info_fastest_tool(existing_group_info):
+    existing_group_info.other_item_info["breaking"]["fastest tool"] = "My Fastest Tool"
+    result = existing_group_info.get_breaking_info()
+    assert result["select_default"]["fastest_tool"] == "My Fastest Tool"
+    assert "fastest_yes" in result["default_checked_ids"]
+
+
+def test_get_breaking_info_fastest_tool_missing(existing_group_info):
+    existing_group_info.other_item_info["breaking"] = {"requires tool": True, "requires silk": True}
+    result = existing_group_info.get_breaking_info()
+    assert len(result["default_checked_ids"]) == 2
+    assert len(result["select_default"]) == 0
+
+
+def test_get_breaking_info_required_tool(existing_group_info):
+    existing_group_info.other_item_info["breaking"]["required tool"] = "MY TOOL"
+    assert "MY TOOL" in existing_group_info.get_breaking_info()["select_default"][
+        "spec_tool_select"]
+
+
+def test_get_breaking_info_required_tool_missing(existing_group_info):
+    existing_group_info.other_item_info["breaking"] = {"requires tool": True, "requires silk": True}
+    assert len(existing_group_info.get_breaking_info()["select_default"]) == 0
+
+
+@pytest.mark.parametrize(
+    ("other_silk_value", "expected"),
+    [(True, "requires_silk"),
+     (False, "requires_silk_no")]
+)
+def test_get_breaking_info_silk_value(other_silk_value, expected, existing_group_info):
+    existing_group_info.other_item_info["breaking"]["requires silk"] = other_silk_value
+    assert expected in existing_group_info.get_breaking_info()["default_checked_ids"]
+
+
+@pytest.mark.parametrize(
+    ("other_tool_value", "expected"),
+    [(True, "requires_tool_any"),
+     (False, "requires_tool_no")]
+)
+def test_get_breaking_info_tool_value(other_tool_value, expected, existing_group_info):
+    existing_group_info.other_item_info["breaking"]["requires tool"] = other_tool_value
+    assert expected in existing_group_info.get_breaking_info()["default_checked_ids"]
+
+
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
 def test_get_group_item(mock_get_file_contents, existing_group_info):
     assert ExistingGroupInfo.get_group_items(GROUP_NAME, ITEM_NAME) == [
         OTHER_ITEM_NAME]
-    mock_get_file_contents.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
+    mock_get_file_contents.assert_called_once_with(
+        f"{EXPECTED_JSON_DIR}/groups/"
+        f"{GROUP_NAME}.json")
 
 
 @pytest.mark.parametrize(
@@ -119,6 +198,10 @@ def test_group_init_builder(mock_update_session):
     assert mock_update_session.called
 
 
+####################################################################################################
+#                                   REMOVE_FROM_GROUP                                              #
+####################################################################################################
+
 @patch(f"{FILE_LOC}.get_file_contents")
 @patch(f"{FILE_LOC}.update_json_file")
 def test_remove_from_group(mock_update_json_file, mock_get_file_contents):
@@ -149,6 +232,10 @@ def test_remove_from_group_only_item(mock_remove, mock_get_file_contents):
     remove_from_group(GROUP_NAME, ITEM_NAME)
     mock_remove.assert_called_once_with(f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
+
+####################################################################################################
+#                                   SAVE_TO _GROUP                                                 #
+####################################################################################################
 
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.get_file_contents")
@@ -203,6 +290,7 @@ def test_save_to_group_none_group_name(mock_update_json_file, mock_isfile):
 
 @patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
 def test_use_values_button_clicked(mock_update_session, existing_group_info):
+    existing_group_info.use_group_items = False
     assert not existing_group_info.use_group_items
     existing_group_info.use_values_button_clicked()
     assert existing_group_info.use_group_items

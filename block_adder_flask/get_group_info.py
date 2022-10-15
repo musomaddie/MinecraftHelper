@@ -99,6 +99,34 @@ class ExistingGroupInfo:
             return [OBTAINMENT_METHODS_TITLE_TO_IDS[key] for key in key_list]
         return []
 
+    def get_breaking_info(self):
+        # TODO: handle case where there is multiple breaking options!! -> i.e. the dictionary is
+        #  a list
+        if self.should_show and self.use_group_items:
+            if "breaking" not in self.other_item_info:
+                return []
+
+            og_item_info = self.other_item_info["breaking"]
+            default_checked = [
+                "requires_tool_any" if og_item_info["requires tool"] else "requires_tool_no",
+                "requires_silk" if og_item_info["requires silk"] else "requires_silk_no"
+            ]
+            select_default = {}
+
+            if "required tool" in og_item_info:
+                select_default["spec_tool_select"] = og_item_info["required tool"]
+            if "fastest tool" in og_item_info:
+                default_checked.append("fastest_yes")
+                select_default["fastest_tool"] = og_item_info["fastest tool"]
+
+            # TODO: return a value indicating what button should be clicked.
+            return {
+                "default_checked_ids": default_checked,
+                "select_default": select_default
+            }
+
+        return []
+
     def update_group_in_session(self):
         session["group_info"] = self.__dict__
 
