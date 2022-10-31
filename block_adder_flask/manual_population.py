@@ -33,6 +33,18 @@ def _add_to_item_list(item_name, filename=JSON_ITEM_LIST):
     update_json_file(existing_json, filename)
 
 
+def _check_update_group_toggle(
+        request_form: dict, item_name: str, group_info: ExistingGroupInfo) -> bool:
+    """
+    Checks if the toggle for use group has been submitted as part of the form. Returns true if so,
+    else false.
+    """
+    if "existing_group_values" in request.form:
+        group_info.use_values_button_clicked("group_checkbox" not in request.form)
+        return True
+    return False
+
+
 def select_next_item(cur):
     cur.execute(f"SELECT * FROM {ITEMS_GROUPS_TN}")
     item_name_list = [block["item_name"] for block in cur.fetchall()]
@@ -229,7 +241,8 @@ def item(item_name):
             # TODO: make sure that it returns a list instead of null
             "add_block_start.html",
             group_name=group_name,
-            show_group=True,
+            show_group=group_info.should_show,
+            toggle_selected=group_info.use_group_items,
             item_name=item_name,
             already_checked=group_info.get_obtaining_methods(),
             block_url=item_url)
@@ -243,9 +256,8 @@ def item(item_name):
         ExistingGroupInfo.load_from_session(new_group_name, item_name).update_group_in_session()
         return redirect(url_for("add.item", item_name=item_name))
 
-    # if "load_from_existing_group" in request.form:
-    #     group_info.use_values_button_clicked()
-    #     return redirect(url_for("add.item", item_name=item_name))
+    if _check_update_group_toggle(request.form, item_name, group_info):
+        return redirect(url_for("add.item", item_name=item_name))
 
     methods = []
     if "breaking" in request.form.keys():
