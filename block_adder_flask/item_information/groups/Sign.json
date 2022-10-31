@@ -1,1 +1,7 @@
-{"group name": "Sign", "items": ["Acacia Sign"]}
+{
+  "group name": "Sign",
+  "items": [
+    "Acacia Sign",
+    "Birch Sign"
+  ]
+}

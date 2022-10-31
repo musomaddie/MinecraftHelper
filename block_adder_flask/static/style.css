@@ -52,3 +52,111 @@ td {
     border: #7542e3 1px dot-dash;
     /*Why isn't the border showing?*/
 }
+
+.existing_group_toggle {
+    border: 2px solid #7542e3;
+    border-radius: 25px;
+    padding: 10px;
+}
+
+#toggle-group-overall {
+    display: table;
+    width: 500px;
+    counter-reset: button-cover;
+}
+
+.toggle-group-button-cover {
+    display: table-cell;
+    position: relative;
+    width: 200px;
+    height: 140px;
+    box-sizing: border-box;
+}
+
+.group-button-cover {
+    height: 100px;
+    margin: 20px;
+    background-color: #B1ADF7;
+    box-shadow: 0 10px 20px -8px #d0ceeb;
+    border-radius: 4px;
+}
+
+.group-button-cover,
+.knobs,
+.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.group-button {
+    position: relative;
+    top: 50%;
+    width: 94px;
+    height: 56px;
+    margin: -20px auto 0 auto;
+    overflow: hidden;
+}
+
+.group-button.r,
+.group-button.r .layer {
+    border-radius: 100px;
+}
+
+.group-checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs {
+    z-index: 2;
+}
+
+.layer {
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+#group-button .knobs:before {
+    content: "Use Group";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 40px;
+    height: 30px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    background-color: #03a9f4;
+    border-radius: 50%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+#group-button .group-checkbox:checked + .knobs:before {
+    content: "Don't Use Group";
+    left: 42px;
+    background-color: #f44336;
+}
+
+#group-button .group-checkbox:checked ~ .layer {
+    background-color: #fcebeb;
+}
+
+#group-button .knobs,
+#group-button .knobs:before,
+#group-button .layer {
+    transition: 0.3s ease all;
+}

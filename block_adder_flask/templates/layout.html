@@ -27,16 +27,75 @@
 <h1>Adding Minecraft Block Helper </h1>
 
 {% if show_group %}
-Load default values from existing group: {{group_name}}
-<form method="post">
-    <input class="group submit_button" type="submit"
-           id="existing_group_sub"
-           name="load_from_existing_group"
-           value="Load values from existing group"/>
-</form>
+<div class="existing_group_toggle" id="toggle-group-overall">
+    Load default values from existing group: {{group_name}}
+    <form method="post">
+        <div class="toggle-group-button-cover">
+            <div class="group-button-cover">
+                <div class="group-button r" id="group-button">
+                    <input type="checkbox" class="group-checkbox" name="group_checkbox"/>
+                    <div class="knobs"></div>
+                    <div class="layer"></div>
+                </div>
+            </div>
+        </div>
+
+        <input class="submit_button" type="submit"
+               id="existing_group_sub"
+               name="existing_group_values"
+               value="Toggle Using Existing Group Values"
+        />
+
+    </form>
+</div>
 <br>
 {% endif %}
 
 {% block body %}{% endblock %}
+<script>
+    function toggleClicked(element) {
+        // This is oddly buggy
+        const myClass = element.classList.contains("dont") ? "dont" : "use";
+        const otherClass = element.classList.contains("dont") ? "use" : "dont";
+        const isToggled = element.classList.contains("toggle_selected")
+
+        for (let myItems of document.getElementsByClassName(myClass)) {
+            if (isToggled) {
+            }
+        }
+
+        // isToggled -> cry
+
+
+        // const all_visible = document.getElementsByClassName("toggle_selected")
+        // for (let item of all_visible) {
+        //     item.classList.remove("toggle_selected");
+        //     item.classList.remove("not_toggle_selected");
+        // }
+        //
+        // for (let other_item of document.getElementsByClassName(otherClass)) {
+        //     if (isToggled) {
+        //         other_item.classList.add("not_toggle_selected");
+        //     } else {
+        //         other_item.classList.add("toggle_selected");
+        //     }
+        // }
+        //
+
+        // if (element.classList.contains("dont")) {
+        //     for (let item of document.getElementsByClassName("dont")) {
+        //         item.classList.remove("not_toggle_selected");
+        //         item.classList.add("toggle_selected");
+        //     }
+        // } else {
+        //     for (let item of document.getElementsByClassName("use")) {
+        //         item.classList.remove("not_toggle_selected");
+        //         item.classList.add("toggle_selected");
+        //     }
+        // }
+        //Step 1: remove visible from all
+        // Step 2: get what type of class it is and apply it to all other elements in the same use/ dont class
+    }
+</script>
 </body>
 </html>

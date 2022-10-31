@@ -226,6 +226,7 @@ def item(item_name):
     item_url = f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}"
     if request.method == "GET":
         return render_template(
+            # TODO: make sure that it returns a list instead of null
             "add_block_start.html",
             group_name=group_name,
             show_group=True,
@@ -242,9 +243,9 @@ def item(item_name):
         ExistingGroupInfo.load_from_session(new_group_name, item_name).update_group_in_session()
         return redirect(url_for("add.item", item_name=item_name))
 
-    if "load_from_existing_group" in request.form:
-        group_info.use_values_button_clicked()
-        return redirect(url_for("add.item", item_name=item_name))
+    # if "load_from_existing_group" in request.form:
+    #     group_info.use_values_button_clicked()
+    #     return redirect(url_for("add.item", item_name=item_name))
 
     methods = []
     if "breaking" in request.form.keys():
