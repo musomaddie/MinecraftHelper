@@ -69,12 +69,12 @@ td {
     display: table-cell;
     position: relative;
     width: 200px;
-    height: 140px;
+    height: 160px;
     box-sizing: border-box;
 }
 
 .group-button-cover {
-    height: 100px;
+    height: 120px;
     margin: 20px;
     background-color: #B1ADF7;
     box-shadow: 0 10px 20px -8px #d0ceeb;
@@ -93,7 +93,7 @@ td {
 
 .group-button {
     position: relative;
-    top: 50%;
+    top: 45%;
     width: 94px;
     height: 56px;
     margin: -20px auto 0 auto;
