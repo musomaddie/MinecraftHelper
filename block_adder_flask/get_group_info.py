@@ -86,6 +86,7 @@ class ExistingGroupInfo:
         self.update_group_in_session()
 
     def use_values_button_clicked(self):
+        # TODO: turn this into a toggle
         if not self.should_show:
             return
         self.use_group_items = True
@@ -129,6 +130,7 @@ class ExistingGroupInfo:
 
     def update_group_in_session(self):
         session["group_info"] = self.__dict__
+        session["group_name"] = self.group_name
 
     @staticmethod
     def get_group_items(group_name, current_item):
