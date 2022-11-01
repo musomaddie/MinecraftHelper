@@ -85,11 +85,10 @@ class ExistingGroupInfo:
         self.use_group_items = use_group_items
         self.update_group_in_session()
 
-    def use_values_button_clicked(self):
-        # TODO: turn this into a toggle
+    def use_values_button_clicked(self, should_use_group: bool):
         if not self.should_show:
             return
-        self.use_group_items = True
+        self.use_group_items = should_use_group
         self.update_group_in_session()
 
     def get_obtaining_methods(self):

@@ -106,6 +106,9 @@
         $(document).ready(function () {
             const quote_literal = /&#39;/g;
             const replace_second = /{|}/g;
+            if ('{{already_checked}}' == '[]') {
+                return;
+            }
             '{{already_checked}}'.split(",").forEach(
                 // I can do the whole thing in here as long as the regex works right.
                 element => {

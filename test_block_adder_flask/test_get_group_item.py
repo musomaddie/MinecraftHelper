@@ -292,6 +292,6 @@ def test_save_to_group_none_group_name(mock_update_json_file, mock_isfile):
 def test_use_values_button_clicked(mock_update_session, existing_group_info):
     existing_group_info.use_group_items = False
     assert not existing_group_info.use_group_items
-    existing_group_info.use_values_button_clicked()
+    existing_group_info.use_values_button_clicked(True)
     assert existing_group_info.use_group_items
     assert mock_update_session.called

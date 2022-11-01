@@ -27,5 +27,19 @@
         </library>
       </libraries>
     </data-source>
+    <data-source source="LOCAL" name="minecraft_items.db [2]" uuid="28bb1d19-b11d-47e6-af7f-1b4dd0a81dab">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/instance/minecraft_items.db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="block_list.db [2]" uuid="37cfe569-1545-4cf4-a9ff-f72cd220c791">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/block_adder_flask/db/block_list.db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

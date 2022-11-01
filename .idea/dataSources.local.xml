@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="PY-221.5591.52">
+  <component name="dataSourceStorageLocal" created-in="PY-221.6008.17">
     <data-source name="block_list.db" uuid="eaccedae-8b31-4cf9-8d66-e49c9f2720af">
       <database-info product="SQLite" version="3.38.0" jdbc-version="2.1" driver-name="SQLite JDBC" driver-version="3.38.0-SNAPSHOT" dbms="SQLITE" exact-version="3.38.0" exact-driver-version="3.38">
         <identifier-quote-string>&quot;</identifier-quote-string>
@@ -38,6 +38,14 @@
           <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
+    </data-source>
+    <data-source name="minecraft_items.db [2]" uuid="28bb1d19-b11d-47e6-af7f-1b4dd0a81dab">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" exact-version="0" />
+      <schema-mapping />
+    </data-source>
+    <data-source name="block_list.db [2]" uuid="37cfe569-1545-4cf4-a9ff-f72cd220c791">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" exact-version="0" />
+      <schema-mapping />
     </data-source>
   </component>
 </project>

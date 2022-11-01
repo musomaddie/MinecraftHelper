@@ -1,1 +1,7 @@
-{"group name": "Wooden Fence Gate", "items": ["Acacia Fence Gate"]}
+{
+  "group name": "Wooden Fence Gate",
+  "items": [
+    "Acacia Fence Gate",
+    "Birch Fence Gate"
+  ]
+}
