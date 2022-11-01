@@ -1,4 +1,4 @@
-from unittest.mock import ANY, call, patch
+from unittest.mock import ANY, MagicMock, call, patch
 
 import pytest
 from werkzeug.datastructures import ImmutableMultiDict
@@ -264,6 +264,25 @@ def test_breaking_other(mock_continue_work, mock_flash, mock_append_json_file, c
         f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
     mock_flash.assert_called_once()
     mock_continue_work.assert_called_once_with(ITEM_NAME, False, "add.breaking_other")
+
+
+@pytest.mark.parametrize(
+    ("request_form", "expected_return_value", "expect_called"),
+    [({}, False, []),
+     ({"existing_group_values": "is here"}, True, True),
+     ({"existing_group_values": "is here", "group_checkbox": "on"}, True, False)]
+)
+def test_check_update_group_item(request_form, expected_return_value, expect_called):
+    mock_group_info = MagicMock()
+    assert pop._check_update_group_toggle(
+        request_form, ITEM_NAME, mock_group_info) == expected_return_value
+    if expected_return_value:
+        mock_group_info.assert_has_calls(
+            [
+                call.use_values_button_clicked(expect_called)
+            ])
+    else:
+        mock_group_info.assert_not_called()
 
 
 @pytest.mark.parametrize("should_add_another", [True, False])
