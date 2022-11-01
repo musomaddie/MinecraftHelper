@@ -39,8 +39,8 @@ def _check_update_group_toggle(
     Checks if the toggle for use group has been submitted as part of the form. Returns true if so,
     else false.
     """
-    if "existing_group_values" in request.form:
-        group_info.use_values_button_clicked("group_checkbox" not in request.form)
+    if "existing_group_values" in request_form:
+        group_info.use_values_button_clicked("group_checkbox" not in request_form)
         return True
     return False
 
@@ -238,7 +238,6 @@ def item(item_name):
     item_url = f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}"
     if request.method == "GET":
         return render_template(
-            # TODO: make sure that it returns a list instead of null
             "add_block_start.html",
             group_name=group_name,
             show_group=group_info.should_show,
