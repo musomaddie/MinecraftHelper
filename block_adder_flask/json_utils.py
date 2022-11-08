@@ -8,6 +8,8 @@ def append_json_file(future_key: str, key_value_condition: list, filename: str):
     current_content = get_file_contents(filename)
     json_dict = {}
     for option in key_value_condition:
+        # This should be added to the json file if there are only two values (key - value pair)
+        # or if the third (optional) value is true.
         if len(option) == 2 or option[2]:
             json_dict[option[0]] = option[1]
     if future_key in current_content:
