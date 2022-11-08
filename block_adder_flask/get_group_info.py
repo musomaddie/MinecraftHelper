@@ -100,31 +100,44 @@ class ExistingGroupInfo:
         return []
 
     def get_breaking_info(self):
-        # TODO: handle case where there is multiple breaking options!! -> i.e. the dictionary is
-        #  a list
         if self.should_show and self.use_group_items:
             if "breaking" not in self.other_item_info:
                 return []
-
             og_item_info = self.other_item_info["breaking"]
-            default_checked = [
-                "requires_tool_any" if og_item_info["requires tool"] else "requires_tool_no",
-                "requires_silk" if og_item_info["requires silk"] else "requires_silk_no"
-            ]
-            select_default = {}
 
-            if "required tool" in og_item_info:
-                select_default["spec_tool_select"] = og_item_info["required tool"]
-            if "fastest tool" in og_item_info:
-                default_checked.append("fastest_yes")
-                select_default["fastest_tool"] = og_item_info["fastest tool"]
+            def calculate_from_one_dict(breaking_info, btn_info):
+                select_default = {}
+                default_checked = [
+                    "requires_tool_any" if breaking_info["requires tool"] else "requires_tool_no",
+                    "requires_silk" if breaking_info["requires silk"] else "requires_silk_no"
+                ]
+                if "required tool" in breaking_info:
+                    select_default["spec_tool_select"] = breaking_info["required tool"]
+                if "fastest tool" in breaking_info:
+                    default_checked.append("fastest_yes")
+                    select_default["fastest_tool"] = breaking_info["fastest tool"]
+                return {"default_checked_ids": default_checked,
+                        "select_default": select_default,
+                        "button_to_click": btn_info}
 
-            # TODO: return a value indicating what button should be clicked.
-            return {
-                "default_checked_ids": default_checked,
-                "select_default": select_default
-            }
-
+            if type(og_item_info) == list:
+                current_data = get_file_contents("{JSON_DIR}/{self.current_item}.json")
+                if "breaking" in current_data:
+                    cd_is_still_dict = type(current_data["breaking"]) == dict
+                    return calculate_from_one_dict(
+                        og_item_info[
+                            1 if cd_is_still_dict else len(current_data["breaking"])],
+                        "next_button"
+                        if (cd_is_still_dict and len(og_item_info) == 2)
+                           or (len(current_data["breaking"]) + 1 == len(og_item_info))
+                        else "another_button")
+                else:
+                    return calculate_from_one_dict(og_item_info[0], "another_button")
+                # This is a list so I know that I need to check if I've already processed any
+                # breaking info. Then get processed + 1 out of the existing info and use it.
+                print("ghghghg")
+            else:
+                return calculate_from_one_dict(og_item_info, "next_button")
         return []
 
     def update_group_in_session(self):

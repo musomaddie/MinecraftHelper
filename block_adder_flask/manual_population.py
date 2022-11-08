@@ -67,15 +67,13 @@ def continue_work(item_name, repeat_current, current_method_name):
 
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
-    group_info = ExistingGroupInfo.load_from_session(session["group_name", item_name])
+    group_info = ExistingGroupInfo.load_from_session(session["group_name"], item_name)
     if request.method == "GET":
-        # TODO: consider including json in the url.
         return render_template(
             "add_breaking.html", item_name=item_name,
-            should_show=group_info.should_show,
+            show_group=True,
             existing_info=group_info.get_breaking_info())
-    if "load_from_existing_group" in request.form:
-        group_info.use_values_button_clicked()
+    if _check_update_group_toggle(request.form, item_name, group_info):
         return redirect(url_for("breaking", item_name=item_name))
     append_json_file(
         "breaking",
@@ -227,9 +225,6 @@ def stonecutter(item_name):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
-    # TODO: consider turning use group value button as a toggle.
-    # TODO: if an item group already exists add shortcuts to help load it.
-    # TODO: improve this so that the session is always updated when required.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
