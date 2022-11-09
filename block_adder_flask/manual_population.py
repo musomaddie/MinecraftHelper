@@ -72,6 +72,7 @@ def breaking(item_name):
         return render_template(
             "add_breaking.html", item_name=item_name,
             show_group=True,
+            toggle_selected=True,
             existing_info=group_info.get_breaking_info())
     if _check_update_group_toggle(request.form, item_name, group_info):
         return redirect(url_for("breaking", item_name=item_name))

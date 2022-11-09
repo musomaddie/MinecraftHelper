@@ -133,9 +133,6 @@ class ExistingGroupInfo:
                         else "another_button")
                 else:
                     return calculate_from_one_dict(og_item_info[0], "another_button")
-                # This is a list so I know that I need to check if I've already processed any
-                # breaking info. Then get processed + 1 out of the existing info and use it.
-                print("ghghghg")
             else:
                 return calculate_from_one_dict(og_item_info, "next_button")
         return []
