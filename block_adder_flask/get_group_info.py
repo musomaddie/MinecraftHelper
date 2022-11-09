@@ -137,6 +137,22 @@ class ExistingGroupInfo:
                 return calculate_from_one_dict(og_item_info, "next_button")
         return []
 
+    def get_breaking_other_info(self):
+        if self.should_show and self.use_group_items:
+            if "breaking other" not in self.other_item_info:
+                return []
+            og_item_info = self.other_item_info["breaking other"]
+            # Simple case everything exists as expected.
+            values = {
+                "other_block": og_item_info["other block name"],
+                "should_fortune_checked": og_item_info["helped with fortune"]
+            }
+            lhood_key = "likelihood of dropping"
+            if lhood_key in og_item_info:
+                values["percent_lhood_dropping"] = og_item_info[lhood_key]
+            return values
+        return []
+
     def update_group_in_session(self):
         session["group_info"] = self.__dict__
         session["group_name"] = self.group_name
