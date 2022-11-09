@@ -226,26 +226,28 @@ def test_add_item_all_methods_selected(
 def test_breaking(
         mock_continue_work, mock_flash, mock_append_json_file,
         tool_form_value, specific_tool, silk_form_value, fastest_tool, move_another, client):
-    form_data = {"requires_tool": tool_form_value,
-                 "specific_tool": specific_tool,
-                 "requires_silk": silk_form_value,
-                 "fastest_specific_tool": fastest_tool}
-    if move_another:
-        form_data["another"] = ""
-    if fastest_tool != "":
-        form_data["fastest_tool"] = ""
-    response = client.post(f"/add_breaking/{ITEM_NAME}", data=form_data)
-    assert response.status_code == 200
-    mock_append_json_file.assert_called_once_with(
-        "breaking", [
-            ("requires tool", tool_form_value != "tool_no"),
-            ("required tool", specific_tool, specific_tool != ""),
-            ("requires silk", silk_form_value != "silk_no"),
-            ("fastest tool", fastest_tool, fastest_tool != "")],
-        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"
-    )
-    mock_flash.assert_called_once()
-    mock_continue_work.assert_called_once_with(ITEM_NAME, move_another, "add.breaking")
+    with patch(f"{FILE_LOC}.session", dict()) as session:
+        session["group_name"] = GROUP_NAME
+        form_data = {"requires_tool": tool_form_value,
+                     "specific_tool": specific_tool,
+                     "requires_silk": silk_form_value,
+                     "fastest_specific_tool": fastest_tool}
+        if move_another:
+            form_data["another"] = ""
+        if fastest_tool != "":
+            form_data["fastest_tool"] = ""
+        response = client.post(f"/add_breaking/{ITEM_NAME}", data=form_data)
+        assert response.status_code == 200
+        mock_append_json_file.assert_called_once_with(
+            "breaking", [
+                ("requires tool", tool_form_value != "tool_no"),
+                ("required tool", specific_tool, specific_tool != ""),
+                ("requires silk", silk_form_value != "silk_no"),
+                ("fastest tool", fastest_tool, fastest_tool != "")],
+            f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json"
+        )
+        mock_flash.assert_called_once()
+        mock_continue_work.assert_called_once_with(ITEM_NAME, move_another, "add.breaking")
 
 
 @patch(f"{FILE_LOC}.append_json_file")
