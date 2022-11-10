@@ -96,7 +96,8 @@ def breaking_other(item_name):
         return render_template(
             "add_breaking_other.html", item_name=item_name,
             show_group=group_info.should_show,
-            toggle_selected=group_info.use_group_items
+            toggle_selected=group_info.use_group_items,
+            existing_info=group_info.get_breaking_other_info(),
         )
     if _check_update_group_toggle(request.form, item_name, group_info):
         return redirect(url_for("breaking_other", item_name=item_name))

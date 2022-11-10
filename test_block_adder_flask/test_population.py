@@ -254,18 +254,20 @@ def test_breaking(
 @patch(f"{FILE_LOC}.flash")
 @patch(f"{FILE_LOC}.continue_work")
 def test_breaking_other(mock_continue_work, mock_flash, mock_append_json_file, client):
-    response = client.post(
-        f"/add_breaking_other/{ITEM_NAME}",
-        data={"other_block": "Other Block", "percent_dropping": 10.12, "fortune": ""})
-    assert response.status_code == 200
-    mock_append_json_file.assert_called_once_with(
-        "breaking other", [
-            ("other block name", "Other Block"),
-            ("likelihood of dropping", 10.12, True),
-            ("helped with fortune", True)],
-        f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
-    mock_flash.assert_called_once()
-    mock_continue_work.assert_called_once_with(ITEM_NAME, False, "add.breaking_other")
+    with patch(f"{FILE_LOC}.session", dict()) as session:
+        session["group_name"] = GROUP_NAME
+        response = client.post(
+            f"/add_breaking_other/{ITEM_NAME}",
+            data={"other_block": "Other Block", "percent_dropping": 10.12, "fortune": ""})
+        assert response.status_code == 200
+        mock_append_json_file.assert_called_once_with(
+            "breaking other", [
+                ("other block name", "Other Block"),
+                ("likelihood of dropping", 10.12, True),
+                ("helped with fortune", True)],
+            f"{EXPECTED_JSON_DIR}/{ITEM_NAME}.json")
+        mock_flash.assert_called_once()
+        mock_continue_work.assert_called_once_with(ITEM_NAME, False, "add.breaking_other")
 
 
 @pytest.mark.parametrize(
