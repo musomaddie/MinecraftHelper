@@ -1,5 +1,5 @@
 import copy
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -27,7 +27,23 @@ MOCK_ITEM_CONTENTS = {
         "likelihood of dropping": 32.5,
         "helped with fortune": True
     },
-    "crafting": {"more data"}
+    "crafting": {
+        "crafting slots": [
+            OTHER_ITEM_NAME,
+            "",
+            "",
+            OTHER_ITEM_NAME,
+            OTHER_ITEM_NAME,
+            "",
+            OTHER_ITEM_NAME,
+            OTHER_ITEM_NAME,
+            OTHER_ITEM_NAME
+        ],
+        "num created": 4,
+        "works with four by four": True,  # Set to true even though it shouldn't be in this case
+        # to make testing easier.
+        "requires exact positioning": True
+    }
 }
 GROUP_MOCK_JSON_CONTENTS = {
     "group name": GROUP_NAME,
@@ -78,6 +94,46 @@ def test_create_from_dict(mock_existing_group_info):
 
 
 ####################################################################################################
+#                                _HANDLE_MULTI_VALUE_OBT_METHOD                                    #
+####################################################################################################
+@pytest.mark.parametrize(
+    ("get_file_contents_rv", "other_item_info", "expected_used_values_arguments"),
+    [
+        # 1 of 1
+        ({}, {"this is": "a dict"}, [{"this is": "a dict"}, "next_button"]),
+        # 1 of 2
+        ({},
+         [{"existing dict": 1}, {"existing dict": 2}],
+         [{"existing dict": 1}, "another_button"]),
+        # 2 of 2
+        ({"method key": {"fake dictionary": 1}},
+         [{"existing dict": 1}, {"existing dict": 2}],
+         [{"existing dict": 2}, "next_button"]),
+        # 2 of 3
+        ({"method key": {"fake dictionary": 1}},
+         [{"existing dict": 1}, {"existing dict": 2}, {"existing dict": 3}],
+         [{"existing dict": 2}, "another_button"]),
+        # 3 of 3
+        ({"method key": [{"fake dictionary": 1}, {"fake dictionary": 2}]},
+         [{"existing dict": 1}, {"existing dict": 2}, {"existing dict": 3}],
+         [{"existing dict": 3}, "next_button"])
+    ]
+)
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_handle_multi_value_obt_method(
+        mock_get_file_contents,
+        get_file_contents_rv,
+        other_item_info,
+        expected_used_values_arguments,
+        existing_group_info):
+    mock_get_file_contents.return_value = get_file_contents_rv
+    existing_group_info.other_item_info["method key"] = other_item_info
+    callback_mock = MagicMock()
+    existing_group_info._handle_multi_value_obt_method("method key", callback_mock)
+    callback_mock.assert_called_once_with(*expected_used_values_arguments)
+
+
+####################################################################################################
 #                                     GET_BREAKING_INFO                                            #
 ####################################################################################################
 
@@ -116,51 +172,6 @@ def test_get_breaking_info_fastest_tool_missing(existing_group_info):
     result = existing_group_info.get_breaking_info()
     assert len(result["default_checked_ids"]) == 2
     assert len(result["select_default"]) == 0
-
-
-@pytest.mark.parametrize(
-    ("get_file_contents_rv", "other_item_info", "expected"),
-    [
-        # 1 of 2
-        ({},
-         [{"requires tool": False, "requires silk": False},
-          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"}],
-         {"default_checked_ids": ["requires_tool_no", "requires_silk_no"],
-          "select_default": {}, "button_to_click": "another_button"}),
-        # 2 of 2
-        ({"breaking": {"I dont care what is here": "it just needs to be a dict"}},
-         [{"I dont care whats here": "it just needs to be a dict"},
-          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"}],
-         {"default_checked_ids": ["requires_tool_any", "requires_silk_no"],
-          "select_default": {"spec_tool_select": "pickaxe"}, "button_to_click": "next_button"}),
-        # 2 of 3
-        ({"breaking": {"I don't care whats here": "it just needs to be a dict"}},
-         [{"a placeholder dict": 1},
-          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"},
-          {"a placeholder dict": 2}],
-         {"default_checked_ids": ["requires_tool_any", "requires_silk_no"],
-          "select_default": {"spec_tool_select": "pickaxe"}, "button_to_click": "another_button"}),
-        # 3 of 3
-        ({"breaking": [{"placeholder dict": 1}, {"placeholder dict": 2}]},
-         [{"placeholder dict": 1}, {"a placeholder dict": 2},
-          {"requires tool": True, "required tool": "pickaxe",
-           "requires silk": True, "fastest tool": "pickaxe"}],
-         {"default_checked_ids": ["requires_tool_any", "requires_silk", "fastest_yes"],
-          "select_default": {"fastest_tool": "pickaxe", "spec_tool_select": "pickaxe"},
-          "button_to_click": "next_button"}
-         )
-    ]
-)
-@patch(f"{FILE_LOC}.get_file_contents")
-def test_get_breaking_info_multiple_methods(
-        mock_get_file_contents,
-        get_file_contents_rv,
-        other_item_info,
-        expected,
-        existing_group_info):
-    mock_get_file_contents.return_value = get_file_contents_rv
-    existing_group_info.other_item_info["breaking"] = other_item_info
-    assert existing_group_info.get_breaking_info() == expected
 
 
 def test_get_breaking_info_required_tool(existing_group_info):
@@ -229,6 +240,42 @@ def test_get_breaking_other_info_missing_fortune(existing_group_info):
     assert existing_group_info.get_breaking_other_info() == {
         "other_block": OTHER_ITEM_NAME,
         "should_fortune_checked": True
+    }
+
+
+####################################################################################################
+#                              GET_CRAFTING_INFO                                                   #
+####################################################################################################
+@pytest.mark.parametrize(
+    ("should_show", "use_group_items", "other_item_info"),
+    [(False, False, {}),
+     (False, True, {}),
+     (True, False, {}),
+     (True, True, {})]
+)
+def test_get_crafting_info_empty_list(
+        should_show, use_group_items, other_item_info, existing_group_info):
+    existing_group_info.other_item_info = other_item_info
+    existing_group_info.should_show = should_show
+    existing_group_info.use_group_items = use_group_items
+    assert existing_group_info.get_crafting_info() == []
+
+
+def test_get_crafting_info_full_info(existing_group_info):
+    assert existing_group_info.get_crafting_info() == {
+        "crafting_slots": {
+            "cs1": OTHER_ITEM_NAME,
+            "cs2": "",
+            "cs3": "",
+            "cs4": OTHER_ITEM_NAME,
+            "cs5": OTHER_ITEM_NAME,
+            "cs6": "",
+            "cs7": OTHER_ITEM_NAME,
+            "cs8": OTHER_ITEM_NAME,
+            "cs9": OTHER_ITEM_NAME
+        }, "n_created": 4,
+        "default_selected": ["works_four_checkbox", "exact_pos_checkbox"],
+        "button_to_click": "next_button"
     }
 
 

@@ -91,6 +91,26 @@ class ExistingGroupInfo:
         self.use_group_items = should_use_group
         self.update_group_in_session()
 
+    def _handle_multi_value_obt_method(self, method_key, calculate_used_values):
+        """ Helper method to handle any obtainment methods that allow multiple options.
+        """
+        other_item_info = self.other_item_info[method_key]
+        if type(other_item_info) == list:
+            current_item_info = get_file_contents(f"{JSON_DIR}/{self.current_item}.json")
+            if method_key in current_item_info:
+                is_cur_item_data_dict = type(current_item_info[method_key]) == dict
+                move_to_next_obt_method = (
+                        (is_cur_item_data_dict and len(other_item_info) == 2)
+                        or (len(current_item_info[method_key]) + 1 == len(other_item_info))
+                )
+                return calculate_used_values(
+                    other_item_info[
+                        1 if is_cur_item_data_dict else len(current_item_info[method_key])],
+                    "next_button" if move_to_next_obt_method else "another_button"
+                )
+            return calculate_used_values(other_item_info[0], "another_button")
+        return calculate_used_values(other_item_info, "next_button")
+
     def get_obtaining_methods(self):
         if self.should_show and self.use_group_items:
             key_list = list(self.other_item_info.keys())
@@ -120,21 +140,7 @@ class ExistingGroupInfo:
                         "select_default": select_default,
                         "button_to_click": btn_info}
 
-            if type(og_item_info) == list:
-                current_data = get_file_contents("{JSON_DIR}/{self.current_item}.json")
-                if "breaking" in current_data:
-                    cd_is_still_dict = type(current_data["breaking"]) == dict
-                    return calculate_from_one_dict(
-                        og_item_info[
-                            1 if cd_is_still_dict else len(current_data["breaking"])],
-                        "next_button"
-                        if (cd_is_still_dict and len(og_item_info) == 2)
-                           or (len(current_data["breaking"]) + 1 == len(og_item_info))
-                        else "another_button")
-                else:
-                    return calculate_from_one_dict(og_item_info[0], "another_button")
-            else:
-                return calculate_from_one_dict(og_item_info, "next_button")
+            return self._handle_multi_value_obt_method("breaking", calculate_from_one_dict)
         return []
 
     def get_breaking_other_info(self):
@@ -151,6 +157,28 @@ class ExistingGroupInfo:
             if lhood_key in og_item_info:
                 values["percent_lhood_dropping"] = og_item_info[lhood_key]
             return values
+        return []
+
+    def get_crafting_info(self):
+        if self.should_show and self.use_group_items:
+            if "crafting" not in self.other_item_info:
+                return []
+            og_item_info = self.other_item_info["crafting"]
+
+            def calculate_from_one_dict(crafting_info, btn_info):
+                default_checked = []
+                if crafting_info["works with four by four"]:
+                    default_checked.append("works_four_checkbox")
+                if crafting_info["requires exact positioning"]:
+                    default_checked.append("exact_pos_checkbox")
+                return {"crafting_slots": {
+                    f"cs{i + 1}": crafting_info["crafting slots"][i] for i in range(9)},
+                    "n_created": crafting_info["num created"],
+                    "default_selected": default_checked,
+                    "button_to_click": btn_info
+                }
+
+            return self._handle_multi_value_obt_method("crafting", calculate_from_one_dict)
         return []
 
     def update_group_in_session(self):
