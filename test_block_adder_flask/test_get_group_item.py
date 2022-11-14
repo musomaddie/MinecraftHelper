@@ -246,6 +246,7 @@ def test_get_breaking_other_info_missing_fortune(existing_group_info):
 ####################################################################################################
 #                              GET_CRAFTING_INFO                                                   #
 ####################################################################################################
+
 @pytest.mark.parametrize(
     ("should_show", "use_group_items", "other_item_info"),
     [(False, False, {}),
@@ -279,6 +280,17 @@ def test_get_crafting_info_full_info(existing_group_info):
     }
 
 
+def test_get_crafting_info_missing_default_selected(existing_group_info):
+    existing_group_info.other_item_info["crafting"]["works with four by four"] = False
+    existing_group_info.other_item_info["crafting"]["requires exact positioning"] = False
+    actual_default_selected = existing_group_info.get_crafting_info()["default_selected"]
+    assert len(actual_default_selected) == 0
+
+
+####################################################################################################
+#                              GET_GROUP_ITEM                                                      #
+####################################################################################################
+
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
 def test_get_group_item(mock_get_file_contents, existing_group_info):
     assert ExistingGroupInfo.get_group_items(GROUP_NAME, ITEM_NAME) == [
@@ -287,6 +299,10 @@ def test_get_group_item(mock_get_file_contents, existing_group_info):
         f"{EXPECTED_JSON_DIR}/groups/"
         f"{GROUP_NAME}.json")
 
+
+####################################################################################################
+#                                        GET_OBTAINING_METHODS                                     #
+####################################################################################################
 
 @pytest.mark.parametrize(
     ("should_show", "use_group_items", "expected"),
@@ -301,6 +317,10 @@ def test_get_obtaining_methods(existing_group_info, should_show, use_group_items
     assert existing_group_info.get_obtaining_methods() == expected
 
 
+####################################################################################################
+#                                        GET_UPDATED_GROUP_NAME                                    #
+####################################################################################################
+
 @pytest.mark.parametrize(
     ("from_db", "json_data", "expected_name"),
     [("DB Group", {}, "DB Group"),
@@ -311,6 +331,10 @@ def test_get_updated_group_name(from_db, json_data, expected_name):
     assert get_updated_group_name(
         from_db, json_data) == expected_name
 
+
+####################################################################################################
+#                                        GROUP_INIT_BUILDER                                        #
+####################################################################################################
 
 @patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
 def test_group_init_builder(mock_update_session):

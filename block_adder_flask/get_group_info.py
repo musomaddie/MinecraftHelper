@@ -148,7 +148,6 @@ class ExistingGroupInfo:
             if "breaking other" not in self.other_item_info:
                 return []
             og_item_info = self.other_item_info["breaking other"]
-            # Simple case everything exists as expected.
             values = {
                 "other_block": og_item_info["other block name"],
                 "should_fortune_checked": og_item_info["helped with fortune"]
