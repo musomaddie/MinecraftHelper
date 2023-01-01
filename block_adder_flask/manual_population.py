@@ -95,10 +95,8 @@ def breaking_other(item_name):
     if request.method == "GET":
         return render_template(
             "add_breaking_other.html", item_name=item_name,
-            show_group=True,
-            toggle_selected=True,
-            # show_group=group_info.should_show,
-            # toggle_selected=group_info.use_group_items,
+            show_group=group_info.should_show,
+            toggle_selected=group_info.use_group_items,
             existing_info=group_info.get_breaking_other_info(),
         )
     if _check_update_group_toggle(request.form, item_name, group_info):
@@ -116,8 +114,17 @@ def breaking_other(item_name):
 
 @bp.route("/add_crafting/<item_name>", methods=["GET", "POST"])
 def crafting(item_name):
+    group_info = ExistingGroupInfo.load_from_session(session["group_name"], item_name)
     if request.method == "GET":
-        return render_template("add_crafting.html", item_name=item_name)
+        return render_template(
+            "add_crafting.html",
+            item_name=item_name,
+            show_group=True,
+            toggle_selected=True,
+            # show_group=group_info.should_show,
+            # toggle_selected=group_info.use_group_items,
+            existing_info=group_info.get_crafting_info()
+        )
     append_json_file(
         "crafting",
         [("crafting slots", [

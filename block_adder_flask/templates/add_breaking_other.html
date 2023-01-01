@@ -42,7 +42,6 @@
             if ('{{existing_info}}' === '[]') {
                 return;
             }
-            console.log('{{existing_info}}');
             const quote_literal = /&#39;/g;
             const fake_true = /True/g;
             const fake_false = /False/g;
@@ -53,7 +52,6 @@
                 .replaceAll(fake_true, "true")
                 .replaceAll(fake_false, "false")
             );
-            console.log(value_dict);
             document.getElementById("other_block").value = value_dict["other_block"]
             if (value_dict["should_fortune_checked"]) {
                 document.getElementById("fortune_checkbox").checked = true

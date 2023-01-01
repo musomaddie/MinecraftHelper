@@ -159,6 +159,22 @@ class ExistingGroupInfo:
         return []
 
     def get_crafting_info(self):
+        OTHER_ITEM_NAME = "hello"
+        return {
+            "crafting_slots": {
+                "cs1": OTHER_ITEM_NAME,
+                "cs2": "",
+                "cs3": "",
+                "cs4": OTHER_ITEM_NAME,
+                "cs5": OTHER_ITEM_NAME,
+                "cs6": "",
+                "cs7": OTHER_ITEM_NAME,
+                "cs8": OTHER_ITEM_NAME,
+                "cs9": OTHER_ITEM_NAME
+            }, "n_created": 4,
+            "default_selected": ["works_four_checkbox", "exact_pos_checkbox"],
+            "button_to_click": "next_button"
+        }
         if self.should_show and self.use_group_items:
             if "crafting" not in self.other_item_info:
                 return []
