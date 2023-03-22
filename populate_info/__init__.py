@@ -20,8 +20,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    #
-    # from . import manual_population
-    # app.register_blueprint(manual_population.bp)
+    # from populate_info.
+    from . import start_population
+    app.register_blueprint(start_population.bp)
 
     return app
