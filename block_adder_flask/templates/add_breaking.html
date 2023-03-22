@@ -80,7 +80,7 @@
                 <input type="checkbox" id="fastest_tool" value="fastest_yes" name="fastest_tool"/>
             </td>
             <td class="left_padding" colspan="4">
-                <select name="fastest_specific_tool">
+                <select name="fastest_specific_tool" id="fastest_specific_tool">
                     <option></option>
                     <option value="flint_and_steel">Flint and Steel</option>
                     <option value="shears">Shears</option>
@@ -94,10 +94,35 @@
     </table>
     <input class="submit_button right_margin" type="submit"
            value="Submit & add another breaking method"
-           name="another"/>
+           id="another_button" name="another"/>
     <input class="submit_button" type="submit"
            value="Submit & move to the next obtainment method"
-           name="next"/>
+           id="next_button" name="next"/>
+    <script>
+        $(document).ready(function () {
+            if ('{{show_group}}' === "False") {
+                return;
+            }
+            const quote_literal = /&#39;/g;
+            if ('{{existing_info}}' === '[]') {
+                return;
+            }
+            const value_dict = JSON.parse('{{existing_info}}'.replaceAll(quote_literal, '"'));
+            value_dict["default_checked"].forEach(
+                id => {
+                    document.getElementById(id).checked = true;
+                });
+            if ("fastest_tool" in value_dict["select_default"]) {
+                document.getElementById("fastest_specific_tool").value =
+                    value_dict["select_default"]["fastest_tool"]
+            }
+            if ("spec_tool_select" in value_dict["select_default"]) {
+                document.getElementById("spec_tool_select").value =
+                    value_dict["select_default"]["spec_tool_select"]
+            }
+            document.getElementById(value_dict["button_to_click"]).classList.add("should_press_button");
+        });
+    </script>
 </form>
 
 {% endblock %}

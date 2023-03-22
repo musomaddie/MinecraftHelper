@@ -67,15 +67,14 @@ def continue_work(item_name, repeat_current, current_method_name):
 
 @bp.route("/add_breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
-    group_info = ExistingGroupInfo.load_from_session(session["group_name", item_name])
+    group_info = ExistingGroupInfo.load_from_session(session["group_name"], item_name)
     if request.method == "GET":
-        # TODO: consider including json in the url.
         return render_template(
             "add_breaking.html", item_name=item_name,
-            should_show=group_info.should_show,
+            show_group=group_info.should_show,
+            toggle_selected=group_info.use_group_items,
             existing_info=group_info.get_breaking_info())
-    if "load_from_existing_group" in request.form:
-        group_info.use_values_button_clicked()
+    if _check_update_group_toggle(request.form, item_name, group_info):
         return redirect(url_for("breaking", item_name=item_name))
     append_json_file(
         "breaking",
@@ -92,8 +91,18 @@ def breaking(item_name):
 
 @bp.route("/add_breaking_other/<item_name>", methods=["GET", "POST"])
 def breaking_other(item_name):
+    group_info = ExistingGroupInfo.load_from_session(session["group_name"], item_name)
     if request.method == "GET":
-        return render_template("add_breaking_other.html", item_name=item_name)
+        return render_template(
+            "add_breaking_other.html", item_name=item_name,
+            show_group=True,
+            toggle_selected=True,
+            # show_group=group_info.should_show,
+            # toggle_selected=group_info.use_group_items,
+            existing_info=group_info.get_breaking_other_info(),
+        )
+    if _check_update_group_toggle(request.form, item_name, group_info):
+        return redirect(url_for("breaking_other", item_name=item_name))
     append_json_file(
         "breaking other",
         [("other block name", request.form["other_block"]),

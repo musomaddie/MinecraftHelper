@@ -6,8 +6,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript"
-            src="{{url_for('static', filename='pre_check_items.js')}}"></script>
 
     <meta charset="UTF-8">
     <title>Add Information </title>
@@ -55,6 +53,9 @@
 {% block body %}{% endblock %}
 <script>
     $(document).ready(function () {
+        if ('{{show_group}}' === "False") {
+            return;
+        }
         const quote_literal = /&#39;/g;
         if (!'{{toggle_selected}}') {
             document.getElementById("toggle-checkbox").checked = true;

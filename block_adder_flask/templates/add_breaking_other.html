@@ -13,10 +13,12 @@
         </tr>
         <tr>
             <td>
-                <label for="percent">What is the likelihood of {{item_name}} dropping? </label>
+                <label for="percent_lhood_dropping">What is the likelihood of {{item_name}}
+                    dropping? </label>
             </td>
             <td class="left_padding">
-                <input type="number" step="0.01" id="percent" name="percent_dropping"/>
+                <input type="number" step="0.01" id="percent_lhood_dropping"
+                       name="percent_dropping"/>
             </td>
         </tr>
         <tr>
@@ -31,5 +33,36 @@
     <input class="submit_button" type="submit"
            value="Submit & move to the next obtainment method"
            name="next"/>
+
+    <script>
+        $(document).ready(function () {
+            if ('{{show_group}}' === "False") {
+                return;
+            }
+            if ('{{existing_info}}' === '[]') {
+                return;
+            }
+            console.log('{{existing_info}}');
+            const quote_literal = /&#39;/g;
+            const fake_true = /True/g;
+            const fake_false = /False/g;
+            const str = '{{existing_info}}'.replaceAll(quote_literal, '"').replaceAll(fake_true,
+                "true").replaceAll(fake_false, "false");
+            const value_dict = JSON.parse('{{existing_info}}'
+                .replaceAll(quote_literal, '"')
+                .replaceAll(fake_true, "true")
+                .replaceAll(fake_false, "false")
+            );
+            console.log(value_dict);
+            document.getElementById("other_block").value = value_dict["other_block"]
+            if (value_dict["should_fortune_checked"]) {
+                document.getElementById("fortune_checkbox").checked = true
+            }
+            if ("percent_lhood_dropping" in value_dict) {
+                document.getElementById("percent_lhood_dropping").value =
+                    value_dict["percent_lhood_dropping"]
+            }
+        });
+    </script>
 </form>
 {% endblock %}}

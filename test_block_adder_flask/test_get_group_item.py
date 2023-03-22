@@ -1,3 +1,4 @@
+import copy
 from unittest.mock import call, patch
 
 import pytest
@@ -21,6 +22,11 @@ MOCK_ITEM_CONTENTS = {
          "required tool": "pickaxe",
          "requires silk": True,
          "fastest tool": "pickaxe"},
+    "breaking other": {
+        "other block name": OTHER_ITEM_NAME,
+        "likelihood of dropping": 32.5,
+        "helped with fortune": True
+    },
     "crafting": {"more data"}
 }
 GROUP_MOCK_JSON_CONTENTS = {
@@ -32,8 +38,10 @@ GROUP_MOCK_JSON_CONTENTS = {
 @pytest.fixture
 @patch(f"{FILE_LOC}.ExistingGroupInfo.update_group_in_session")
 def existing_group_info(client):
+    # Copying the mock item contents so any changes made to the dictionary in any tests are not
+    # reflected for future tests.
     return ExistingGroupInfo(
-        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, MOCK_ITEM_CONTENTS, True
+        GROUP_NAME, ITEM_NAME, [OTHER_ITEM_NAME], True, copy.deepcopy(MOCK_ITEM_CONTENTS), True
     )
 
 
@@ -76,7 +84,8 @@ def test_create_from_dict(mock_existing_group_info):
 def test_get_breaking_info(existing_group_info):
     assert existing_group_info.get_breaking_info() == {
         "default_checked_ids": ["requires_tool_any", "requires_silk", "fastest_yes"],
-        "select_default": {"fastest_tool": "pickaxe", "spec_tool_select": "pickaxe"}
+        "select_default": {"fastest_tool": "pickaxe", "spec_tool_select": "pickaxe"},
+        "button_to_click": "next_button"
     }
 
 
@@ -107,6 +116,51 @@ def test_get_breaking_info_fastest_tool_missing(existing_group_info):
     result = existing_group_info.get_breaking_info()
     assert len(result["default_checked_ids"]) == 2
     assert len(result["select_default"]) == 0
+
+
+@pytest.mark.parametrize(
+    ("get_file_contents_rv", "other_item_info", "expected"),
+    [
+        # 1 of 2
+        ({},
+         [{"requires tool": False, "requires silk": False},
+          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"}],
+         {"default_checked_ids": ["requires_tool_no", "requires_silk_no"],
+          "select_default": {}, "button_to_click": "another_button"}),
+        # 2 of 2
+        ({"breaking": {"I dont care what is here": "it just needs to be a dict"}},
+         [{"I dont care whats here": "it just needs to be a dict"},
+          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"}],
+         {"default_checked_ids": ["requires_tool_any", "requires_silk_no"],
+          "select_default": {"spec_tool_select": "pickaxe"}, "button_to_click": "next_button"}),
+        # 2 of 3
+        ({"breaking": {"I don't care whats here": "it just needs to be a dict"}},
+         [{"a placeholder dict": 1},
+          {"requires tool": True, "requires silk": False, "required tool": "pickaxe"},
+          {"a placeholder dict": 2}],
+         {"default_checked_ids": ["requires_tool_any", "requires_silk_no"],
+          "select_default": {"spec_tool_select": "pickaxe"}, "button_to_click": "another_button"}),
+        # 3 of 3
+        ({"breaking": [{"placeholder dict": 1}, {"placeholder dict": 2}]},
+         [{"placeholder dict": 1}, {"a placeholder dict": 2},
+          {"requires tool": True, "required tool": "pickaxe",
+           "requires silk": True, "fastest tool": "pickaxe"}],
+         {"default_checked_ids": ["requires_tool_any", "requires_silk", "fastest_yes"],
+          "select_default": {"fastest_tool": "pickaxe", "spec_tool_select": "pickaxe"},
+          "button_to_click": "next_button"}
+         )
+    ]
+)
+@patch(f"{FILE_LOC}.get_file_contents")
+def test_get_breaking_info_multiple_methods(
+        mock_get_file_contents,
+        get_file_contents_rv,
+        other_item_info,
+        expected,
+        existing_group_info):
+    mock_get_file_contents.return_value = get_file_contents_rv
+    existing_group_info.other_item_info["breaking"] = other_item_info
+    assert existing_group_info.get_breaking_info() == expected
 
 
 def test_get_breaking_info_required_tool(existing_group_info):
@@ -140,6 +194,44 @@ def test_get_breaking_info_tool_value(other_tool_value, expected, existing_group
     assert expected in existing_group_info.get_breaking_info()["default_checked_ids"]
 
 
+####################################################################################################
+#                              GET_BREAKING_OTHER_INFO                                             #
+####################################################################################################
+
+@pytest.mark.parametrize(
+    ("should_show", "use_group_items", "other_item_info"),
+    [(False, False, {}),
+     (False, True, {}),
+     (True, False, {}),
+     (True, True, {})]
+)
+def test_get_breaking_other_info_empty_list(
+        should_show, use_group_items, other_item_info, existing_group_info):
+    existing_group_info.other_item_info = other_item_info
+    existing_group_info.should_show = should_show
+    existing_group_info.use_group_items = use_group_items
+    assert existing_group_info.get_breaking_other_info() == []
+
+
+def test_get_breaking_other_info_full_info(existing_group_info):
+    assert existing_group_info.get_breaking_other_info() == {
+        "percent_lhood_dropping": 32.5,
+        "other_block": OTHER_ITEM_NAME,
+        "should_fortune_checked": True
+    }
+
+
+def test_get_breaking_other_info_missing_fortune(existing_group_info):
+    existing_group_info.other_item_info["breaking other"] = {
+        "other block name": OTHER_ITEM_NAME,
+        "helped with fortune": True
+    }
+    assert existing_group_info.get_breaking_other_info() == {
+        "other_block": OTHER_ITEM_NAME,
+        "should_fortune_checked": True
+    }
+
+
 @patch(f"{FILE_LOC}.get_file_contents", return_value={"items": [ITEM_NAME, OTHER_ITEM_NAME]})
 def test_get_group_item(mock_get_file_contents, existing_group_info):
     assert ExistingGroupInfo.get_group_items(GROUP_NAME, ITEM_NAME) == [
@@ -154,7 +246,7 @@ def test_get_group_item(mock_get_file_contents, existing_group_info):
     [(False, False, []),
      (False, True, []),
      (True, False, []),
-     (True, True, ["breaking_checkbox", "crafting_checkbox"])]
+     (True, True, ["breaking_checkbox", "breaking_other_checkbox", "crafting_checkbox"])]
 )
 def test_get_obtaining_methods(existing_group_info, should_show, use_group_items, expected):
     existing_group_info.should_show = should_show

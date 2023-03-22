@@ -106,7 +106,8 @@
         $(document).ready(function () {
             const quote_literal = /&#39;/g;
             const replace_second = /{|}/g;
-            if ('{{already_checked}}' == '[]') {
+            // I can do with by converting it to a json
+            if ('{{already_checked}}' === '[]') {
                 return;
             }
             '{{already_checked}}'.split(",").forEach(

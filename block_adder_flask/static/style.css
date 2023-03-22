@@ -25,7 +25,7 @@ td {
     margin-top: 15px;
     border: none;
     border-radius: 8px;
-    padding: 12px 22px;
+    padding: 17px 27px;
     text-align: center;
     display: inline-block;
     font-size: 16px;
@@ -50,7 +50,6 @@ td {
     list-style-type: none;
     text-align: center;
     border: #7542e3 1px dot-dash;
-    /*Why isn't the border showing?*/
 }
 
 .existing_group_toggle {
@@ -59,6 +58,12 @@ td {
     padding: 10px;
 }
 
+.should_press_button {
+    border: 5px dashed red;
+    padding: 12px 22px;
+}
+
+/*Use existing values toggle.*/
 #toggle-group-overall {
     display: table;
     width: 500px;
