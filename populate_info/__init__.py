@@ -7,7 +7,6 @@ def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY="top secret shhhhhh",
-        DATABASE=os.path.join(app.instance_path, "minecraft_items.db")
     )
 
     if test_config is None:

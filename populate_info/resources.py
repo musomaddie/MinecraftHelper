@@ -11,3 +11,9 @@ def get_item_fn(item_name):
 
 # ########################################## JSON KEYS #########################################
 ITEM_LIST_KEY = "items"
+
+
+# ###################################### MISC ##############################################
+# URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
+def get_item_url(item_name: str) -> str:
+    return f"https://minecraft.fandom.com/wiki/{item_name.replace(' ', '%20')}"
