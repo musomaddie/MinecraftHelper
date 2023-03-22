@@ -268,6 +268,8 @@ def test_save_to_group_existing_group(mock_update_json_file, mock_get_file_conte
         {"group name": GROUP_NAME, "items": ["existing item", ITEM_NAME]},
         f"{EXPECTED_JSON_DIR}/groups/{GROUP_NAME}.json")
 
+    # TODO: test it actually appends to group instead
+
 
 @patch(f"{FILE_LOC}.isfile")
 @patch(f"{FILE_LOC}.update_json_file")

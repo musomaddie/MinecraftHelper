@@ -61,7 +61,6 @@ class GroupInfoBuilder:
 
 
 class ExistingGroupInfo:
-
     group_name: str
     current_item: str
     other_items: list[str]
@@ -84,6 +83,9 @@ class ExistingGroupInfo:
         self.other_item_info = other_item_info
         self.use_group_items = use_group_items
         self.update_group_in_session()
+
+    def __str__(self):
+        return f"{self.group_name} (name), {self.current_item} (current item), {self.other_items} (items) {self.should_show} (ss)"
 
     def use_values_button_clicked(self, should_use_group: bool):
         if not self.should_show:
@@ -139,6 +141,7 @@ class ExistingGroupInfo:
 
     @staticmethod
     def load_from_session(group_name: str, item_name: str) -> 'ExistingGroupInfo':
+        print("reached here before breaking!")
         if "group_info" in session:
             existing = session["group_info"]
             if item_name == existing["current_item"] and group_name == existing["group_name"]:
@@ -181,12 +184,15 @@ def remove_from_group(group_name, item_name):
 
 
 def save_to_group(group_name, item_name):
+    # TODO: don't save if group name and item name are the same??
     if group_name == "" or group_name is None:
         return
     group_dir = f"{JSON_DIR}/groups"
     group_fn_full = f"{group_dir}/{group_name}.json"
     if isfile(group_fn_full):
+        # TODO: make sure this doesn't delete the existing group data.
         existing_group_items = get_file_contents(group_fn_full)
+        print(existing_group_items)
         if item_name not in existing_group_items["items"]:
             existing_group_items["items"].append(item_name)
             update_json_file(existing_group_items, group_fn_full)

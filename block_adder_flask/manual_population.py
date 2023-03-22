@@ -227,21 +227,27 @@ def stonecutter(item_name):
 
 @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def item(item_name):
-    # TODO: consider turning use group value button as a toggle.
-    # TODO: if an item group already exists add shortcuts to help load it.
-    # TODO: improve this so that the session is always updated when required.
+    """ Why didn't I document any of this????????? AAAA"""
+
+    # Attempt to find any existing information.
     item_file_name = item_name + ".json"
     item_file_name_full = f"{JSON_DIR}/{item_file_name}"
     existing_json_data = {}
+    # Load existing information (if possible)
     if isfile(join(JSON_DIR, item_file_name)):
         existing_json_data = get_file_contents(item_file_name_full)
         _add_to_item_list(item_name)
     else:
         existing_json_data["name"] = item_name
         update_json_file(existing_json_data, item_file_name_full)
+
+    # Fetch and save group name
     group_name = get_updated_group_name(get_group(item_name), existing_json_data)
     save_to_group(group_name, item_name)
     group_info = ExistingGroupInfo.load_from_session(group_name, item_name)
+    print(f"Group info {group_info}")
+
+    # If a GET request fetch the data
     item_url = f"{URL_BLOCK_PAGE_TEMPLATE}{item_name.replace(' ', '%20')}"
     if request.method == "GET":
         return render_template(
@@ -253,6 +259,7 @@ def item(item_name):
             already_checked=group_info.get_obtaining_methods(),
             block_url=item_url)
 
+    # Update the group information and reload the same page with the new information.
     if "update_group" in request.form:
         remove_from_group(group_name, item_name)
         new_group_name = request.form["group_name_replacement"]
