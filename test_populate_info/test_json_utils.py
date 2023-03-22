@@ -1,26 +1,67 @@
 import json
+from os import path
+
+import pytest
 
 import populate_info.resources as r
+from conftest import NEW_GROUP, TEST_ITEM, EXISTING_GROUP
 from populate_info import json_utils
 
 
-def _added_item_file_contents():
-    with open(r.ADDED_ITEM_FN) as f:
+def _get_file_contents(filename: str) -> dict:
+    with open(filename) as f:
         return json.load(f)
 
 
+# ################################## add_to_group_file ################################
+# def add_to_group_file(group_name: str, item_name: str):
+def test_add_to_group_file_new_file():
+    json_utils.add_to_group_file(NEW_GROUP, TEST_ITEM)
+
+    assert path.exists(r.get_group_fn(NEW_GROUP))
+    content = _get_file_contents(r.get_group_fn(NEW_GROUP))
+
+    assert r.GROUP_NAME_KEY in content
+    assert content[r.GROUP_NAME_KEY] == NEW_GROUP
+
+    assert r.GROUP_ITEMS_KEY in content
+    assert len(content[r.GROUP_ITEMS_KEY]) == 1
+    assert content[r.GROUP_ITEMS_KEY][0] == TEST_ITEM
+
+
+def test_add_to_group_file_poor_group_name():
+    json_utils.add_to_group_file("", TEST_ITEM)
+    assert not path.exists(r.get_group_fn(""))
+
+    with pytest.raises(AttributeError):
+        json_utils.add_to_group_file(None, TEST_ITEM)
+
+
+def test_add_to_group_file_existing_group():
+    json_utils.add_to_group_file(EXISTING_GROUP, TEST_ITEM)
+    assert path.exists(r.get_group_fn(NEW_GROUP))
+    contents = _get_file_contents(r.get_group_fn(NEW_GROUP))
+
+    assert r.GROUP_NAME_KEY in contents
+    assert contents[r.GROUP_NAME_KEY] == EXISTING_GROUP
+
+    assert r.GROUP_ITEMS_KEY in contents
+    assert len(contents[r.GROUP_ITEMS_KEY]) == 2
+    assert contents[r.GROUP_ITEMS_KEY][1] == TEST_ITEM
+
+
 # ################################### get_next_block tests ##################################
-def test_get_next_item_first_item(teardown):
+def test_get_next_item_first_item():
     assert json_utils.get_next_item() == "A Item"
 
 
-def test_get_next_item_has_items(teardown):
+def test_get_next_item_has_items():
     with open(r.ADDED_ITEM_FN, "w") as f:
         json.dump({r.ITEM_LIST_KEY: ["A Item"]}, f)
     assert json_utils.get_next_item() == "Second Item"
 
 
-def test_get_next_item_no_items_left(teardown):
+def test_get_next_item_no_items_left():
     with open(r.ADDED_ITEM_FN, "w") as f:
         json.dump({r.ITEM_LIST_KEY: [
             "A Item",

@@ -9,8 +9,14 @@ def get_item_fn(item_name):
     return f"{DIR}{item_name}.json"
 
 
+def get_group_fn(group_name: str):
+    return f"{DIR}groups/{group_name.lower().replace(' ', '_')}.json"
+
+
 # ########################################## JSON KEYS #########################################
 ITEM_LIST_KEY = "items"
+GROUP_NAME_KEY = "group name"
+GROUP_ITEMS_KEY = "items"
 
 
 # ###################################### MISC ##############################################
