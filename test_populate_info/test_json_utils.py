@@ -14,7 +14,6 @@ def _get_file_contents(filename: str) -> dict:
 
 
 # ################################## add_to_group_file ################################
-# def add_to_group_file(group_name: str, item_name: str):
 def test_add_to_group_file_new_file():
     json_utils.add_to_group_file(NEW_GROUP, TEST_ITEM)
 
@@ -29,18 +28,16 @@ def test_add_to_group_file_new_file():
     assert content[r.GROUP_ITEMS_KEY][0] == TEST_ITEM
 
 
-def test_add_to_group_file_poor_group_name():
-    json_utils.add_to_group_file("", TEST_ITEM)
+@pytest.mark.parametrize("group_name", ("", None))
+def test_add_to_group_file_poor_group_name(group_name):
+    json_utils.add_to_group_file(group_name, TEST_ITEM)
     assert not path.exists(r.get_group_fn(""))
-
-    with pytest.raises(AttributeError):
-        json_utils.add_to_group_file(None, TEST_ITEM)
 
 
 def test_add_to_group_file_existing_group():
     json_utils.add_to_group_file(EXISTING_GROUP, TEST_ITEM)
-    assert path.exists(r.get_group_fn(NEW_GROUP))
-    contents = _get_file_contents(r.get_group_fn(NEW_GROUP))
+    assert path.exists(r.get_group_fn(EXISTING_GROUP))
+    contents = _get_file_contents(r.get_group_fn(EXISTING_GROUP))
 
     assert r.GROUP_NAME_KEY in contents
     assert contents[r.GROUP_NAME_KEY] == EXISTING_GROUP

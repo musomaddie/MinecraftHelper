@@ -26,6 +26,7 @@ def _wipe_existing_group():
 
 def _wipe_all():
     _wipe_added_blocks()
+    _wipe_existing_group()
 
 
 @pytest.fixture
@@ -47,7 +48,7 @@ def change_directory(monkeypatch):
 @pytest.fixture(autouse=True)
 def teardown():
     yield
-    _wipe_added_blocks()
+    _wipe_all()
     # Get group name.
     try:
         os.remove(r.get_group_fn(NEW_GROUP))
