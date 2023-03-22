@@ -26,4 +26,4 @@ def test_get_next_block_no_blocks_left(teardown):
             "A Item",
             "Second Item",
             "Yet Another Item"]}, f)
-        assert json_utils.get_next_block() is None
+    assert json_utils.get_next_block() is None
