@@ -1,19 +1,7 @@
-# import json
-# from os.path import isfile, join
-#
-# from flask import Blueprint, flash, redirect, render_template, request, session, url_for # # from populate_info.db_for_flask import get_db, get_group
-# from populate_info.get_group_info import (
-#     ExistingGroupInfo, get_updated_group_name, remove_from_group, save_to_group)
-#
-# ITEMS_GROUPS_TN = "item_to_group"
-# URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
-# JSON_DIR = "populate_info/item_information"
-# JSON_ITEM_LIST = "populate_info/item_information/item_list.json"
-#
-from flask import Blueprint, session, url_for, redirect, request, render_template
+from flask import Blueprint, redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
-from populate_info.group_utils import update_group
+from populate_info.group_utils import should_show_group, update_group
 from populate_info.json_utils import get_next_item
 
 bp = Blueprint("add", __name__)
@@ -37,12 +25,12 @@ def start_adding_item(item_name):
             "add_item/start.html",
             item_name=item_name,
             item_url=r.get_item_url(item_name),
-            group_name=group_name)
+            group_name=group_name,
+            show_group=should_show_group(group_name))
 
     # Update group name and reload this page (if applicable).
     if "group_name_btn" in request.form:
         new_group_name = request.form["group_name"]
-        print(request.form)
         update_group(group_name, new_group_name, item_name)
         session[r.GROUP_NAME_SK] = new_group_name
         return redirect(url_for("add.start_adding_item", item_name=item_name))
