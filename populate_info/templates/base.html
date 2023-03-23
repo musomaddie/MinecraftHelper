@@ -4,7 +4,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!--    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>-->
     <!--    <script type="text/javascript"-->
     <!--            src="{{url_for('static', filename='pre_check_items.js')}}"></script>-->
@@ -14,6 +14,40 @@
 </head>
 <body>
 <h1> Minecraft block / item Information Helper </h1>
+{% if show_group %}
+    I am showing a group!!
+    <div class="existing_group_toggle" id="toggle-group-overall">
+        Load default values from existing group: {{ group_name }}
+        <form method="post">
+            <div class="toggle-group-button-cover">
+                <div class="group-button-cover">
+                    <div class="group-button r" id="group-button">
+                        <input type="checkbox" class="group-checkbox" name="group_checkbox"
+                               id="toggle-checkbox"/>
+                        <div class="knobs"></div>
+                        <div class="layer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <input class="submit_button" type="submit"
+                   id="existing_group_sub"
+                   name="existing_group_values"
+                   value="Toggle Using Existing Group Values"
+            />
+
+        </form>
+    </div>
+    <br>
+{% endif %}
 {% block body %} {% endblock %}
+<script>
+    $(document).ready(function () {
+        const quote_literal = /&#39;/g;
+        if (!'{{toggle_selected}}') {
+            document.getElementById("toggle-checkbox").checked = true;
+        }
+    });
+</script>
 </body>
 </html>
