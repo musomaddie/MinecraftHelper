@@ -8,6 +8,7 @@ from populate_info import create_app
 
 NEW_GROUP = "New Group"
 EXISTING_GROUP = "Test Group"
+MISSING_GROUP = "Missing Group"
 TEST_ITEM = "Test Item"
 
 

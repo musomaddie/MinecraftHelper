@@ -12,13 +12,21 @@ def add_to_group_file(group_name: str, item_name: str):
             if path.exists(filename)
             else {r.GROUP_NAME_KEY: group_name, r.GROUP_ITEMS_KEY: []})
     data[r.GROUP_ITEMS_KEY].append(item_name)
-    print(data)
     write_json_to_file(filename, data)
 
 
-def write_json_to_file(filename: str, data: dict):
-    with open(filename, "w") as f:
-        json.dump(data, f)
+def remove_from_group_file(group_name: str, item_name: str):
+    filename = r.get_group_fn(group_name)
+    if not path.exists(filename):
+        return
+    data = load_json_from_file(filename)
+    try:
+        data[r.GROUP_ITEMS_KEY].remove(item_name)
+    except ValueError:
+        # If it doesn't exist the file will be unchanged so there is no point us modifying it further.
+        return
+    # TODO: consider deleting file completely if there are no items left.
+    write_json_to_file(filename, data)
 
 
 def load_json_from_file(filename: str) -> dict:
@@ -35,3 +43,8 @@ def get_next_item() -> str:
         return None
 
     return all_items[len(current_items)]
+
+
+def write_json_to_file(filename: str, data: dict):
+    with open(filename, "w") as f:
+        json.dump(data, f)

@@ -4,7 +4,7 @@ from os import path
 import pytest
 
 import populate_info.resources as r
-from conftest import NEW_GROUP, TEST_ITEM, EXISTING_GROUP
+from conftest import NEW_GROUP, TEST_ITEM, EXISTING_GROUP, MISSING_GROUP
 from populate_info import json_utils
 
 
@@ -65,3 +65,28 @@ def test_get_next_item_no_items_left():
             "Second Item",
             "Yet Another Item"]}, f)
     assert json_utils.get_next_item() is None
+
+
+# #################################### remove_from_group_file tests ####################
+def test_remove_from_group_file_doesnt_exist():
+    json_utils.remove_from_group_file(MISSING_GROUP, TEST_ITEM)
+    assert True
+
+
+@pytest.mark.parametrize(
+    ("group_name", "expected_contents"),
+    [(NEW_GROUP, []), (EXISTING_GROUP, ["Existing Item"])]
+)
+def test_remove_from_group(group_name, expected_contents):
+    json_utils.add_to_group_file(group_name, TEST_ITEM)
+    json_utils.remove_from_group_file(group_name, TEST_ITEM)
+    result = _get_file_contents(r.get_group_fn(group_name))[r.ITEM_LIST_KEY]
+    assert result == expected_contents
+
+
+def test_remove_from_group_without_item():
+    # If we are asked to remove something from a group where it isn't, the file should be unchanged.
+    original = _get_file_contents(r.get_group_fn(EXISTING_GROUP))
+    json_utils.remove_from_group_file(EXISTING_GROUP, TEST_ITEM)
+    result = _get_file_contents(r.get_group_fn(EXISTING_GROUP))
+    assert result == original
