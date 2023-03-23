@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
-from populate_info.group_utils import should_show_group, update_group
+from populate_info.group_utils import update_group
 from populate_info.json_utils import get_next_item
 
 bp = Blueprint("add", __name__)
@@ -26,7 +26,9 @@ def start_adding_item(item_name):
             item_name=item_name,
             item_url=r.get_item_url(item_name),
             group_name=group_name,
-            show_group=should_show_group(group_name))
+            # Temporarily on for testing
+            show_group=True)
+        # show_group=should_show_group(group_name))
 
     # Update group name and reload this page (if applicable).
     if "group_name_btn" in request.form:
