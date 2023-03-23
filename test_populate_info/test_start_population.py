@@ -1,7 +1,7 @@
 from flask import session
 
 import populate_info.resources as r
-from conftest import TEST_ITEM, EXISTING_GROUP
+from conftest import GROUP_1, ITEM_1
 
 
 def test_start_adding_item_get(client):
@@ -16,10 +16,10 @@ def test_start_adding_item_post_group_name(client):
         session_before[r.GROUP_NAME_SK] = "Old Group"
     with client:
         response = client.post(
-            f"/add_item/{TEST_ITEM}", data={"group_name": EXISTING_GROUP, "group_name_btn": "Set group name"}
+            f"/add_item/{ITEM_1}", data={"group_name": GROUP_1, "group_name_btn": "Set group name"}
         )
         assert response.status_code == 302
-        assert session[r.GROUP_NAME_SK] == EXISTING_GROUP
+        assert session[r.GROUP_NAME_SK] == GROUP_1
 
 
 def test_start_redirects(client):
