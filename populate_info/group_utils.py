@@ -1,4 +1,5 @@
 import populate_info.resources as r
+
 from populate_info.json_utils import add_to_group_file, load_json_from_file, remove_from_group_file
 
 
@@ -13,6 +14,16 @@ def add_to_group(group_name: str, item_name: str):
     if not is_group_name_interesting(group_name):
         return
     add_to_group_file(group_name, item_name)
+
+
+def get_group_categories(group_name: str):
+    """ The group will have the information saved in the json for convience, so I just have to find and return it."""
+    if not should_show_group(group_name):
+        return []
+    data = load_json_from_file(r.get_group_fn(group_name))
+    # Get all the keys of data without item name and item list.
+    keys = list(data.keys())
+    return [key for key in list(data.keys()) if key != r.GROUP_NAME_KEY and key != r.GROUP_ITEMS_KEY]
 
 
 def is_group_name_interesting(group_name: str) -> bool:

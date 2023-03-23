@@ -17,6 +17,7 @@ def get_group_fn(group_name: str):
 ITEM_LIST_KEY = "items"
 GROUP_NAME_KEY = "group name"
 GROUP_ITEMS_KEY = "items"
+BREAKING_CAT_KEY = "breaking"
 
 # ############################## SESSION KEYS #############################################
 CUR_ITEM_SK = "current_item"
