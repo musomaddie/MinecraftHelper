@@ -1,9 +1,24 @@
 {% extends "base.html" %}
 {% block body %}
-    <h2> Adding information for {{ item_name }}</h2>
-    <a href={{ item_url }}>(minecraft wiki) </a>
+    <h2> Adding information for {{ item_name }}
+        <a href={{ item_url }}>(wiki) </a>
+    </h2>
+
+    The group name is {{ group_name }}
 
     <form method="post">
+        <table>
+            <tr>
+                <td>
+                    <label for="group_name">Set group name to: </label>
+                </td>
+                <td class="left_padding">
+                    {#                    TODO: create a dropdown selector of existing group names #}
+                    <input type="text" id="group_name" name="group_name" required/>
+                </td>
+            </tr>
+        </table>
+        <input class="submit_button" type="submit" value="Set group name" name="group_name_btn"/>
     </form>
 
 {% endblock %}

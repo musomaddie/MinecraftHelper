@@ -13,12 +13,13 @@
 from flask import Blueprint, session, url_for, redirect, request, render_template
 
 import populate_info.resources as r
+from populate_info.group_utils import update_group
 from populate_info.json_utils import get_next_item
 
 bp = Blueprint("add", __name__)
 
 
-@bp.route("/add_item/<item_name>", methods=["GET"])
+@bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 def start_adding_item(item_name):
     """
     Start adding data for this item.
@@ -27,23 +28,26 @@ def start_adding_item(item_name):
     """
     item_file_name = r.get_item_fn(item_name)
     # Don't save to the JSON file until the end, use session for now.
-    session["current_item_name"] = item_name
+    session[r.CUR_ITEM_SK] = item_name
+    group_name = session.get(r.GROUP_NAME_SK, "")
 
     # Return basic page if this is a get request!!
     if request.method == "GET":
         return render_template(
             "add_item/start.html",
             item_name=item_name,
-            item_url=r.get_item_url(item_name)
-        )
+            item_url=r.get_item_url(item_name),
+            group_name=group_name)
 
-    # <h2> Adding information for {{ item_name }}</h2>
-    # <a href={{ item_url }}>(minecraft wiki) </a>
+    # Update group name and reload this page (if applicable).
+    if "group_name_btn" in request.form:
+        new_group_name = request.form["group_name"]
+        print(request.form)
+        update_group(group_name, new_group_name, item_name)
+        session[r.GROUP_NAME_SK] = new_group_name
+        return redirect(url_for("add.start_adding_item", item_name=item_name))
 
 
-#
-#
-#
 # @bp.route("/add_item/<item_name>", methods=["GET", "POST"])
 # def item(item_name):
 #     item_file_name = item_name + ".json"

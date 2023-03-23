@@ -1,4 +1,4 @@
-from populate_info.json_utils import add_to_group_file
+from populate_info.json_utils import add_to_group_file, remove_from_group_file
 
 
 def add_to_group(group_name: str, item_name: str):
@@ -25,9 +25,15 @@ def is_group_name_interesting(group_name: str) -> bool:
 
 
 def update_group(old_group_name, new_group_name, item_name):
-    pass
-    # remove_from_group(old_group_name, item_name)
-    # add_to_group(new_group_name, item_name)
+    """
+    Moves the given item from the old group to the new group.
+
+    :param old_group_name:
+    :param new_group_name:
+    :param item_name:
+    """
+    remove_from_group_file(old_group_name, item_name)
+    add_to_group(new_group_name, item_name)
 
 
 def remove_from_group(group_name: str, item_name: str):

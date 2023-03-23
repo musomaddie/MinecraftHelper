@@ -18,8 +18,11 @@ ITEM_LIST_KEY = "items"
 GROUP_NAME_KEY = "group name"
 GROUP_ITEMS_KEY = "items"
 
+# ############################## SESSION KEYS #############################################
+CUR_ITEM_SK = "current_item"
+GROUP_NAME_SK = "group"
+
 
 # ###################################### MISC ##############################################
-# URL_BLOCK_PAGE_TEMPLATE = "https://minecraft.fandom.com/wiki/"
 def get_item_url(item_name: str) -> str:
     return f"https://minecraft.fandom.com/wiki/{item_name.replace(' ', '%20')}"
