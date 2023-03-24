@@ -28,3 +28,10 @@ USE_GROUP_VALUES_SK = "use_group_values"
 # ###################################### MISC ##############################################
 def get_item_url(item_name: str) -> str:
     return f"https://minecraft.fandom.com/wiki/{item_name.replace(' ', '%20')}"
+
+
+def category_names_to_html_ids(category_names: list[str]) -> list[str]:
+    helper_dict = {
+        "breaking": "breaking_cbox"
+    }
+    return [helper_dict[cat_name] for cat_name in category_names]

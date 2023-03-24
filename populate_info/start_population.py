@@ -17,6 +17,8 @@ def start_adding_item(item_name):
     item_file_name = r.get_item_fn(item_name)
     # Don't save to the JSON file until the end, use session for now.
     session[r.CUR_ITEM_SK] = item_name
+    # Temporarily set for testing - TODO
+    session[r.GROUP_NAME_SK] = "TESTING_GROUP"
     group_name = session.get(r.GROUP_NAME_SK, "")
 
     # Return basic page if this is a get request!!
@@ -26,9 +28,9 @@ def start_adding_item(item_name):
             item_name=item_name,
             item_url=r.get_item_url(item_name),
             group_name=group_name,
-            checked_from_group=get_group_categories("TESTING_GROUP"),
             is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
-            # Temporarily on for testing
+            group_categories=r.category_names_to_html_ids(get_group_categories(group_name)),
+            # Temporarily on for testing TODO
             show_group=True)
         # show_group=should_show_group(group_name))
 
@@ -53,6 +55,7 @@ def start_adding_item(item_name):
         item_url=r.get_item_url(item_name),
         group_name=group_name,
         is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
+        group_categories=get_group_categories(group_name),
         # Temporarily on for testing
         show_group=True)
 

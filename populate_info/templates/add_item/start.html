@@ -39,17 +39,12 @@
 
     <script>
         $(document).ready(function () {
-            const quote_literal = /&#39;/g;
-            const replace_second = /{|}\g;
-            if ('{{ already_checked }}' == '[]') {
-                return;
+            // Quit if we shouldn't be updating these values.
+            if ((!JSON.parse('{{ show_group|tojson }}')) && (!JSON.parse('{{ is_toggle_selected|tojson }}'))) {
+                return
             }
-            '{{ already_checked }}'.split(",").forEach(
-                element => {
-                    document.getElementById(
-                        element.replace(quote_literal, "").replace(replace_second, "").replaceAll(" ", "")
-                    ).checked = true;
-                }
+            JSON.parse('{{ group_categories|tojson }}').forEach(
+                element => document.getElementById(element).checked = true
             );
         });
     </script>
