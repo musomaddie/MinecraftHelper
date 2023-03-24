@@ -23,6 +23,7 @@ BREAKING_CAT_KEY = "breaking"
 CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.
 GROUP_NAME_SK = "group"
 USE_GROUP_VALUES_SK = "use_group_values"
+METHOD_LIST_SK = "methods"
 
 
 # ###################################### MISC ##############################################

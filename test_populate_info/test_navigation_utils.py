@@ -21,4 +21,3 @@ def test_move_next_category_breaking_left(mock_redirect, mock_url_for):
 def test_move_next_category_none_left(mock_redirect, mock_url_for):
     result = move_next_category(ITEM_1, [])
     mock_url_for.assert_called_once_with("add.start_adding_item", item_name=ITEM_1)
-# @redirect_patch_str

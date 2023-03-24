@@ -47,6 +47,7 @@ def start_adding_item(item_name):
     methods = []
     if "breaking" in request.form.keys():
         methods.append("add.breaking")
+    session[r.METHOD_LIST_SK] = methods
 
     return move_next_category(item_name, methods)
 

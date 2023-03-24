@@ -1,9 +1,28 @@
+from unittest.mock import patch
+
 import pytest
 
 import populate_info.resources as r
-from conftest import ITEM_1, ITEM_2
-from populate_info.group_utils import get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, \
-    should_show_group
+from conftest import GROUP_3, ITEM_1, ITEM_2
+from populate_info.group_utils import (
+    add_to_group, get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, should_show_group)
+
+FILE_LOC = "populate_info.group_utils"
+
+
+# #################################################################################################################### #
+#  add_to_group                                                                                                        #
+# #################################################################################################################### #
+@patch(f"{FILE_LOC}.add_to_group_file")
+def test_add_to_group_new_group(mock_add_to_file):
+    add_to_group(GROUP_3, ITEM_1)
+    mock_add_to_file.assert_called_once_with(GROUP_3, ITEM_1)
+
+
+@patch(f"{FILE_LOC}.add_to_group_file")
+def test_add_to_group_non_interesting_group_name(mock_add_to_file):
+    add_to_group("", ITEM_1)
+    assert not mock_add_to_file.called
 
 
 # #################################################################################################################### #
@@ -37,6 +56,10 @@ def test_get_group_categories_all_categories(group_file_all_categories):
     assert "breaking" in result
 
 
+def test_get_group_categories_noninteresting_group():
+    assert get_group_categories("") == []
+
+
 # #################################################################################################################### #
 #  get group breaking info                                                                                             #
 # #################################################################################################################### #
@@ -48,6 +71,11 @@ def test_get_group_breaking_info(group_file_all_categories):
     assert result["fastest tool"] == "Axe"
     assert "silk touch"
     assert not result["silk touch"]
+
+
+def test_get_group_breaking_info_noninteresting_group_name():
+    result = get_group_breaking_info("")
+    assert result == []
 
 
 # #################################################################################################################### #

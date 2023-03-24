@@ -45,3 +45,12 @@ def test_start_adding_item_post_toggle_updated(client):
 
 def test_start_redirects(client):
     assert client.get("/").status_code == 302
+
+
+def test_start_adding_item_next_category(client):
+    with client:
+        response = client.post(
+            f"/add_item/{ITEM_1}", data={"breaking": "some info"})
+        assert response.status_code == 302
+        assert r.METHOD_LIST_SK in session
+        assert len(session[r.METHOD_LIST_SK]) == 0

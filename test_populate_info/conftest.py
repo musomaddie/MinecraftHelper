@@ -28,6 +28,12 @@ def _create_file(filename, data):
         json.dump(data, f)
 
 
+def get_file_contents(filename: str) -> dict:
+    print(f"filename: {filename}")
+    with open(filename) as f:
+        return json.load(f)
+
+
 @pytest.fixture
 def app():
     app = create_app({"TESTING": True})
