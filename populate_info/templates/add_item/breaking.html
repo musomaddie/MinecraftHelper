@@ -1,4 +1,101 @@
 {% extends "base.html" %}
 {% block body %}
-    starting breaking
+    <h2> Get {{ item_name }} by breaking itself</h2>
+    <form method="post">
+        <table class="with_row_dividers">
+            <tr>
+                <td> Is a tool required?</td>
+                <td class="left_padding right_align">
+                    <label for="requires_tool_no"> No: </label>
+                </td>
+                <td>
+                    <input type="radio" id="requires_tool_no"
+                           value="tool_no" name="requires_tool" required/>
+                </td>
+                <td class="left_padding right_align">
+                    <label for="requires_tool_any">Any tool</label>
+                </td>
+                <td>
+                    <input type="radio" id="requires_tool_any"
+                           value="tool_any" name="requires_tool" required/>
+                </td>
+                <td class="left_padding right_align">
+                    <label for="requires_tool_spec">Specific tool:</label>
+                </td>
+                <td>
+                    <input type="radio" id="requires_tool_spec"
+                           value="tool_spec" name="requires_tool" required/>
+                </td>
+                <td>
+                    <select name="specific_tool" id="spec_tool_select">
+                        <option></option>
+                        <option value="fishing_rod">Fishing Rod</option>
+                        <option value="flint_and_still">Flint and Steel</option>
+                        <option value="shears">Shears</option>
+                        <option value="axe">Axe (any)</option>
+                        <option value="hoe">Hoe (any)</option>
+                        <option value="pickaxe">Pickaxe (any)</option>
+                        <option value="shovel"> Shovel (any)</option>
+                        <option value="stone_axe">Stone Axe</option>
+                        <option value="iron_axe">Iron Axe</option>
+                        <option value="diamond_axe">Diamond Axe</option>
+                        <option value="stone_hoe">Stone Hoe</option>
+                        <option value="iron_hoe">Iron Hoe</option>
+                        <option value="diamond_hoe">Diamond Hoe</option>
+                        <option value="stone_pickaxe">Stone Pickaxe</option>
+                        <option value="iron_pickaxe">Iron Pickaxe</option>
+                        <option value="diamond_pickaxe">Diamond Pickaxe</option>
+                        <option value="stone_shovel">Stone Shovel</option>
+                        <option value="iron_shovel">Iron Shovel</option>
+                        <option value="diamond_shovel">Diamond Shovel</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Is Silk Touch required?
+                </td>
+                <td class="left_padding right_align">
+                    <label for="requires_silk_no">No: </label>
+                </td>
+                <td>
+                    <input type="radio" id="requires_silk_no"
+                           value="silk_no" name="requires_silk" required/>
+                </td>
+                <td class="left_padding right_align">
+                    <label for="requires_silk_yes">Yes: </label>
+                </td>
+                <td>
+                    <input type="radio" id="requires_silk_yes"
+                           value="silk_yes" name="requires_silk" required/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="fastest_tool"> Is there a fastest tool?</label>
+                </td>
+                <td class="left_padding right_align">
+                    <input type="checkbox" id="fastest_tool"
+                           value="fastest_yes" name="fastest_tool"/>
+                </td>
+                <td class="left_padding right_align">
+                    <select name="fastest_specific_tool">
+                        <option></option>
+                        <option value="flint_and_steel">Flint and Steel</option>
+                        <option value="shears">Shears</option>
+                        <option value="axe">Axe</option>
+                        <option value="hoe">Hoe</option>
+                        <option value="pickaxe">Pickaxe</option>
+                        <option value="shovel">Shovel</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <input class="submit_button right_margin" type="submit"
+               value="Submit & add another breaking method"
+               name="another"/>
+        <input class="submit_button" type="submit"
+               value="Submit & move to the next obtainment method"
+               name="next"/>
+    </form>
 {% endblock %}

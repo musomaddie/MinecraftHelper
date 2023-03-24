@@ -45,8 +45,8 @@ def start_adding_item(item_name):
         return redirect(url_for("add.start_adding_item", item_name=item_name))
 
     methods = []
-    # if "breaking" in request.form.keys():
-    #     methods.append("add.breaking")
+    if "breaking" in request.form.keys():
+        methods.append("add.breaking")
 
     return move_next_category(item_name, methods)
 

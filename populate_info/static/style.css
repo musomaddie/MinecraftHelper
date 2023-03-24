@@ -160,3 +160,11 @@ td {
 #group-button .layer {
     transition: 0.3s ease all;
 }
+
+table.with_row_dividers {
+    border-collapse: collapse;
+}
+
+.with_row_dividers tr {
+    border-bottom: 1px dashed #7542e3;
+}
