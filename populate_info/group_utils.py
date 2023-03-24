@@ -1,5 +1,6 @@
-import populate_info.resources as r
+from flask import session
 
+import populate_info.resources as r
 from populate_info.json_utils import add_to_group_file, load_json_from_file, remove_from_group_file
 
 
@@ -39,6 +40,19 @@ def is_group_name_interesting(group_name: str) -> bool:
 def load_group_items(group_name: str) -> list[str]:
     """ Returns a list of all items in the provided group."""
     return load_json_from_file(r.get_group_fn(group_name))[r.GROUP_ITEMS_KEY]
+
+
+def maybe_group_toggle_update_saved(request_form: dict) -> bool:
+    """ Updates the status of the 'use group' toggle if it has been changed.
+
+     Returns true if the toggle has changed, false otherwise. (to help control data flow)."""
+    if "update_use_group_values" in request_form:
+        # if we've been told to update it we need to use the value passed to set this value (because who knows how
+        # many times it's been toggled?!)
+        print(request_form)
+        session[r.USE_GROUP_VALUES_SK] = "group_checkbox" not in request_form
+        return True
+    return False
 
 
 def should_show_group(group_name: str):

@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
-from populate_info.group_utils import update_group
+from populate_info.group_utils import update_group, get_group_categories, maybe_group_toggle_update_saved
 from populate_info.json_utils import get_next_item
 
 bp = Blueprint("add", __name__)
@@ -26,6 +26,8 @@ def start_adding_item(item_name):
             item_name=item_name,
             item_url=r.get_item_url(item_name),
             group_name=group_name,
+            checked_from_group=get_group_categories("TESTING_GROUP"),
+            is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
             # Temporarily on for testing
             show_group=True)
         # show_group=should_show_group(group_name))
@@ -36,6 +38,25 @@ def start_adding_item(item_name):
         update_group(group_name, new_group_name, item_name)
         session[r.GROUP_NAME_SK] = new_group_name
         return redirect(url_for("add.start_adding_item", item_name=item_name))
+
+    if maybe_group_toggle_update_saved(request.form):
+        return redirect(url_for("add.start_adding_item", item_name=item_name))
+
+    methods = []
+    if "breaking" in request.form.keys():
+        methods.append("add.breaking")
+
+    # TODO: temp for testing
+    return render_template(
+        "add_item/start.html",
+        item_name=item_name,
+        item_url=r.get_item_url(item_name),
+        group_name=group_name,
+        # js_data={"is_toggled_selected": True},
+        # checked_from_group=
+        # Temporarily on for testing
+        is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
+        show_group=True)
 
 
 # @bp.route("/add_item/<item_name>", methods=["GET", "POST"])

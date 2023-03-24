@@ -1,0 +1,10 @@
+{
+  "group name": "Testing",
+  "items": [
+    "Testing item",
+    "Another item"
+  ],
+  "breaking": {
+    "some": "data"
+  }
+}

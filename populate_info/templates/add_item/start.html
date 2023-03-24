@@ -21,4 +21,37 @@
         <input class="submit_button" type="submit" value="Set group name" name="group_name_btn"/>
     </form>
 
+    <br>
+    <h3> How do you obtain this block? </h3>
+    <form method="post" id="item_start_form">
+        <table class="alignment">
+            <tr>
+                <td>
+                    <input type="checkbox" id="breaking_cbox" name="breaking"/>
+                </td>
+                <td class="left_padding">
+                    <label for="breaking_cbox">Breaking? </label>
+                </td>
+            </tr>
+        </table>
+        <input class="submit_button" type="submit" value="Next"></input>
+    </form>
+
+    <script>
+        $(document).ready(function () {
+            const quote_literal = /&#39;/g;
+            const replace_second = /{|}\g;
+            if ('{{ already_checked }}' == '[]') {
+                return;
+            }
+            '{{ already_checked }}'.split(",").forEach(
+                element => {
+                    document.getElementById(
+                        element.replace(quote_literal, "").replace(replace_second, "").replaceAll(" ", "")
+                    ).checked = true;
+                }
+            );
+        });
+    </script>
+
 {% endblock %}

@@ -14,8 +14,16 @@ ITEM_2 = "Test Item 2"
 ITEM_3 = "Test Item 3"
 
 
+def _add_manual_test_group():
+    with open(r.get_group_fn("testing_group"), "w") as f:
+        json.dump(
+            {"group name": "Testing",
+             "items": ["Testing item", "Another item"],
+             "breaking": {"some": "data"}},
+            f)
+
+
 def _create_file(filename, data):
-    print(f"filename {filename}")
     with open(filename, "w") as f:
         json.dump(data, f)
 
@@ -53,6 +61,15 @@ def group_file_with_2_items():
     return GROUP_1
 
 
+@pytest.fixture
+def group_file_all_categories():
+    _create_file(r.get_group_fn(GROUP_1),
+                 {r.GROUP_NAME_KEY: GROUP_1,
+                  r.GROUP_ITEMS_KEY: [ITEM_1, ITEM_2],
+                  r.BREAKING_CAT_KEY: {"something": "here"}})
+    return GROUP_1
+
+
 @pytest.fixture(autouse=True)
 def create_tmp_dir(monkeypatch, tmp_path):
     Path(tmp_path / r.DIR).mkdir(parents=True)
@@ -61,3 +78,6 @@ def create_tmp_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     _create_file(r.ADDED_ITEM_FN, {r.ITEM_LIST_KEY: []})
     _create_file(r.FULL_ITEMS_LIST_FN, {r.ITEM_LIST_KEY: [ITEM_1, ITEM_2, ITEM_3]})
+    # While I have the tmp file harcdcoded in prod I need to create it in the tests too.
+    # TODO: delete this
+    _add_manual_test_group()
