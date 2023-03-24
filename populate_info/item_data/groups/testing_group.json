@@ -5,6 +5,13 @@
     "Another item"
   ],
   "breaking": {
-    "some": "data"
+    "required tool": "any",
+    "fastest tool": "Axe",
+    "silk touch": false
+  },
+  "breaking - all": {
+    "required tool o1": "any",
+    "required tool o2": "specific - TOOL NAME",
+    "silk touch o1": true
   }
 }

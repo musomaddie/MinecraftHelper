@@ -66,7 +66,8 @@ def group_file_all_categories():
     _create_file(r.get_group_fn(GROUP_1),
                  {r.GROUP_NAME_KEY: GROUP_1,
                   r.GROUP_ITEMS_KEY: [ITEM_1, ITEM_2],
-                  r.BREAKING_CAT_KEY: {"something": "here"}})
+                  r.BREAKING_CAT_KEY: {
+                      "required tool": "any", "fastest tool": "Axe", "silk touch": False}})
     return GROUP_1
 
 

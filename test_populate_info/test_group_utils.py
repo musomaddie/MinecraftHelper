@@ -2,7 +2,8 @@ import pytest
 
 import populate_info.resources as r
 from conftest import ITEM_1, ITEM_2
-from populate_info.group_utils import should_show_group, get_group_categories, maybe_group_toggle_update_saved
+from populate_info.group_utils import get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, \
+    should_show_group
 
 
 # #################################################################################################################### #
@@ -37,7 +38,20 @@ def test_get_group_categories_all_categories(group_file_all_categories):
 
 
 # #################################################################################################################### #
-#  maybe update button                                                                                                #
+#  get group breaking info                                                                                             #
+# #################################################################################################################### #
+def test_get_group_breaking_info(group_file_all_categories):
+    result = get_group_breaking_info(group_file_all_categories)
+    assert "required tool" in result
+    assert result["required tool"] == "any"
+    assert "fastest tool" in result
+    assert result["fastest tool"] == "Axe"
+    assert "silk touch"
+    assert not result["silk touch"]
+
+
+# #################################################################################################################### #
+#  maybe update button                                                                                                 #
 # #################################################################################################################### #
 
 @pytest.mark.parametrize("request_form", [{}, {"not what we want": "hehehe"}])
