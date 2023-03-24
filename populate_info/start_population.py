@@ -39,7 +39,7 @@ def start_adding_item(item_name):
         session[r.GROUP_NAME_SK] = new_group_name
         return redirect(url_for("add.start_adding_item", item_name=item_name))
 
-    if maybe_group_toggle_update_saved(request.form):
+    if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.start_adding_item", item_name=item_name))
 
     methods = []
@@ -52,10 +52,8 @@ def start_adding_item(item_name):
         item_name=item_name,
         item_url=r.get_item_url(item_name),
         group_name=group_name,
-        # js_data={"is_toggled_selected": True},
-        # checked_from_group=
-        # Temporarily on for testing
         is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
+        # Temporarily on for testing
         show_group=True)
 
 
