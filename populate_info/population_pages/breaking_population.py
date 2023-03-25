@@ -2,6 +2,7 @@ from flask import redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import maybe_group_toggle_update_saved
+from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 
 REQ_TOOL_HTML_TO_JSON = {
@@ -48,12 +49,5 @@ def breaking(item_name):
     if "fastest_tool" in request.form:
         data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest_specific_tool"])
 
-    # TODO: save data & maybe move on.
-
-    return render_template(
-        "add_item/breaking.html",
-        item_name=item_name,
-        group_name=session[r.GROUP_NAME_SK],
-        is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, False),
-        # TODO - temporarily on for testing!
-        show_group=True)
+    return either_move_next_category_or_repeat(
+        item_name, "add.breaking", session[r.METHOD_LIST_SK], request.form)
