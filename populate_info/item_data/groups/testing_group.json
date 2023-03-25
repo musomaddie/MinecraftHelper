@@ -5,13 +5,15 @@
     "Another item"
   ],
   "breaking": {
-    "required tool": "any",
+    "requires tool": "any",
     "fastest tool": "Axe",
     "silk touch": false
   },
   "breaking - all": {
-    "required tool o1": "any",
-    "required tool o2": "specific - TOOL NAME",
+    "requires tool o1": "any",
+    "requires tool o2": "specific",
+    "fastest tool": "tool (optional)",
+    "required tool": "TOOL NAME (optional)",
     "silk touch o1": true
   }
 }

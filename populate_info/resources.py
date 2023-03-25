@@ -18,6 +18,10 @@ ITEM_LIST_KEY = "items"
 GROUP_NAME_KEY = "group name"
 GROUP_ITEMS_KEY = "items"
 BREAKING_CAT_KEY = "breaking"
+BREAKING_REQ_TOOL_KEY = "requires tool"
+BREAKING_REQ_SPECIFIC_TOOL_KEY = "required tool"
+BREAKING_FASTEST_TOOL_KEY = "fastest tool"
+BREAKING_SILK_TOUCH_KEY = "silk touch"
 
 # ############################## SESSION KEYS #############################################
 CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.
@@ -31,8 +35,39 @@ def get_item_url(item_name: str) -> str:
     return f"https://minecraft.fandom.com/wiki/{item_name.replace(' ', '%20')}"
 
 
+def clean_up_tool_name(tool_id: str) -> str:
+    """ Taking in a tool name cleans it up ready for display. """
+    tool_id.replace("_", " ").title()
+    return tool_id
+
+
+def idify_tool_name(tool_name: str) -> str:
+    """ Inverse behaviour to clean_up_tool_name. """
+    tool_name.lower().replace(" ", "_")
+    return tool_name
+
+
+# ####################################### JSON to HTML helpers ###########################################
+
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     helper_dict = {
         "breaking": "breaking_cbox"
     }
-    return [helper_dict[cat_name] for cat_name in category_names]
+    return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]
+
+# def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, str]:
+#     """ Takes an object taken from JSON that contains the breaking data and returns the corresponding information that
+#     should be passed to the webpage."""
+#     # TODO: handle list being allowed.
+#     # To check a radio button with javascript I need its id.
+#     result = {}
+#     # Find the radio button for required tool:
+#     value = breaking_data[REQ_TOOL_BREAKING_KEY]
+#     if value == "any":
+#         button = "requires_tool_any"
+#     if not value:
+#         button = "requires_tool_no"
+#     else:
+#         button = "requires_tool_spec"
+#
+#     pass
