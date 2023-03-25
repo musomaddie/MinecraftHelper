@@ -43,8 +43,7 @@ def clean_up_tool_name(tool_id: str) -> str:
 
 def idify_tool_name(tool_name: str) -> str:
     """ Inverse behaviour to clean_up_tool_name. """
-    tool_name.lower().replace(" ", "_")
-    return tool_name
+    return tool_name.lower().replace(" ", "_")
 
 
 # ####################################### JSON to HTML helpers ###########################################
@@ -54,20 +53,3 @@ def category_names_to_html_ids(category_names: list[str]) -> list[str]:
         "breaking": "breaking_cbox"
     }
     return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]
-
-# def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, str]:
-#     """ Takes an object taken from JSON that contains the breaking data and returns the corresponding information that
-#     should be passed to the webpage."""
-#     # TODO: handle list being allowed.
-#     # To check a radio button with javascript I need its id.
-#     result = {}
-#     # Find the radio button for required tool:
-#     value = breaking_data[REQ_TOOL_BREAKING_KEY]
-#     if value == "any":
-#         button = "requires_tool_any"
-#     if not value:
-#         button = "requires_tool_no"
-#     else:
-#         button = "requires_tool_spec"
-#
-#     pass
