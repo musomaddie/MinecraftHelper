@@ -80,6 +80,7 @@ def group_file_all_categories():
 @pytest.fixture(autouse=True)
 def create_tmp_dir(monkeypatch, tmp_path):
     Path(tmp_path / r.DIR).mkdir(parents=True)
+    Path(tmp_path / r.DIR / "all_items").mkdir(parents=True)
     Path(tmp_path / r.DIR / "groups").mkdir(parents=True)
     # Monkeypatch these paths before creating any files.
     monkeypatch.chdir(tmp_path)
