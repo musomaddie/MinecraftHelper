@@ -1,9 +1,7 @@
-from unittest.mock import patch
-
 import pytest
 
 import populate_info.resources as r
-from conftest import ITEM_1
+from conftest import ITEM_1, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.breaking_population import breaking_json_to_html_ids
 
 dir = "populate_info.population_pages.breaking_population"
@@ -64,11 +62,7 @@ def test_breaking_get(client):
     assert response.status_code == 200
 
 
-@patch(f"{dir}.write_json_category_to_file")
-def test_breaking_post(mock_write_json_cat_to_file, client):
-    with client.session_transaction() as session_before:
-        session_before[r.GROUP_NAME_SK] = "group name"
-        session_before[r.METHOD_LIST_SK] = []
+def test_breaking_post(client, session_with_group, item_file_name_only):
     response = client.post(
         f"/breaking/{ITEM_1}", data={
             "requires_tool": "tool_no",
@@ -76,9 +70,7 @@ def test_breaking_post(mock_write_json_cat_to_file, client):
         }
     )
     assert response.status_code == 302
-    mock_write_json_cat_to_file.assert_called_once_with(
-        ITEM_1, "group name", r.BREAKING_CAT_KEY, {
-            r.BREAKING_REQ_TOOL_KEY: "none",
-            r.BREAKING_SILK_TOUCH_KEY: False
-        }
-    )
+    assert_dictionary_values(
+        get_file_contents(r.get_item_fn(ITEM_1)),
+        [(r.BREAKING_CAT_KEY, {r.BREAKING_REQ_TOOL_KEY: "none", r.BREAKING_SILK_TOUCH_KEY: False})],
+        assert_exact=False)

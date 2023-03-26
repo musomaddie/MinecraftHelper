@@ -61,6 +61,7 @@ def client(app):
 def session_with_group(client):
     with client.session_transaction() as first_session:
         first_session[r.GROUP_NAME_SK] = GROUP_1
+        first_session[r.METHOD_LIST_SK] = []
 
 
 @pytest.fixture

@@ -6,7 +6,7 @@ import pytest
 import populate_info.resources as r
 from conftest import GROUP_1, ITEM_1, ITEM_2, ITEM_3, get_file_contents, assert_dictionary_values
 from populate_info import json_utils
-from populate_info.json_utils import write_json_category_to_file, create_json_file
+from populate_info.json_utils import create_json_file, write_json_category_to_file
 
 
 # #################################################################################################################### #
@@ -43,6 +43,17 @@ def test_add_to_group_file_existing_group(group_file_with_1_item):
     assert r.GROUP_ITEMS_KEY in contents
     assert len(contents[r.GROUP_ITEMS_KEY]) == 2
     assert contents[r.GROUP_ITEMS_KEY][1] == ITEM_2
+
+
+# #################################################################################################################### #
+#  create json file                                                                                                    #
+# #################################################################################################################### #
+def test_create_json_file():
+    assert not path.exists(r.get_item_fn(ITEM_3))
+    create_json_file(ITEM_3)
+    assert path.exists(r.get_item_fn(ITEM_3))
+    result = get_file_contents(r.get_item_fn(ITEM_3))
+    assert_dictionary_values(result, [[r.ITEM_NAME_KEY, ITEM_3]])
 
 
 # #################################################################################################################### #
@@ -95,35 +106,16 @@ def test_remove_from_group_without_item(group_file_with_1_item):
 
 
 # #################################################################################################################### #
-#  remove from group file                                                                                              #
+#  write json category                                                                                                #
 # #################################################################################################################### #
-def test_write_json_category_to_file_no_file():
-    write_json_category_to_file(ITEM_1, GROUP_1, "cat 1", {"key 1": "value 1", "key 2": "value 2"})
-    result = get_file_contents(r.get_item_fn(ITEM_1))
+def test_write_json_category_to_file(item_file_name_only):
+    cat_name = "testing info"
+    category_info = {"key1": "value 1", "key2": "value 2"}
+    write_json_category_to_file(item_file_name_only, cat_name, category_info)
     assert_dictionary_values(
-        result,
-        [(r.ITEM_NAME_KEY, ITEM_1),
-         (r.GROUP_NAME_KEY, GROUP_1),
-         ("cat 1", {"key 1": "value 1", "key 2": "value 2"})])
-
-
-def test_write_json_category_to_file_non_interesting_group_name():
-    write_json_category_to_file(ITEM_1, "", "cat 1", {"key 1": "value 1"})
-    result = get_file_contents(r.get_item_fn(ITEM_1))
-    assert r.GROUP_NAME_KEY not in result
-    assert_dictionary_values(
-        result,
-        [(r.ITEM_NAME_KEY, ITEM_1),
-         ("cat 1", {"key 1": "value 1"})]
+        get_file_contents(r.get_item_fn(item_file_name_only)),
+        [(r.ITEM_NAME_KEY, item_file_name_only),
+         (cat_name, category_info)]
     )
 
-
-# #################################################################################################################### #
-#  create json file                                                                                                    #
-# #################################################################################################################### #
-def test_create_json_file():
-    assert not path.exists(r.get_item_fn(ITEM_3))
-    create_json_file(ITEM_3)
-    assert path.exists(r.get_item_fn(ITEM_3))
-    result = get_file_contents(r.get_item_fn(ITEM_3))
-    assert_dictionary_values(result, [[r.ITEM_NAME_KEY, ITEM_3]])
+# TODO - file not found.

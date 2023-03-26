@@ -78,9 +78,7 @@ def breaking(item_name):
         data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest_specific_tool"])
 
     # Save data to JSON - TODO: delete when testing otherwise this could get interesting!
-    write_json_category_to_file(
-        item_name, session[r.GROUP_NAME_SK], r.BREAKING_CAT_KEY, data
-    )
+    write_json_category_to_file(item_name, r.BREAKING_CAT_KEY, data)
 
     # TODO: add a save to group util as well for this (but with a maybe).
 
