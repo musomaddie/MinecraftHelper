@@ -1,7 +1,9 @@
+from os import path
+
 from flask import session
 
 import populate_info.resources as r
-from conftest import GROUP_1, ITEM_1
+from conftest import GROUP_1, ITEM_1, assert_dictionary_values, get_file_contents
 
 
 def test_start_adding_item_get(client):
@@ -34,23 +36,25 @@ def test_start_adding_item_post_toggle_updated(client):
         assert r.USE_GROUP_VALUES_SK in session
 
 
-# assert maybe_group_toggle_update_saved(my_session, {"update_use_group_values": "", "group_checkbox": ""})
-
-
-# def test_start_adding_item_post_toggle_update(client):
-#     with client:
-#         response = client.post(
-#             f"/add_item/{ITEM_1}", data=
-#         )
-
 def test_start_redirects(client):
     assert client.get("/").status_code == 302
 
 
 def test_start_adding_item_next_category(client):
+    # The file should not exist here
+    assert not path.exists(r.get_item_fn(ITEM_1))
+
     with client:
         response = client.post(
             f"/add_item/{ITEM_1}", data={"breaking": "some info"})
         assert response.status_code == 302
         assert r.METHOD_LIST_SK in session
         assert len(session[r.METHOD_LIST_SK]) == 0
+
+    # Regardless of what else happens here, I know what the file should look like.
+    contents = get_file_contents(r.get_item_fn(ITEM_1))
+    print(f"\nContents: {contents}")
+    assert_dictionary_values(
+        get_file_contents(r.get_item_fn(ITEM_1)),
+        # TODO - when the manual group value is deleted update this string.
+        [(r.ITEM_NAME_KEY, ITEM_1), (r.GROUP_NAME_KEY, "TESTING_GROUP")])

@@ -1,5 +1,5 @@
 import populate_info.resources as r
-from populate_info.json_utils import add_to_group_file, load_json_from_file, remove_from_group_file
+from populate_info.json_utils import add_to_group_file, load_json_from_file, remove_from_group_file, write_json_to_file
 
 
 def add_to_group(group_name: str, item_name: str):
@@ -96,3 +96,12 @@ def remove_from_group(group_name: str, item_name: str):
     """
     if not is_group_name_interesting(group_name):
         remove_from_group_file(group_name, item_name)
+
+
+def write_group_data_to_json(item_name: str, group_name: str):
+    """ Write the name of this group to the item file. """
+    if not is_group_name_interesting(group_name):
+        return
+    data = load_json_from_file(r.get_item_fn(item_name))
+    data[r.GROUP_NAME_KEY] = group_name
+    write_json_to_file(r.get_item_fn(item_name), data)

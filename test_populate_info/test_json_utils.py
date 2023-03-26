@@ -6,7 +6,7 @@ import pytest
 import populate_info.resources as r
 from conftest import GROUP_1, ITEM_1, ITEM_2, ITEM_3, get_file_contents, assert_dictionary_values
 from populate_info import json_utils
-from populate_info.json_utils import write_json_category_to_file
+from populate_info.json_utils import write_json_category_to_file, create_json_file
 
 
 # #################################################################################################################### #
@@ -116,3 +116,14 @@ def test_write_json_category_to_file_non_interesting_group_name():
         [(r.ITEM_NAME_KEY, ITEM_1),
          ("cat 1", {"key 1": "value 1"})]
     )
+
+
+# #################################################################################################################### #
+#  create json file                                                                                                    #
+# #################################################################################################################### #
+def test_create_json_file():
+    assert not path.exists(r.get_item_fn(ITEM_3))
+    create_json_file(ITEM_3)
+    assert path.exists(r.get_item_fn(ITEM_3))
+    result = get_file_contents(r.get_item_fn(ITEM_3))
+    assert_dictionary_values(result, [[r.ITEM_NAME_KEY, ITEM_3]])

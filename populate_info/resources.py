@@ -6,7 +6,7 @@ FULL_ITEMS_LIST_FN = f"{DIR}all_items/full_item_list.json"
 
 
 def get_item_fn(item_name):
-    return f"{DIR}{item_name}.json"
+    return f"{DIR}{item_name.replace(' ', '_').lower()}.json"
 
 
 def get_group_fn(group_name: str):

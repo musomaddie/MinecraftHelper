@@ -15,6 +15,11 @@ def add_to_group_file(group_name: str, item_name: str):
     write_json_to_file(filename, data)
 
 
+def create_json_file(item_name: str):
+    filename = r.get_item_fn(item_name)
+    write_json_to_file(filename, {r.ITEM_NAME_KEY: item_name})
+
+
 def remove_from_group_file(group_name: str, item_name: str):
     filename = r.get_group_fn(group_name)
     if not path.exists(filename):
