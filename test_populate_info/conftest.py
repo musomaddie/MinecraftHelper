@@ -34,6 +34,17 @@ def get_file_contents(filename: str) -> dict:
         return json.load(f)
 
 
+def assert_dictionary_values(result, expected_key_value_pairs):
+    assert len(result) == len(expected_key_value_pairs), f"There are values in {result} that shouldn't be there"
+    for expected_key, expected_value in zip(
+            [l[0] for l in expected_key_value_pairs],
+            [l[1] for l in expected_key_value_pairs]
+    ):
+        assert expected_key in result, f"{expected_key} is not found in {result}"
+        assert result[expected_key] == expected_value, f"expected result[{expected_key}] to be {expected_value} but " \
+                                                       f"was {result[expected_key]}"
+
+
 @pytest.fixture
 def app():
     app = create_app({"TESTING": True})

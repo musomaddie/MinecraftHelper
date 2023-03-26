@@ -1,0 +1,9 @@
+{
+  "item name": "Item Name",
+  "group name": "Testing",
+  "breaking": {
+    "requires tool": "any",
+    "fastest tool": "Axe",
+    "silk touch": false
+  }
+}

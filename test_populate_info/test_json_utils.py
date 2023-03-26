@@ -4,8 +4,9 @@ from os import path
 import pytest
 
 import populate_info.resources as r
-from conftest import GROUP_1, ITEM_1, ITEM_2, ITEM_3, get_file_contents
+from conftest import GROUP_1, ITEM_1, ITEM_2, ITEM_3, get_file_contents, assert_dictionary_values
 from populate_info import json_utils
+from populate_info.json_utils import write_json_category_to_file
 
 
 # #################################################################################################################### #
@@ -91,3 +92,27 @@ def test_remove_from_group_without_item(group_file_with_1_item):
     json_utils.remove_from_group_file(GROUP_1, ITEM_2)
     result = get_file_contents(r.get_group_fn(GROUP_1))
     assert result == original
+
+
+# #################################################################################################################### #
+#  remove from group file                                                                                              #
+# #################################################################################################################### #
+def test_write_json_category_to_file_no_file():
+    write_json_category_to_file(ITEM_1, GROUP_1, "cat 1", {"key 1": "value 1", "key 2": "value 2"})
+    result = get_file_contents(r.get_item_fn(ITEM_1))
+    assert_dictionary_values(
+        result,
+        [(r.ITEM_NAME_KEY, ITEM_1),
+         (r.GROUP_NAME_KEY, GROUP_1),
+         ("cat 1", {"key 1": "value 1", "key 2": "value 2"})])
+
+
+def test_write_json_category_to_file_non_interesting_group_name():
+    write_json_category_to_file(ITEM_1, "", "cat 1", {"key 1": "value 1"})
+    result = get_file_contents(r.get_item_fn(ITEM_1))
+    assert r.GROUP_NAME_KEY not in result
+    assert_dictionary_values(
+        result,
+        [(r.ITEM_NAME_KEY, ITEM_1),
+         ("cat 1", {"key 1": "value 1"})]
+    )

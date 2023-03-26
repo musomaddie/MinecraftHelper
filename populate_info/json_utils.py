@@ -45,6 +45,22 @@ def get_next_item() -> str:
     return all_items[len(current_items)]
 
 
+def write_json_category_to_file(item_name: str, group_name: str, category_name: str, category_info: dict):
+    # TODO: implement for when there should be multiple things in this category.
+
+    # try and load data if it already exists.
+    filename = r.get_item_fn(item_name)
+    data = {r.ITEM_NAME_KEY: item_name}
+    # TODO - exclude group name better but results in circular import.
+    if not (group_name is None or group_name == ""):
+        data[r.GROUP_NAME_KEY] = group_name
+    if path.exists(filename):
+        data = load_json_from_file(filename)
+
+    data[category_name] = category_info
+    write_json_to_file(filename, data)
+
+
 def write_json_to_file(filename: str, data: dict):
     with open(filename, "w") as f:
         json.dump(data, f)

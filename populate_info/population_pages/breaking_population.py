@@ -76,5 +76,8 @@ def breaking(item_name):
     if "fastest_tool" in request.form:
         data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest_specific_tool"])
 
+    # Save data to JSON - TODO: delete when testing otherwise this could get interesting!
+    # TODO: add a group util as well for this (but with a maybe).
+
     return either_move_next_category_or_repeat(
         item_name, "add.breaking", session[r.METHOD_LIST_SK], request.form)

@@ -32,6 +32,12 @@ def get_group_categories(group_name: str) -> list[str]:
     return [key for key in list(data.keys()) if key != r.GROUP_NAME_KEY and key != r.GROUP_ITEMS_KEY]
 
 
+def include_group_in_item_file(group_name: str, item_data: dict[str, str]):
+    if not is_group_name_interesting(group_name):
+        return
+    item_data[r.GROUP_NAME_KEY] = group_name
+
+
 def is_group_name_interesting(group_name: str) -> bool:
     """
     Returns whether the group name is 'interesting'. (used to exit early).

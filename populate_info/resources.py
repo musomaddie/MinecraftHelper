@@ -14,8 +14,9 @@ def get_group_fn(group_name: str):
 
 
 # ########################################## JSON KEYS #########################################
-ITEM_LIST_KEY = "items"
 GROUP_NAME_KEY = "group name"
+ITEM_NAME_KEY = "item name"
+ITEM_LIST_KEY = "items"
 GROUP_ITEMS_KEY = "items"
 BREAKING_CAT_KEY = "breaking"
 BREAKING_REQ_TOOL_KEY = "requires tool"
