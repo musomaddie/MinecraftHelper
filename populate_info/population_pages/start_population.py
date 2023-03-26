@@ -19,6 +19,7 @@ def start_adding_item(item_name):
     session[r.CUR_ITEM_SK] = item_name
     # Temporarily set for testing - TODO
     session[r.GROUP_NAME_SK] = "TESTING_GROUP"
+    # TODO: add corresponding boolean for group name.
     group_name = session.get(r.GROUP_NAME_SK, "")
 
     # Return basic page if this is a get request!!

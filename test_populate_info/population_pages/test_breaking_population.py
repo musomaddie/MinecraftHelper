@@ -1,7 +1,12 @@
+from unittest.mock import patch
+
 import pytest
 
 import populate_info.resources as r
+from conftest import ITEM_1
 from populate_info.population_pages.breaking_population import breaking_json_to_html_ids
+
+dir = "populate_info.population_pages.breaking_population"
 
 r_tool = "Iron Axe"
 r_tool_expected = "iron_axe"
@@ -57,3 +62,23 @@ def test_breaking_get(client):
         session_before[r.GROUP_NAME_SK] = "group name"
     response = client.get("/breaking/Testsing Item")
     assert response.status_code == 200
+
+
+@patch(f"{dir}.write_json_category_to_file")
+def test_breaking_post(mock_write_json_cat_to_file, client):
+    with client.session_transaction() as session_before:
+        session_before[r.GROUP_NAME_SK] = "group name"
+        session_before[r.METHOD_LIST_SK] = []
+    response = client.post(
+        f"/breaking/{ITEM_1}", data={
+            "requires_tool": "tool_no",
+            "requires_silk": "silk_no",
+        }
+    )
+    assert response.status_code == 302
+    mock_write_json_cat_to_file.assert_called_once_with(
+        ITEM_1, "group name", r.BREAKING_CAT_KEY, {
+            r.BREAKING_REQ_TOOL_KEY: "none",
+            r.BREAKING_SILK_TOUCH_KEY: False
+        }
+    )

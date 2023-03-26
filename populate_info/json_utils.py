@@ -46,6 +46,8 @@ def get_next_item() -> str:
 
 
 def write_json_category_to_file(item_name: str, group_name: str, category_name: str, category_info: dict):
+    # TODO: write a creator for when the file is first created that we know is called and remove group name from
+    #  category list.
     # TODO: implement for when there should be multiple things in this category.
 
     # try and load data if it already exists.
@@ -63,4 +65,4 @@ def write_json_category_to_file(item_name: str, group_name: str, category_name: 
 
 def write_json_to_file(filename: str, data: dict):
     with open(filename, "w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=2)

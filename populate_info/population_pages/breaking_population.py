@@ -2,6 +2,7 @@ from flask import redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import maybe_group_toggle_update_saved
+from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 
@@ -77,7 +78,11 @@ def breaking(item_name):
         data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest_specific_tool"])
 
     # Save data to JSON - TODO: delete when testing otherwise this could get interesting!
-    # TODO: add a group util as well for this (but with a maybe).
+    write_json_category_to_file(
+        item_name, session[r.GROUP_NAME_SK], r.BREAKING_CAT_KEY, data
+    )
+
+    # TODO: add a save to group util as well for this (but with a maybe).
 
     return either_move_next_category_or_repeat(
         item_name, "add.breaking", session[r.METHOD_LIST_SK], request.form)
