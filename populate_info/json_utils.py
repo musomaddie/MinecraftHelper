@@ -51,8 +51,13 @@ def remove_from_group_file(group_name: str, item_name: str):
 
 
 def write_json_category_to_file(item_name: str, category_name: str, category_info: dict):
+    write_json_category_to_file_given_filename(
+        r.get_item_fn(item_name), category_name, category_info
+    )
+
+
+def write_json_category_to_file_given_filename(filename: str, category_name: str, category_info: dict):
     # TODO: implement for when there should be multiple things in this category.
-    filename = r.get_item_fn(item_name)
     data = load_json_from_file(filename)
     data[category_name] = category_info
     write_json_to_file(filename, data)
