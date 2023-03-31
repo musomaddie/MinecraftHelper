@@ -38,8 +38,8 @@ def get_item_url(item_name: str) -> str:
 
 def clean_up_tool_name(tool_id: str) -> str:
     """ Taking in a tool name cleans it up ready for display. """
-    tool_id.replace("_", " ").title()
-    return tool_id
+    tool_id.replace("_", " ")
+    return tool_id.title()
 
 
 def idify_tool_name(tool_name: str) -> str:

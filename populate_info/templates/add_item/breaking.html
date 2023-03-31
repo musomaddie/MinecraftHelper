@@ -65,7 +65,7 @@
                            value="fastest_yes" name="fastest_tool"/>
                 </td>
                 <td class="left_padding right_align">
-                    <select name="fastest_specific_tool">
+                    <select name="fastest_specific_tool" id="fastest_specific_tool_select">
                         <option></option>
                         <option value="flint_and_steel">Flint and Steel</option>
                         <option value="shears">Shears</option>
@@ -103,4 +103,19 @@
                value="Submit & move to the next obtainment method"
                name="next"/>
     </form>
+    <script>
+        $(document).ready(function () {
+            // Quit early if we know we shouldn't be updating these values.
+            if ((!JSON.parse('{{ show_group|tojson }}')) && (!JSON.parse('{{ is_toggle_selected|tojson }}'))) {
+                return
+            }
+            let groupInfo = JSON.parse(' {{ group_info|tojson }}');
+            groupInfo["to_mark_checked"].forEach(
+                element => document.getElementById(element).checked = true
+            );
+            for (let key in groupInfo["dropdown_select"]) {
+                document.getElementById(key).value = groupInfo["dropdown_select"][key]
+            }
+        });
+    </script>
 {% endblock %}

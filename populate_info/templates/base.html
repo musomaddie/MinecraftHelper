@@ -47,6 +47,9 @@
 {% block body %} {% endblock %}
 <script>
     $(document).ready(function () {
+        if (!JSON.parse('{{ show_group|tojson }}')) {
+            return;
+        }
         if (!JSON.parse('{{ is_toggle_selected|tojson }}')) {
             document.getElementById("toggle-checkbox").checked = true;
         }

@@ -6,8 +6,8 @@
   ],
   "breaking": {
     "requires tool": "any",
-    "fastest tool": "Axe",
-    "silk touch": false
+    "silk touch": false,
+    "fastest tool": "Pickaxe"
   },
   "breaking - all": {
     "requires tool o1": "any",
