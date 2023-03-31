@@ -168,3 +168,15 @@ table.with_row_dividers {
 .with_row_dividers tr {
     border-bottom: 1px dashed #7542e3;
 }
+
+.crafting_grid_table {
+    border-collapse: collapse;
+}
+
+.crafting_grid_row {
+    height: 100px;
+}
+
+.crafting_grid_cell {
+    text-align: center;
+}
