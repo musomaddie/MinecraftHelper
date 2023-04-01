@@ -66,8 +66,8 @@ def test_get_group_categories_noninteresting_group():
 # #################################################################################################################### #
 def test_get_group_breaking_info(group_file_all_categories):
     result = get_group_breaking_info(group_file_all_categories)
-    assert "required tool" in result
-    assert result["required tool"] == "any"
+    assert "requires tool" in result
+    assert result["requires tool"] == "any"
     assert "fastest tool" in result
     assert result["fastest tool"] == "Axe"
     assert "silk touch"

@@ -44,7 +44,7 @@ def test_breaking_json_to_html_required_tool():
     result = breaking_json_to_html_ids(
         {"requires tool": "specific", "required tool": r_tool, "silk touch": False}
     )
-    assert r_tool_expected in result["dropdown_select"]
+    assert r_tool_expected == result["dropdown_select"]["specific_tool_select"]
 
 
 def test_breaking_json_to_html_fastest_tool():
@@ -52,13 +52,11 @@ def test_breaking_json_to_html_fastest_tool():
         {"requires tool": "any", "silk touch": False, "fastest tool": f_tool}
     )
     assert "fastest_tool" in result["to_mark_checked"]
-    assert f_tool_expected in result["dropdown_select"]
+    assert f_tool.lower() == result["dropdown_select"]["fastest_specific_tool_select"]
 
 
-def test_breaking_get(client):
-    with client.session_transaction() as session_before:
-        session_before[r.GROUP_NAME_SK] = "group name"
-    response = client.get("/breaking/Testsing Item")
+def test_breaking_get(client, session_with_group):
+    response = client.get("/breaking/Testing Item")
     assert response.status_code == 200
 
 

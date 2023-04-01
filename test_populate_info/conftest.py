@@ -16,6 +16,7 @@ ITEM_3 = "Test Item 3"
 
 def _add_manual_test_group():
     with open(r.get_group_fn("testing_group"), "w") as f:
+        print(f.name)
         json.dump(
             {"group name": "Testing",
              "items": ["Testing item", "Another item"],
@@ -58,7 +59,7 @@ def client(app):
 
 
 @pytest.fixture
-def session_with_group(client):
+def session_with_group(group_file_all_categories, client):
     with client.session_transaction() as first_session:
         first_session[r.GROUP_NAME_SK] = GROUP_1
         first_session[r.METHOD_LIST_SK] = []
@@ -92,7 +93,7 @@ def group_file_all_categories():
                  {r.GROUP_NAME_KEY: GROUP_1,
                   r.GROUP_ITEMS_KEY: [ITEM_1, ITEM_2],
                   r.BREAKING_CAT_KEY: {
-                      "required tool": "any", "fastest tool": "Axe", "silk touch": False}})
+                      "requires tool": "any", "fastest tool": "Axe", "silk touch": False}})
     return GROUP_1
 
 

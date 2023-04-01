@@ -47,6 +47,7 @@ def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, list[str]]:
 @item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
     """ Handles populating the breaking obtainment method."""
+    print(session[r.GROUP_NAME_SK])
     if request.method == "GET":
         return render_template(
             "add_item/breaking.html",
