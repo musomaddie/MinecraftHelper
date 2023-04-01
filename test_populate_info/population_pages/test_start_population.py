@@ -24,7 +24,6 @@ def test_start_adding_item_post_group_name(client):
         assert session[r.GROUP_NAME_SK] == GROUP_1
 
 
-# TODO: write this!
 def test_start_adding_item_post_toggle_updated(client):
     with client.session_transaction() as session_before:
         assert r.USE_GROUP_VALUES_SK not in session_before
@@ -53,8 +52,20 @@ def test_start_adding_item_next_category(client):
 
     # Regardless of what else happens here, I know what the file should look like.
     contents = get_file_contents(r.get_item_fn(ITEM_1))
-    print(f"\nContents: {contents}")
     assert_dictionary_values(
         get_file_contents(r.get_item_fn(ITEM_1)),
         # TODO - when the manual group value is deleted update this string.
         [(r.ITEM_NAME_KEY, ITEM_1), (r.GROUP_NAME_KEY, "TESTING_GROUP")])
+
+
+def test_start_adding_item_all_categories(client):
+    # The test above asserts the item file so I don't really have to worry about what's happening here.
+    with client:
+        response = client.post(
+            f"/add_item/{ITEM_1}",
+            data={"breaking": "some info", "crafting": "more info"}
+        )
+        assert response.status_code == 302
+        assert r.METHOD_LIST_SK in session
+        assert len(session[r.METHOD_LIST_SK]) == 1
+        assert "add.crafting" in session[r.METHOD_LIST_SK]
