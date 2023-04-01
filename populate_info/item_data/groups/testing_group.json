@@ -9,11 +9,37 @@
     "silk touch": false,
     "fastest tool": "Pickaxe"
   },
-  "breaking - all": {
-    "requires tool o1": "any",
-    "requires tool o2": "specific",
-    "fastest tool": "tool (optional)",
-    "required tool": "TOOL NAME (optional)",
-    "silk touch o1": true
+  "[meta] breaking": {
+    "requires tool": [
+      "any",
+      "specific",
+      "none"
+    ],
+    "fastest tool": "optional -> tool name",
+    "required tool": "optional -> tool name",
+    "silk touch": [
+      true,
+      false
+    ],
+    "[meta] can be a list": true
+  },
+  "crafting": {
+    "slots": {
+      "1": "Item 1",
+      "2": "Item 2",
+      "4": "Item 4"
+    },
+    "number created": 1,
+    "works in smaller grid": true,
+    "relative positioning": "flexible"
+  },
+  "[meta] crafting": {
+    "[meta] slots_description": "If a slot isn't used it's missing from this list. ",
+    "[meta] slots_numbering": "slots are numbered from left to right - top to bottom (matching html",
+    "[meta] can be a list": true,
+    "relative positioning": [
+      "flexible",
+      "strict"
+    ]
   }
 }
