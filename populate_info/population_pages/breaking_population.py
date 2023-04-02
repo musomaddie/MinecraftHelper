@@ -1,8 +1,8 @@
 from flask import redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
-from populate_info.group_utils import (maybe_group_toggle_update_saved, maybe_write_category_to_group,
-    get_group_breaking_info)
+from populate_info.group_utils import (maybe_group_toggle_update_saved, get_group_breaking_info,
+    maybe_write_category_to_group)
 from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
@@ -47,7 +47,7 @@ def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, list[str]]:
 @item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
 def breaking(item_name):
     """ Handles populating the breaking obtainment method."""
-    print(session[r.GROUP_NAME_SK])
+    # TODO - update all uses of session[r.GROUP_NAME] to session.get with a default group name.
     if request.method == "GET":
         return render_template(
             "add_item/breaking.html",

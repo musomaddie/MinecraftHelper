@@ -53,8 +53,9 @@ def test_should_show_group_false_poor_group_name():
 # #################################################################################################################### #
 def test_get_group_categories_all_categories(group_file_all_categories):
     result = get_group_categories(group_file_all_categories)
-    assert len(result) == 1
+    assert len(result) == 2
     assert "breaking" in result
+    assert "crafting" in result
 
 
 def test_get_group_categories_noninteresting_group():
@@ -76,7 +77,7 @@ def test_get_group_breaking_info(group_file_all_categories):
 
 def test_get_group_breaking_info_noninteresting_group_name():
     result = get_group_breaking_info("")
-    assert result == []
+    assert result == {}
 
 
 # #################################################################################################################### #

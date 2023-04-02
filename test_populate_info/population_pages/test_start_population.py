@@ -69,3 +69,5 @@ def test_start_adding_item_all_categories(client):
         assert r.METHOD_LIST_SK in session
         assert len(session[r.METHOD_LIST_SK]) == 1
         assert "add.crafting" in session[r.METHOD_LIST_SK]
+
+# TODO - test the HTML ids when told to use group!!
