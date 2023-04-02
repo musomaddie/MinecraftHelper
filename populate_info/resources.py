@@ -19,10 +19,15 @@ ITEM_NAME_KEY = "item name"
 ITEM_LIST_KEY = "items"
 GROUP_ITEMS_KEY = "items"
 BREAKING_CAT_KEY = "breaking"
+CRAFTING_CAT_KEY = "crafting"
+
+# ##### Breaking
 BREAKING_REQ_TOOL_KEY = "requires tool"
 BREAKING_REQ_SPECIFIC_TOOL_KEY = "required tool"
 BREAKING_FASTEST_TOOL_KEY = "fastest tool"
 BREAKING_SILK_TOUCH_KEY = "silk touch"
+
+# #### Crafting
 
 # ############################## SESSION KEYS #############################################
 CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.
@@ -51,6 +56,7 @@ def idify_tool_name(tool_name: str) -> str:
 
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     helper_dict = {
-        "breaking": "breaking_cbox"
+        "breaking": "breaking_cbox",
+        "crafting": "crafting_box"
     }
     return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]

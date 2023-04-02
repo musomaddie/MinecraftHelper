@@ -20,8 +20,15 @@ def add_to_group(group_name: str, item_name: str):
 def get_group_breaking_info(group_name: str) -> dict[str: str]:
     """ Gets all the breaking information from the existing group. """
     if not should_show_group(group_name):
-        return []
+        return {}
     return load_json_from_file(r.get_group_fn(group_name))[r.BREAKING_CAT_KEY]
+
+
+def get_group_crafting_info(group_name: str) -> dict[str: str]:
+    """ Gets all the crafting information from the existing group. """
+    if not should_show_group(group_name):
+        return {}
+    return load_json_from_file(r.get_group_fn(group_name))[r.CRAFTING_CAT_KEY]
 
 
 def get_group_categories(group_name: str) -> list[str]:

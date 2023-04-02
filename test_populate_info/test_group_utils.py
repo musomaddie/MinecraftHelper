@@ -3,10 +3,10 @@ from unittest.mock import patch
 import pytest
 
 import populate_info.resources as r
-from conftest import GROUP_3, ITEM_1, ITEM_2, GROUP_1, get_file_contents
+from conftest import GROUP_3, ITEM_1, ITEM_2, GROUP_1, get_file_contents, assert_dictionary_values, ITEM_3
 from populate_info.group_utils import (
     add_to_group, get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, should_show_group,
-    write_group_data_to_json)
+    write_group_data_to_json, get_group_crafting_info)
 
 FILE_LOC = "populate_info.group_utils"
 
@@ -77,6 +77,23 @@ def test_get_group_breaking_info(group_file_all_categories):
 
 def test_get_group_breaking_info_noninteresting_group_name():
     result = get_group_breaking_info("")
+    assert result == {}
+
+
+# #################################################################################################################### #
+#  get group crafting info                                                                                             #
+# #################################################################################################################### #
+def test_group_crafting_info(group_file_all_categories):
+    result = get_group_crafting_info(group_file_all_categories)
+    assert_dictionary_values(
+        result,
+        [("slots", {"1": ITEM_1, "2": ITEM_2, "3": ITEM_3}),
+         ("relative positioning", "strict"),
+         ("works in smaller grid", False)])
+
+
+def test_get_group_crafting_info_noninteresting_group_name():
+    result = get_group_crafting_info("")
     assert result == {}
 
 

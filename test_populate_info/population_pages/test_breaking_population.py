@@ -4,8 +4,6 @@ import populate_info.resources as r
 from conftest import ITEM_1, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.breaking_population import breaking_json_to_html_ids
 
-dir = "populate_info.population_pages.breaking_population"
-
 r_tool = "Iron Axe"
 r_tool_expected = "iron_axe"
 f_tool = "Shears"
