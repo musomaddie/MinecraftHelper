@@ -35,16 +35,26 @@ def get_file_contents(filename: str) -> dict:
 
 
 def assert_dictionary_values(result, expected_key_value_pairs, assert_exact=True):
+    """ Checks if the given expected_key_value_pairs are in the dictionary passed as result. If assert_exact is True,
+    the result should contain ONLY these values.
+
+    I have to assign the value to be asserted to a variable prior to calling assert otherwise pytest won't use my
+    custom assertion error messages. Not sure why :(
+    """
     if assert_exact:
-        assert len(result) == len(expected_key_value_pairs), f"There are values in {result} that shouldn't be there"
+        expected_length = len(result) == len(expected_key_value_pairs)
+        msg = f"{result} has more values then {expected_key_value_pairs}."
+        assert expected_length, msg
     for expected_key, expected_value in zip(
             [l[0] for l in expected_key_value_pairs],
             [l[1] for l in expected_key_value_pairs]
     ):
-        # TODO: look into pycharm not using my custom message.
-        assert expected_key in result, f"{expected_key} is not found in {result}"
-        assert result[expected_key] == expected_value, f"expected result[{expected_key}] to be {expected_value} but " \
-                                                       f"was {result[expected_key]}"
+        in_result = expected_key in result
+        msg = f"KEY: {expected_key} not found in {result}"
+        assert in_result, msg
+        match_result = result[expected_key] == expected_value
+        msg = f"expected result[{expected_key}] to be {expected_value} but was {result[expected_key]}"
+        assert match_result, msg
 
 
 @pytest.fixture
