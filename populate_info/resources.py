@@ -28,6 +28,10 @@ BREAKING_FASTEST_TOOL_KEY = "fastest tool"
 BREAKING_SILK_TOUCH_KEY = "silk touch"
 
 # #### Crafting
+CRAFTING_SLOTS_J_KEY = "slots"
+CRAFTING_N_CREATED_J_KEY = "number created"
+CRAFTING_SMALL_GRID_J_KEY = "works in smaller grid"
+CRAFTING_RELATIVE_POSITIONING_J_KEY = "relative positioning"
 
 # ############################## SESSION KEYS #############################################
 CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.

@@ -106,6 +106,7 @@ def group_file_all_categories():
                       "requires tool": "any", "fastest tool": "Axe", "silk touch": False},
                   r.CRAFTING_CAT_KEY: {
                       "slots": {"1": ITEM_1, "2": ITEM_2, "3": ITEM_3},
+                      "number created": 1,
                       "relative positioning": "strict",
                       "works in smaller grid": False}
                   })
