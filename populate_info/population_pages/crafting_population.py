@@ -42,12 +42,16 @@ def crafting(item_name):
             item_name=item_name,
             group_name=session.get(r.GROUP_NAME_SK, ""),
             is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, False),
-            # TODO - temporarily on
+            # TODO - do some fancy stuff with the group to force item names to update apprioriately. (i.e. Acacia
+            #  Planks become Spruce Planks for a Spruce button.
             group_info=crafting_json_to_html_ids(get_group_crafting_info(session[r.GROUP_NAME_SK])),
+            # TODO - temporarily on
             show_group=True)
 
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.crafting", item_name=item_name))
+
+    # TODO - sanity check that there is at least one crafting information.
 
     data = {
         r.CRAFTING_SLOTS_J_KEY: {},

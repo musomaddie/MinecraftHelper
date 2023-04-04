@@ -2,10 +2,8 @@
   "item name": "Acacia Button",
   "group name": "TESTING_GROUP",
   "crafting": {
-    "slots": {
-      "5": "  "
-    },
-    "number created": "3",
+    "slots": {},
+    "number created": "4",
     "works in smaller grid": false,
     "relative positioning": "strict"
   }
