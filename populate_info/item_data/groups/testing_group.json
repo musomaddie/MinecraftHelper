@@ -25,13 +25,11 @@
   },
   "crafting": {
     "slots": {
-      "1": "Item 1",
-      "2": "Item 2",
-      "4": "Item 4"
+      "5": "  "
     },
-    "number created": 1,
-    "works in smaller grid": true,
-    "relative positioning": "flexible"
+    "number created": "3",
+    "works in smaller grid": false,
+    "relative positioning": "strict"
   },
   "[meta] crafting": {
     "[meta] slots_description": "If a slot isn't used it's missing from this list. ",

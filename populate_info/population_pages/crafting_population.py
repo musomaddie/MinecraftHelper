@@ -1,7 +1,10 @@
 from flask import render_template, request, redirect, url_for, session
 
 import populate_info.resources as r
-from populate_info.group_utils import maybe_group_toggle_update_saved, get_group_crafting_info
+from populate_info.group_utils import (maybe_group_toggle_update_saved, get_group_crafting_info,
+    maybe_write_category_to_group)
+from populate_info.json_utils import write_json_category_to_file
+from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 
 HTML_TO_JSON = {
@@ -46,8 +49,22 @@ def crafting(item_name):
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.crafting", item_name=item_name))
 
-    # Remaining steps from here:
-    # 1. Retrieve the data from the form.
-    #       Sanity check and complain if the crafting grid has NO information.
-    # 2. Save the data to JSON. (item and group).
-    # 3. Return possibliy move on.
+    data = {
+        r.CRAFTING_SLOTS_J_KEY: {},
+        r.CRAFTING_N_CREATED_J_KEY: request.form["number_created"],
+        r.CRAFTING_SMALL_GRID_J_KEY: "works_four" in request.form,
+        r.CRAFTING_RELATIVE_POSITIONING_J_KEY: (
+            "flexible" if "flexible_position" in request.form else "strict")
+    }
+    has_an_item = False
+    for i in range(1, 10):
+        if request.form[f"cs{i}"] != "":
+            has_an_item = True
+            data[r.CRAFTING_SLOTS_J_KEY][f"{i}"] = request.form[f"cs{i}"]
+
+    write_json_category_to_file(item_name, r.CRAFTING_CAT_KEY, data)
+    maybe_write_category_to_group(session[r.GROUP_NAME_SK], r.CRAFTING_CAT_KEY, data)
+
+    return either_move_next_category_or_repeat(
+        item_name, "add.crafting", session[r.METHOD_LIST_SK], request.form
+    )

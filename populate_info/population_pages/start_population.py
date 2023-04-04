@@ -23,6 +23,8 @@ def start_adding_item(item_name):
     # TODO: add corresponding boolean for group name.
     group_name = session.get(r.GROUP_NAME_SK, "")
 
+    # TODO - check that the auto group will select crafting when it should!
+
     # Return basic page if this is a get request!!
     if request.method == "GET":
         return render_template(
