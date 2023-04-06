@@ -24,9 +24,12 @@
     "[meta] can be a list": true
   },
   "crafting": {
-    "slots": {},
-    "number created": "4",
-    "works in smaller grid": false,
+    "slots": {
+      "1": "Item here",
+      "2": "another item here!"
+    },
+    "number created": 4,
+    "works in smaller grid": true,
     "relative positioning": "strict"
   },
   "[meta] crafting": {

@@ -61,6 +61,6 @@ def idify_tool_name(tool_name: str) -> str:
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     helper_dict = {
         "breaking": "breaking_cbox",
-        "crafting": "crafting_box"
+        "crafting": "crafting_cbox"
     }
     return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]
