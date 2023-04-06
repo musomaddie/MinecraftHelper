@@ -1,8 +1,13 @@
+from itertools import combinations
+
 import pytest
 
 import populate_info.resources as r
 from conftest import ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.crafting_population import crafting_json_to_html_ids
+
+
+# TODO - add classes to all test files.
 
 
 class TestCraftingJsonToHtml:
@@ -63,29 +68,62 @@ class TestCraftingJsonToHtml:
         assert is_expected_in_html == ("flexible_positioning_cbox" in result["to_mark_checked"])
 
 
-class TestPost:
-    def test_crafting_post(self, client, session_with_group, item_file_name_only):
-        response = client.post(
-            f"/crafting/{ITEM_1}", data={
-                "cs1": ITEM_2,
-                "cs2": "",
-                "cs3": ITEM_3,
-                "cs4": "",
-                "cs5": "",
-                "cs6": "",
-                "cs7": "",
-                "cs8": "",
-                "cs9": "",
-                "number_created": 2
-            }
-        )
+class TestCraftingPost:
+    url = f"/crafting/{ITEM_1}"
+
+    @staticmethod
+    def get_crafting_from_file():
+        return get_file_contents(r.get_item_fn(ITEM_1))[r.CRAFTING_CAT_KEY]
+
+    @pytest.fixture
+    def post_data(self):
+        return {f"cs{i}": "" for i in range(1, 10)} | {"number_created": 2}
+
+    @pytest.mark.parametrize(
+        "slot_numbers",
+        list(combinations([1, 2, 3, 4, 5, 6, 7, 8, 9], 1)) + list(combinations([1, 2, 3, 4, 5, 6, 7, 8, 9], 2))
+    )
+    def test_slots(self, slot_numbers, post_data, client, session_with_group, item_file_name_only):
+        post_data[f"cs{slot_numbers[0]}"] = ITEM_2
+        if len(slot_numbers) == 2:
+            post_data[f"cs{slot_numbers[1]}"] = ITEM_3
+
+        response = client.post(self.url, data=post_data)
+
         assert response.status_code == 302
         assert_dictionary_values(
-            get_file_contents(r.get_item_fn(ITEM_1))[r.CRAFTING_CAT_KEY],
-            [(r.CRAFTING_SLOTS_J_KEY, {"1": ITEM_2, "3": ITEM_3}),
-             (r.CRAFTING_N_CREATED_J_KEY, "2"),
-             (r.CRAFTING_SMALL_GRID_J_KEY, False),
-             (r.CRAFTING_RELATIVE_POSITIONING_J_KEY, "strict")])
+            self.get_crafting_from_file()["slots"],
+            [(str(l1), l2) for l1, l2 in zip(list(slot_numbers), [ITEM_2, ITEM_3])],
+            assert_exact=False
+        )
+
+    def test_number_created(self, client, post_data, session_with_group, item_file_name_only):
+        post_data["number_created"] = 2
+        response = client.post(self.url, data=post_data)
+
+        assert response.status_code == 302
+        assert self.get_crafting_from_file()["number created"] == 2
+
+    @pytest.mark.parametrize("in_small_grid", [True, False])
+    def test_works_in_smaller_grid(self, in_small_grid, post_data, client, session_with_group, item_file_name_only):
+        if in_small_grid:
+            post_data["works_four"] = "value here"
+        response = client.post(self.url, data=post_data)
+
+        assert response.status_code == 302
+        assert self.get_crafting_from_file()["works in smaller grid"] == in_small_grid
+
+    @pytest.mark.parametrize("flexible_positioning_checked", [True, False])
+    def test_flexible_positioning(self, flexible_positioning_checked, post_data, client, session_with_group,
+                                  item_file_name_only):
+        if flexible_positioning_checked:
+            post_data["flexible_position"] = ""
+        response = client.post(self.url, data=post_data)
+
+        assert response.status_code == 302
+        assert self.get_crafting_from_file()["relative positioning"] == (
+            "flexible" if flexible_positioning_checked else "strict"
+        )
 
 
 def test_crafting_get(client, session_with_group):

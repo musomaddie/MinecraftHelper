@@ -55,7 +55,7 @@ def crafting(item_name):
 
     data = {
         r.CRAFTING_SLOTS_J_KEY: {},
-        r.CRAFTING_N_CREATED_J_KEY: request.form["number_created"],
+        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number_created"]),
         r.CRAFTING_SMALL_GRID_J_KEY: "works_four" in request.form,
         r.CRAFTING_RELATIVE_POSITIONING_J_KEY: (
             "flexible" if "flexible_position" in request.form else "strict")

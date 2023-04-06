@@ -50,7 +50,7 @@ def assert_dictionary_values(result, expected_key_value_pairs, assert_exact=True
             [l[1] for l in expected_key_value_pairs]
     ):
         in_result = expected_key in result
-        msg = f"KEY: {expected_key} not found in {result}"
+        msg = f"KEY: {expected_key} ({type(expected_key)} not found in {result}"
         assert in_result, msg
         match_result = result[expected_key] == expected_value
         msg = f"expected result[{expected_key}] to be {expected_value} but was {result[expected_key]}"
