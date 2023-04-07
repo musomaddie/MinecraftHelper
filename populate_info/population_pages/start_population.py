@@ -2,7 +2,7 @@ from flask import redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import (get_group_categories, maybe_group_toggle_update_saved, update_group,
-    write_group_data_to_json)
+    write_group_name_to_item_json)
 from populate_info.json_utils import get_next_item, create_json_file
 from populate_info.navigation_utils import move_next_category
 from populate_info.population_pages import item_blueprint
@@ -56,7 +56,7 @@ def start_adding_item(item_name):
     session[r.METHOD_LIST_SK] = methods
 
     create_json_file(item_name)
-    write_group_data_to_json(item_name, group_name)
+    write_group_name_to_item_json(item_name, group_name)
     return move_next_category(item_name, methods)
 
 

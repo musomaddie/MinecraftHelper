@@ -112,18 +112,14 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
     return False
 
 
-def maybe_write_category_to_group(group_name: str, category_name: str, category_info: dict):
+def maybe_write_category_to_group(group_name: str, item_name: str, category_name: str, category_info: dict):
     """ Writes information about this category to the group file if the group name is interesting, and will generalise
     information within the category if appropriate. (generalised information will contain "<PLACEHOLDER>" where item
     specific information would otherwise live.
-
-    For information to be generalised the following conditions must be met.
-        - the group_name must be interesting
-        - there are other item names within the category_info
-        - the other item names share at least one word with the current name that is not present within the group name.
     """
     if not is_group_name_interesting(group_name):
         return
+    _maybe_generalise_category_info(group_name, item_name, category_name, category_info)
     write_json_category_to_file_given_filename(
         r.get_group_fn(group_name), category_name, category_info
     )
@@ -161,7 +157,10 @@ def remove_from_group(group_name: str, item_name: str):
         remove_from_group_file(group_name, item_name)
 
 
-def write_group_data_to_json(item_name: str, group_name: str):
+# TODO: I don't believe I actually have a util to write item names to the group json. And I'm also not testing
+#  maybe_write_group_json !!!!!!!!!!!!!!!!!!!!!!!!
+
+def write_group_name_to_item_json(item_name: str, group_name: str):
     """ Write the name of this group to the item file. """
     if not is_group_name_interesting(group_name):
         return

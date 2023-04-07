@@ -78,7 +78,7 @@ def breaking(item_name):
 
     # Save data to JSON - TODO: delete when testing otherwise this could get interesting!
     write_json_category_to_file(item_name, r.BREAKING_CAT_KEY, data)
-    maybe_write_category_to_group(session[r.GROUP_NAME_SK], r.BREAKING_CAT_KEY, data)
+    maybe_write_category_to_group(session[r.GROUP_NAME_SK], item_name, r.BREAKING_CAT_KEY, data)
 
     return either_move_next_category_or_repeat(
         item_name, "add.breaking", session[r.METHOD_LIST_SK], request.form)

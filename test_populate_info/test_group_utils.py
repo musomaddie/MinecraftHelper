@@ -7,7 +7,7 @@ import populate_info.resources as r
 from conftest import GROUP_3, ITEM_1, ITEM_2, GROUP_1, get_file_contents, assert_dictionary_values, ITEM_3
 from populate_info.group_utils import (
     add_to_group, get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, should_show_group,
-    write_group_data_to_json, get_group_crafting_info, _maybe_generalise_category_info, _remove_shared_part)
+    write_group_name_to_item_json, get_group_crafting_info, _maybe_generalise_category_info, _remove_shared_part)
 
 FILE_LOC = "populate_info.group_utils"
 
@@ -151,12 +151,12 @@ class TestShouldShowGroup:
 class TestWriteGroupDataToJson:
 
     def test_simple(self, item_file_name_only):
-        write_group_data_to_json(item_file_name_only, GROUP_1)
+        write_group_name_to_item_json(item_file_name_only, GROUP_1)
         result = get_file_contents(r.get_item_fn(item_file_name_only))
         assert r.GROUP_NAME_KEY in result
         assert result[r.GROUP_NAME_KEY] == GROUP_1
 
     def test_not_interesting(self, item_file_name_only):
-        write_group_data_to_json(item_file_name_only, "")
+        write_group_name_to_item_json(item_file_name_only, "")
         result = get_file_contents(r.get_item_fn(item_file_name_only))
         assert r.GROUP_NAME_KEY not in result

@@ -66,7 +66,7 @@ def crafting(item_name):
 
     # TODO - sanity check that there is at least one crafting information.
     write_json_category_to_file(item_name, r.CRAFTING_CAT_KEY, data)
-    maybe_write_category_to_group(session[r.GROUP_NAME_SK], r.CRAFTING_CAT_KEY, data)
+    maybe_write_category_to_group(session[r.GROUP_NAME_SK], item_name, r.CRAFTING_CAT_KEY, data)
 
     return either_move_next_category_or_repeat(
         item_name, "add.crafting", session[r.METHOD_LIST_SK], request.form
