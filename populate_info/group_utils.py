@@ -1,7 +1,44 @@
 import populate_info.resources as r
 from populate_info.json_utils import (add_to_group_file, load_json_from_file, remove_from_group_file,
-    write_json_to_file,
-    write_json_category_to_file_given_filename)
+    write_json_to_file, write_json_category_to_file_given_filename)
+
+
+def _remove_shared_part(name_1: str, name_2: str) -> str:
+    """ Removes any words from name_1 that are also present in name 2. Raises a ValueError if there are no shared
+    elements.
+    """
+    words_1 = name_1.split(" ")
+    words_2 = name_2.split(" ")
+    result = [word for word in words_1 if word not in words_2]
+    if len(result) == 0:
+        raise ValueError(f"{name_1} is identical to {name_2}.")
+    return " ".join(result)
+
+
+def _maybe_generalise_category_info(group_name: str, current_item_name: str, category_key, category_info: dict) -> None:
+    """
+    Generalises any relevant information within the passed category_info. Information is generalised inplace.
+
+    For information to be generalised the following conditions must be met.
+        - there are other item names within the category_info (determined through the category key and info)
+        - the other item names shares at least one word with the current name that is not present within the group name.
+    """
+    category_keys_to_possible_items = {"crafting": ["slots"]}
+    if category_key not in category_keys_to_possible_items:
+        return
+
+    # Calculate the interesting part before continuing, so it can be calculated outside the for loop, and return
+    # early if the item does not have any words in common with the group.
+    unique_item_word = _remove_shared_part(current_item_name, group_name)
+    if len(unique_item_word) == len(current_item_name):
+        return
+
+    for possible_item_key in category_keys_to_possible_items[category_key]:
+        # TODO: handle other types of category_info, not just dicts.
+        for item_key in category_info[possible_item_key]:
+            if unique_item_word in category_info[possible_item_key][item_key]:
+                category_info[possible_item_key][item_key] = category_info.get(possible_item_key).get(
+                    item_key).replace(unique_item_word, "<PLACEHOLDER>")
 
 
 def add_to_group(group_name: str, item_name: str):
@@ -76,7 +113,15 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
 
 
 def maybe_write_category_to_group(group_name: str, category_name: str, category_info: dict):
-    """ Writes information about this category to the group file if the group name is interesting. """
+    """ Writes information about this category to the group file if the group name is interesting, and will generalise
+    information within the category if appropriate. (generalised information will contain "<PLACEHOLDER>" where item
+    specific information would otherwise live.
+
+    For information to be generalised the following conditions must be met.
+        - the group_name must be interesting
+        - there are other item names within the category_info
+        - the other item names share at least one word with the current name that is not present within the group name.
+    """
     if not is_group_name_interesting(group_name):
         return
     write_json_category_to_file_given_filename(
