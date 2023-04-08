@@ -3,6 +3,14 @@ from populate_info.json_utils import (add_to_group_file, load_json_from_file, re
     write_json_to_file, write_json_category_to_file_given_filename)
 
 
+def _get_group_info_for_category(group_name: str, category_key: str) -> dict:
+    """ Helper to get group information for a given category. Private so that other callers don't have to know the
+    correct key. """
+    if not should_show_group(group_name):
+        return {}
+    return load_json_from_file(r.get_group_fn(group_name))[category_key]
+
+
 def _remove_shared_part(name_1: str, name_2: str) -> str:
     """ Removes any words from name_1 that are also present in name 2. Raises a ValueError if there are no shared
     elements.
@@ -44,9 +52,6 @@ def _maybe_generalise_category_info(group_name: str, current_item_name: str, cat
 def add_to_group(group_name: str, item_name: str):
     """
     Adds the item to the given group.
-
-    :param group_name:
-    :param item_name:
     """
     # Exit early if the group name isn't interesting, otherwise add it to the json file.
     if not is_group_name_interesting(group_name):
@@ -56,16 +61,12 @@ def add_to_group(group_name: str, item_name: str):
 
 def get_group_breaking_info(group_name: str) -> dict[str: str]:
     """ Gets all the breaking information from the existing group. """
-    if not should_show_group(group_name):
-        return {}
-    return load_json_from_file(r.get_group_fn(group_name))[r.BREAKING_CAT_KEY]
+    return _get_group_info_for_category(group_name, r.BREAKING_CAT_KEY)
 
 
 def get_group_crafting_info(group_name: str) -> dict[str: str]:
     """ Gets all the crafting information from the existing group. """
-    if not should_show_group(group_name):
-        return {}
-    return load_json_from_file(r.get_group_fn(group_name))[r.CRAFTING_CAT_KEY]
+    return _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
 
 
 def get_group_categories(group_name: str) -> list[str]:
@@ -157,8 +158,7 @@ def remove_from_group(group_name: str, item_name: str):
         remove_from_group_file(group_name, item_name)
 
 
-# TODO: I don't believe I actually have a util to write item names to the group json. And I'm also not testing
-#  maybe_write_group_json !!!!!!!!!!!!!!!!!!!!!!!!
+# TODO: And I'm also not testing  maybe_write_group_json !!!!!!!!!!!!!!!!!!!!!!!!
 
 def write_group_name_to_item_json(item_name: str, group_name: str):
     """ Write the name of this group to the item file. """

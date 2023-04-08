@@ -21,15 +21,16 @@ JSON_TO_HTML = {value: key for key, value in HTML_TO_JSON.items()}
 
 
 def crafting_json_to_html_ids(json_data: dict) -> dict:
+    # TODO: I need to handle the new "<PLACEHOLDER>" data in here -> better suited for within group utils.
     result_data = {"to_fill":
                        {JSON_TO_HTML[slot]: item for slot, item in json_data[r.CRAFTING_SLOTS_J_KEY].items()} |
                        {JSON_TO_HTML[r.CRAFTING_N_CREATED_J_KEY]: json_data[r.CRAFTING_N_CREATED_J_KEY]},
                    "to_mark_checked": []}
-    # TODO - to mark result data
     if json_data[r.CRAFTING_SMALL_GRID_J_KEY]:
         result_data["to_mark_checked"].append("works_in_four_cbox")
     if json_data[r.CRAFTING_RELATIVE_POSITIONING_J_KEY] == "flexible":
         result_data["to_mark_checked"].append("flexible_positioning_cbox")
+    # TODO - show which continue button should be pressed!
     return result_data
 
 
