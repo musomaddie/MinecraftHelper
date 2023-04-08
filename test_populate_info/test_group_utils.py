@@ -4,10 +4,11 @@ from unittest.mock import patch
 import pytest
 
 import populate_info.resources as r
-from conftest import GROUP_3, ITEM_1, ITEM_2, GROUP_1, get_file_contents, assert_dictionary_values, ITEM_3
+from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.group_utils import (
-    add_to_group, get_group_breaking_info, get_group_categories, maybe_group_toggle_update_saved, should_show_group,
-    write_group_name_to_item_json, get_group_crafting_info, _maybe_generalise_category_info, _remove_shared_part)
+    _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_breaking_info,
+    get_group_categories,
+    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json)
 
 FILE_LOC = "populate_info.group_utils"
 
@@ -129,6 +130,19 @@ class TestRemoveSharedPart:
     def test_totally_shared_raises_exception(self):
         with pytest.raises(ValueError):
             _remove_shared_part("Totally Identical", "Totally Identical")
+
+
+class TestReplacePlaceholder:
+    def test_breaking_call(self):
+        breaking_dict = {"requires tool": "any", "silk touch": False, "fastest tool": "Pickaxe"}
+        old_breaking_dict = copy.deepcopy(breaking_dict)
+        _replace_placeholder("Existing", breaking_dict)
+        assert old_breaking_dict == breaking_dict
+
+    def test_crafting_call(self):
+        crafting_dict = {"slots": {1: "<PLACEHOLDER> Planks", "3": "Anvil"}, "number created": 2}
+        _replace_placeholder("Existing", crafting_dict)
+        assert crafting_dict == {"slots": {1: "Existing Planks", "3": "Anvil"}, "number created": 2}
 
 
 class TestShouldShowGroup:

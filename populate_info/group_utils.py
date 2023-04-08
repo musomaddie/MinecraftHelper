@@ -1,6 +1,7 @@
 import populate_info.resources as r
-from populate_info.json_utils import (add_to_group_file, load_json_from_file, remove_from_group_file,
-    write_json_to_file, write_json_category_to_file_given_filename)
+from populate_info.json_utils import (
+    add_to_group_file, load_json_from_file, remove_from_group_file, write_json_category_to_file_given_filename,
+    write_json_to_file)
 
 
 def _get_group_info_for_category(group_name: str, category_key: str) -> dict:
@@ -9,6 +10,14 @@ def _get_group_info_for_category(group_name: str, category_key: str) -> dict:
     if not should_show_group(group_name):
         return {}
     return load_json_from_file(r.get_group_fn(group_name))[category_key]
+
+
+def _replace_placeholder(replace_name: str, data: dict):
+    """ Replaces the placeholder in dictionary items with the given name. """
+    # Try slots
+    for key, value in data.get("slots", {}).items():
+        if "<PLACEHOLDER>" in value:
+            data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
 
 
 def _remove_shared_part(name_1: str, name_2: str) -> str:
@@ -70,7 +79,7 @@ def get_group_crafting_info(group_name: str) -> dict[str: str]:
 
 
 def get_group_categories(group_name: str) -> list[str]:
-    """ The group will have the information saved in the json for convinnce, so I just have to find and return it."""
+    """ The group will have the information saved in the json for ease of use, so I just have to find and return it."""
     if not should_show_group(group_name):
         return []
     data = load_json_from_file(r.get_group_fn(group_name))
