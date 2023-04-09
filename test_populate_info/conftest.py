@@ -69,6 +69,12 @@ def client(app):
 
 
 @pytest.fixture
+def request_context(app):
+    with app.test_request_context():
+        yield
+
+
+@pytest.fixture
 def session_with_group(group_file_all_categories, client):
     with client.session_transaction() as first_session:
         first_session[r.GROUP_NAME_SK] = GROUP_1

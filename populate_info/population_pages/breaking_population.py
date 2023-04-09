@@ -1,8 +1,8 @@
 from flask import redirect, render_template, request, session, url_for
 
 import populate_info.resources as r
-from populate_info.group_utils import (maybe_group_toggle_update_saved, get_group_breaking_info,
-    maybe_write_category_to_group)
+from populate_info.group_utils import (
+    get_group_breaking_info, maybe_group_toggle_update_saved, maybe_write_category_to_group)
 from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
@@ -54,7 +54,7 @@ def breaking(item_name):
             item_name=item_name,
             group_name=session[r.GROUP_NAME_SK],
             is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, False),
-            group_info=breaking_json_to_html_ids(get_group_breaking_info(session[r.GROUP_NAME_SK])),
+            group_info=breaking_json_to_html_ids(get_group_breaking_info(session[r.GROUP_NAME_SK], item_name)),
             # TODO - temporarily on for testing!
             show_group=True)
 
@@ -80,5 +80,4 @@ def breaking(item_name):
     write_json_category_to_file(item_name, r.BREAKING_CAT_KEY, data)
     maybe_write_category_to_group(session[r.GROUP_NAME_SK], item_name, r.BREAKING_CAT_KEY, data)
 
-    return either_move_next_category_or_repeat(
-        item_name, "add.breaking", session[r.METHOD_LIST_SK], request.form)
+    return either_move_next_category_or_repeat(item_name, "add.breaking", request.form)

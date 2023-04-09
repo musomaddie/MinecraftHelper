@@ -12,12 +12,16 @@ def _get_group_info_for_category(group_name: str, category_key: str) -> dict:
     return load_json_from_file(r.get_group_fn(group_name))[category_key]
 
 
-def _replace_placeholder(replace_name: str, data: dict):
-    """ Replaces the placeholder in dictionary items with the given name. """
+def _replace_placeholder(replace_name: str, data: dict) -> dict:
+    """ Replaces the placeholder in dictionary items with the given name.
+
+    Returns the dictionary even though it is modified in place for easier call chaining."""
     # Try slots
     for key, value in data.get("slots", {}).items():
         if "<PLACEHOLDER>" in value:
             data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
+
+    return data
 
 
 def _remove_shared_part(name_1: str, name_2: str) -> str:
@@ -68,14 +72,22 @@ def add_to_group(group_name: str, item_name: str):
     add_to_group_file(group_name, item_name)
 
 
-def get_group_breaking_info(group_name: str) -> dict[str: str]:
-    """ Gets all the breaking information from the existing group. """
-    return _get_group_info_for_category(group_name, r.BREAKING_CAT_KEY)
+def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:
+    """ Gets all the breaking information from the existing group.
+    """
+    # TODO: update tests
+    return _replace_placeholder(_remove_shared_part(item_name, group_name),
+                                _get_group_info_for_category(group_name, r.BREAKING_CAT_KEY))
 
 
-def get_group_crafting_info(group_name: str) -> dict[str: str]:
-    """ Gets all the crafting information from the existing group. """
-    return _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
+def get_group_crafting_info(group_name: str, item_name) -> dict[str: str]:
+    """ Gets all the crafting information from the existing group.
+    """
+    # TODO: update tests
+    return _replace_placeholder(
+        _remove_shared_part(item_name, group_name),
+        _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
+    )
 
 
 def get_group_categories(group_name: str) -> list[str]:

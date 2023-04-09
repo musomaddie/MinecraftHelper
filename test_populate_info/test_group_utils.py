@@ -39,7 +39,7 @@ class TestGetGroupCategories:
 class TestGetGroupBreakingInfo:
 
     def test_simple(self, group_file_all_categories):
-        result = get_group_breaking_info(group_file_all_categories)
+        result = get_group_breaking_info(group_file_all_categories, ITEM_1)
         assert "requires tool" in result
         assert result["requires tool"] == "any"
         assert "fastest tool" in result
@@ -48,13 +48,13 @@ class TestGetGroupBreakingInfo:
         assert not result["silk touch"]
 
     def test_noninteresting_group_name(self):
-        result = get_group_breaking_info("")
+        result = get_group_breaking_info("", ITEM_1)
         assert result == {}
 
 
 class TestGetGroupCraftingInfo:
     def test_simple(self, group_file_all_categories):
-        result = get_group_crafting_info(group_file_all_categories)
+        result = get_group_crafting_info(group_file_all_categories, ITEM_1)
         assert_dictionary_values(
             result,
             [("slots", {"1": ITEM_1, "2": ITEM_2, "3": ITEM_3}),
@@ -63,7 +63,7 @@ class TestGetGroupCraftingInfo:
              ("works in smaller grid", False)])
 
     def test_noninteresting_group_name(self):
-        result = get_group_crafting_info("")
+        result = get_group_crafting_info("", ITEM_1)
         assert result == {}
 
 
