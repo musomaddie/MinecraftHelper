@@ -1,0 +1,7 @@
+basic crafting impl
+    |
+    |
+    |   getting back on track
+    |   |
+    |   |
+    |   |   basic breaking impl.
