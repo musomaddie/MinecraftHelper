@@ -180,3 +180,7 @@ table.with_row_dividers {
 .crafting_grid_cell {
     text-align: center;
 }
+
+.wider_box {
+    width: 500px;
+}
