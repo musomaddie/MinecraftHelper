@@ -63,9 +63,15 @@ def write_json_category_to_file(item_name: str, category_name: str, category_inf
 
 
 def write_json_category_to_file_given_filename(filename: str, category_name: str, category_info: dict):
-    # TODO: implement for when there should be multiple things in this category.
+    """ Writes the information for the given category to the file. If this category already exists, turn it into a
+    list.  """
     data = load_json_from_file(filename)
-    data[category_name] = category_info
+    if category_name in data:
+        if type(data.get(category_name)) == dict:
+            data[category_name] = [data.get(category_name)]
+        data.get(category_name).append(category_info)
+    else:
+        data[category_name] = category_info
     write_json_to_file(filename, data)
 
 

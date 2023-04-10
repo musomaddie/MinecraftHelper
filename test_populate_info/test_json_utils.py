@@ -93,9 +93,9 @@ class TestRemoveFromGroupFile:
 
 class TestWriteJsonCategoryToFile:
 
-    def test_happy(self, item_file_name_only):
+    def test_add_to_category_for_first_time(self, item_file_name_only):
         cat_name = "testing info"
-        category_info = {"key1": "value 1", "key2": "value 2"}
+        category_info = {"key 1": "value 1", "key 2": "value 2"}
         write_json_category_to_file(item_file_name_only, cat_name, category_info)
         assert_dictionary_values(
             get_file_contents(r.get_item_fn(item_file_name_only)),
@@ -103,7 +103,34 @@ class TestWriteJsonCategoryToFile:
              (cat_name, category_info)]
         )
 
-    # TODO - file not found.
+    def test_category_in_file_becomes_list(self, item_file_name_only):
+        cat_name = "testing info"
+        cat_info_1 = {"key 1": "value 1"}
+        write_json_category_to_file(item_file_name_only, cat_name, cat_info_1)
+        cat_info_2 = {"key 1 (2)": "value 1 (2)", "key 2": "value 2"}
+
+        write_json_category_to_file(item_file_name_only, cat_name, cat_info_2)
+        result = get_file_contents(r.get_item_fn(item_file_name_only))[cat_name]
+        assert type(result) == list
+        assert len(result) == 2
+        assert_dictionary_values(result[0], [("key 1", "value 1")])
+        assert_dictionary_values(result[1], [(key, value) for key, value in cat_info_2.items()])
+
+    def test_category_in_file_3_times(self, item_file_name_only):
+        cat_name = "testing info"
+        cat_info_1 = {"k1": "v1"}
+        cat_info_2 = {"k1": "v2"}
+        cat_info_3 = {"k1": "v3"}
+        write_json_category_to_file(item_file_name_only, cat_name, cat_info_1)
+        write_json_category_to_file(item_file_name_only, cat_name, cat_info_2)
+        write_json_category_to_file(item_file_name_only, cat_name, cat_info_3)
+
+        result = get_file_contents(r.get_item_fn(item_file_name_only))[cat_name]
+        assert type(result) == list
+        assert len(result) == 3
+        assert_dictionary_values(result[0], [(k, v) for k, v in cat_info_1.items()])
+        assert_dictionary_values(result[1], [(k, v) for k, v in cat_info_2.items()])
+        assert_dictionary_values(result[2], [(k, v) for k, v in cat_info_3.items()])
 
 
 class TestGetCurrentCategoryInfo:

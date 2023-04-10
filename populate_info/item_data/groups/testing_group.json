@@ -18,12 +18,14 @@
     "works in smaller grid": true,
     "relative positioning": "strict"
   },
-  "environment changes": {
-    "changes": [
-      "change 1 description",
-      "change 2 description"
-    ]
-  },
+  "environment change": [
+    {
+      "change": "change 1 description"
+    },
+    {
+      "change": "change 2 description"
+    }
+  ],
   "[meta] breaking": {
     "requires tool": [
       "any",
