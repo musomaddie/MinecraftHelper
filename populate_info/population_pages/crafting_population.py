@@ -37,9 +37,6 @@ def crafting_json_to_html_ids(json_data: dict) -> dict:
 @item_blueprint.route("/crafting/<item_name>", methods=["GET", "POST"])
 def crafting(item_name):
     """ Handles populating the crafting obtainment method. """
-    print("SESSION (1)", end="")
-    print(session[r.METHOD_LIST_SK])
-    print(session)
     if request.method == "GET":
         return render_template(
             "add_item/crafting.html",
