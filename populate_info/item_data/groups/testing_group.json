@@ -9,6 +9,21 @@
     "silk touch": false,
     "fastest tool": "Pickaxe"
   },
+  "crafting": {
+    "slots": {
+      "1": "Item here",
+      "2": "another item here!"
+    },
+    "number created": 4,
+    "works in smaller grid": true,
+    "relative positioning": "strict"
+  },
+  "environment changes": {
+    "changes": [
+      "change 1 description",
+      "change 2 description"
+    ]
+  },
   "[meta] breaking": {
     "requires tool": [
       "any",
@@ -22,15 +37,6 @@
       false
     ],
     "[meta] can be a list": true
-  },
-  "crafting": {
-    "slots": {
-      "1": "Item here",
-      "2": "another item here!"
-    },
-    "number created": 4,
-    "works in smaller grid": true,
-    "relative positioning": "strict"
   },
   "[meta] crafting": {
     "[meta] slots_description": "If a slot isn't used it's missing from this list. ",
