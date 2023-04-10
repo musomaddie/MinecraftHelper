@@ -63,11 +63,12 @@ def test_start_adding_item_all_categories(client):
     with client:
         response = client.post(
             f"/add_item/{ITEM_1}",
-            data={"breaking": "some info", "crafting": "more info"}
+            data={"breaking": "some info", "crafting": "more info", "env_changes": "more info"}
         )
         assert response.status_code == 302
         assert r.METHOD_LIST_SK in session
-        assert len(session[r.METHOD_LIST_SK]) == 1
+        assert len(session[r.METHOD_LIST_SK]) == 2
         assert "add.crafting" in session[r.METHOD_LIST_SK]
+        assert "add.env_changes" in session[r.METHOD_LIST_SK]
 
 # TODO - test the HTML ids when told to use group!!

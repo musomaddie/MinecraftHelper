@@ -7,9 +7,6 @@ from conftest import ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_
 from populate_info.population_pages.crafting_population import crafting_json_to_html_ids
 
 
-# TODO - add classes to all test files.
-
-
 class TestCraftingJsonToHtml:
     @pytest.fixture
     def crafting_json(self):
