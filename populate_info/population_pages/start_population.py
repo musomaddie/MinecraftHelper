@@ -54,6 +54,8 @@ def start_adding_item(item_name):
         methods.append("add.breaking")
     if "crafting" in request.form.keys():
         methods.append("add.crafting")
+    if "env_changes" in request.form.keys():
+        methods.append("add.env_changes")
     session[r.METHOD_LIST_SK] = methods
 
     create_json_file(item_name)

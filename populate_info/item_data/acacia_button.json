@@ -1,18 +1,4 @@
 {
   "item name": "Acacia Button",
-  "group name": "TESTING_GROUP",
-  "breaking": {
-    "requires tool": "any",
-    "silk touch": false,
-    "fastest tool": "Pickaxe"
-  },
-  "crafting": {
-    "slots": {
-      "1": "Item here",
-      "2": "another item here!"
-    },
-    "number created": 4,
-    "works in smaller grid": true,
-    "relative positioning": "strict"
-  }
+  "group name": "TESTING_GROUP"
 }
