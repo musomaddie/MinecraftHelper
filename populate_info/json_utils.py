@@ -31,6 +31,12 @@ def get_next_item() -> str:
     return all_items[len(current_items)]
 
 
+def get_current_category_info(item_name: str, category_name: str) -> dict:
+    """ Fetches current information for the given category, or an empty dictionary if the category is not found in
+    the file. """
+    return load_json_from_file(r.get_item_fn(item_name)).get(category_name, {})
+
+
 def load_json_from_file(filename: str) -> dict:
     with open(filename) as f:
         return json.load(f)

@@ -16,7 +16,6 @@ ITEM_3 = "Test Item 3"
 
 def _add_manual_test_group():
     with open(r.get_group_fn("testing_group"), "w") as f:
-        print(f.name)
         json.dump(
             {"group name": "Testing",
              "items": ["Testing item", "Another item"],

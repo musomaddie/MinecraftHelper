@@ -6,7 +6,7 @@ import pytest
 import populate_info.resources as r
 from conftest import GROUP_1, ITEM_1, ITEM_2, ITEM_3, get_file_contents, assert_dictionary_values
 from populate_info import json_utils
-from populate_info.json_utils import create_json_file, write_json_category_to_file
+from populate_info.json_utils import create_json_file, write_json_category_to_file, get_current_category_info
 
 
 class TestAddToGroupFile:
@@ -104,3 +104,17 @@ class TestWriteJsonCategoryToFile:
         )
 
     # TODO - file not found.
+
+
+class TestGetCurrentCategoryInfo:
+    def test_exists(self, item_file_name_only):
+        cat_info = {"changes": ["change 1 description"]}
+        write_json_category_to_file(
+            item_file_name_only,
+            "environment changes",
+            cat_info
+        )
+        assert get_current_category_info(item_file_name_only, "environment changes") == cat_info
+
+    def test_doesnt_exist(self, item_file_name_only):
+        assert get_current_category_info(item_file_name_only, "environment changes") == {}
