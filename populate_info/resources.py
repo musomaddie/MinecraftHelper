@@ -18,8 +18,11 @@ GROUP_NAME_KEY = "group name"
 ITEM_NAME_KEY = "item name"
 ITEM_LIST_KEY = "items"
 GROUP_ITEMS_KEY = "items"
+
+# ############# Category keys
 BREAKING_CAT_KEY = "breaking"
 CRAFTING_CAT_KEY = "crafting"
+ENV_CHANGES_CAT_KEY = "environment changes"
 
 # ##### Breaking
 BREAKING_REQ_TOOL_KEY = "requires tool"
@@ -32,6 +35,9 @@ CRAFTING_SLOTS_J_KEY = "slots"
 CRAFTING_N_CREATED_J_KEY = "number created"
 CRAFTING_SMALL_GRID_J_KEY = "works in smaller grid"
 CRAFTING_RELATIVE_POSITIONING_J_KEY = "relative positioning"
+
+# ###### Environment changes.
+EC_CHANGE_J_KEY = "change"
 
 # ############################## SESSION KEYS #############################################
 CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.
@@ -61,6 +67,7 @@ def idify_tool_name(tool_name: str) -> str:
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     helper_dict = {
         "breaking": "breaking_cbox",
-        "crafting": "crafting_cbox"
+        "crafting": "crafting_cbox",
+        "environment change": "env_changes_cbox"
     }
     return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]
