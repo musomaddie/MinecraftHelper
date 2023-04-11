@@ -72,10 +72,19 @@ def add_to_group(group_name: str, item_name: str):
     add_to_group_file(group_name, item_name)
 
 
+def auto_populate_values(values_to_populate, should_populate: bool):
+    """ Returns a list of values for auto-population. If should_populate is false, return an empty version of the
+    same data structure.
+
+    Returning an empty data structure is necessary so that any previously populated information can be wiped.
+    """
+    return values_to_populate if should_populate else {}
+
+
 def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:
     """ Gets all the breaking information from the existing group.
     """
-    # TODO: update tests
+    # TODO: update tests for placeholder
     return _replace_placeholder(_remove_shared_part(item_name, group_name),
                                 _get_group_info_for_category(group_name, r.BREAKING_CAT_KEY))
 
@@ -83,12 +92,15 @@ def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:
 def get_group_crafting_info(group_name: str, item_name) -> dict[str: str]:
     """ Gets all the crafting information from the existing group.
     """
-    # TODO: update tests
+    # TODO: update tests for placeholder
     return _replace_placeholder(
         _remove_shared_part(item_name, group_name),
         _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
     )
 
+
+# TODO: for group info with more than one item in it introduce a skip button to not save it but instead move to next
+#  item.
 
 def get_group_categories(group_name: str) -> list[str]:
     """ The group will have the information saved in the json for ease of use, so I just have to find and return it."""
@@ -141,6 +153,7 @@ def maybe_write_category_to_group(group_name: str, item_name: str, category_name
     """
     if not is_group_name_interesting(group_name):
         return
+    # TODO: don't add the information to the group AGAIN if it already exists.
     _maybe_generalise_category_info(group_name, item_name, category_name, category_info)
     write_json_category_to_file_given_filename(
         r.get_group_fn(group_name), category_name, category_info
@@ -178,8 +191,6 @@ def remove_from_group(group_name: str, item_name: str):
     if not is_group_name_interesting(group_name):
         remove_from_group_file(group_name, item_name)
 
-
-# TODO: And I'm also not testing  maybe_write_group_json !!!!!!!!!!!!!!!!!!!!!!!!
 
 def write_group_name_to_item_json(item_name: str, group_name: str):
     """ Write the name of this group to the item file. """

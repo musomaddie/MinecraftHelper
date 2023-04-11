@@ -56,7 +56,7 @@
     <script>
         $(document).ready(function () {
             // Quit if we shouldn't be updating these values.
-            if ((!JSON.parse('{{ show_group|tojson }}')) && (!JSON.parse('{{ is_toggle_selected|tojson }}'))) {
+            if (!JSON.parse('{{ show_group|tojson }}')) {
                 return
             }
             JSON.parse('{{ group_categories|tojson }}').forEach(

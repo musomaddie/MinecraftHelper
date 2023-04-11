@@ -8,7 +8,8 @@ from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary
 from populate_info.group_utils import (
     _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_breaking_info,
     get_group_categories,
-    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json)
+    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json,
+    auto_populate_values)
 
 FILE_LOC = "populate_info.group_utils"
 
@@ -23,6 +24,16 @@ class TestAddToGroup:
     def test_non_interesting_group_name(self, mock_add_to_file):
         add_to_group("", ITEM_1)
         assert not mock_add_to_file.called
+
+
+class TestAutoPopulateValues:
+    def test_should_populate(self):
+        values = {"k1": "v1", "k2": "v2"}
+        assert auto_populate_values(values, True) == values
+
+    def test_shouldnt_populate(self):
+        values = {"k1": "v1", "k2": "v2"}
+        assert auto_populate_values(values, False) == {}
 
 
 class TestGetGroupCategories:

@@ -1,3 +1,5 @@
+from flask import session
+
 DIR = "populate_info/item_data/"
 
 # ######################################## FILE NAMES #################################################
@@ -65,6 +67,9 @@ def idify_tool_name(tool_name: str) -> str:
 # ####################################### JSON to HTML helpers ###########################################
 
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
+    # Check if I actually need this.
+    if not session.get(USE_GROUP_VALUES_SK, False):
+        return []
     helper_dict = {
         "breaking": "breaking_cbox",
         "crafting": "crafting_cbox",
