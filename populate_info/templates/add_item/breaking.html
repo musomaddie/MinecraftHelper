@@ -106,7 +106,11 @@
     <script>
         $(document).ready(function () {
             // Quit early if we know we shouldn't be updating these values.
-            if ((!JSON.parse('{{ show_group|tojson }}')) && (!JSON.parse('{{ is_toggle_selected|tojson }}'))) {
+            let v = JSON.parse('{{ show_group|tojson }}')
+            let r = JSON.parse('{{ is_toggle_selected }}')
+            console.log(v, r);
+
+            if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
                 return
             }
             let groupInfo = JSON.parse(' {{ group_info|tojson }}');

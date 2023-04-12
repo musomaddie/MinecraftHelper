@@ -121,10 +121,13 @@
     <script>
         $(document).ready(function () {
             // Quit early if we know we shouldn't be updating these values.
-            if ((!JSON.parse('{{ show_group|tojson }}')) && (!JSON.parse('{{ is_toggle_selected|tojson }}'))) {
+            if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
                 return
             }
             let group_info = JSON.parse('{{ group_info|tojson }}');
+            if ($.isEmptyObject(group_info)) {
+                return
+            }
             group_info["to_mark_checked"].forEach(
                 element => document.getElementById(element).checked = true
             );

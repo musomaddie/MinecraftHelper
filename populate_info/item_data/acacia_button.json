@@ -1,4 +1,12 @@
 {
   "item name": "Acacia Button",
-  "group name": "TESTING_GROUP"
+  "group name": "TESTING_GROUP",
+  "environment changes": [
+    {
+      "change": "a thing"
+    },
+    {
+      "change": "another thing "
+    }
+  ]
 }

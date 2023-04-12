@@ -17,6 +17,7 @@ def _replace_placeholder(replace_name: str, data: dict) -> dict:
 
     Returns the dictionary even though it is modified in place for easier call chaining."""
     # Try slots
+    print(data)
     for key, value in data.get("slots", {}).items():
         if "<PLACEHOLDER>" in value:
             data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
@@ -70,15 +71,6 @@ def add_to_group(group_name: str, item_name: str):
     if not is_group_name_interesting(group_name):
         return
     add_to_group_file(group_name, item_name)
-
-
-def auto_populate_values(values_to_populate, should_populate: bool):
-    """ Returns a list of values for auto-population. If should_populate is false, return an empty version of the
-    same data structure.
-
-    Returning an empty data structure is necessary so that any previously populated information can be wiped.
-    """
-    return values_to_populate if should_populate else {}
 
 
 def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:

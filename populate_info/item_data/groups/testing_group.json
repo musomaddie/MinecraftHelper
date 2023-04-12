@@ -18,7 +18,7 @@
     "works in smaller grid": true,
     "relative positioning": "strict"
   },
-  "environment change": [
+  "environment changes": [
     {
       "change": "change 1 description"
     },
@@ -37,8 +37,7 @@
     "silk touch": [
       true,
       false
-    ],
-    "[meta] can be a list": true
+    ]
   },
   "[meta] crafting": {
     "[meta] slots_description": "If a slot isn't used it's missing from this list. ",
