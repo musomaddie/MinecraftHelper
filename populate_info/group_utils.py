@@ -17,7 +17,9 @@ def _replace_placeholder(replace_name: str, data: dict) -> dict:
 
     Returns the dictionary even though it is modified in place for easier call chaining."""
     # Try slots
-    print(data)
+    if type(data) == list:
+        for item in data:
+            return _replace_placeholder(replace_name, item)
     for key, value in data.get("slots", {}).items():
         if "<PLACEHOLDER>" in value:
             data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
@@ -88,6 +90,14 @@ def get_group_crafting_info(group_name: str, item_name) -> dict[str: str]:
     return _replace_placeholder(
         _remove_shared_part(item_name, group_name),
         _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
+    )
+
+
+def get_group_env_changes_info(group_name: str, item_name) -> dict[str: str]:
+    """ Gets all environment changes from the existing group. """
+    return _replace_placeholder(
+        _remove_shared_part(item_name, group_name),
+        _get_group_info_for_category(group_name, r.ENV_CHANGES_CAT_KEY)
     )
 
 

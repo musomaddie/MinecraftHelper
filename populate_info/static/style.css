@@ -184,3 +184,8 @@ table.with_row_dividers {
 .wider_box {
     width: 500px;
 }
+
+.should_select {
+    outline: 3px dashed mediumvioletred;
+    outline-offset: 3px;
+}

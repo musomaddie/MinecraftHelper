@@ -3,10 +3,10 @@
   "group name": "TESTING_GROUP",
   "environment changes": [
     {
-      "change": "a thing"
+      "change": "change 1 description"
     },
     {
-      "change": "another thing "
+      "change": "change 1 description"
     }
   ]
 }

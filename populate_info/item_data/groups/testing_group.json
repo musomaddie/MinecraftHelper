@@ -24,6 +24,12 @@
     },
     {
       "change": "change 2 description"
+    },
+    {
+      "change": "change 1 description"
+    },
+    {
+      "change": "change 1 description"
     }
   ],
   "[meta] breaking": {
