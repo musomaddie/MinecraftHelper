@@ -28,9 +28,10 @@ class TestAddToGroup:
 class TestGetGroupCategories:
     def test_all_categories(self, group_file_all_categories):
         result = get_group_categories(group_file_all_categories)
-        assert len(result) == 2
+        assert len(result) == 3
         assert "breaking" in result
         assert "crafting" in result
+        assert "environment changes" in result
 
     def test_noninteresting_group(self):
         assert get_group_categories("") == []
@@ -174,3 +175,14 @@ class TestWriteGroupDataToJson:
         write_group_name_to_item_json(item_file_name_only, "")
         result = get_file_contents(r.get_item_fn(item_file_name_only))
         assert r.GROUP_NAME_KEY not in result
+
+
+class TestMaybeWriteCategoryToGroup:
+    def test_maybe_write_category_to_group_happy(self):
+        assert False
+
+    def test_maybe_write_category_to_group_noninteresting_name(self):
+        assert False
+
+    def test_maybe_write_category_to_group_already_in_group(self):
+        assert False

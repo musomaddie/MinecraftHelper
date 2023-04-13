@@ -8,14 +8,19 @@ from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 
 
-def env_changes_json_to_html_ids(json_data: list | dict, current_item_data: list | dict) -> dict:
+def env_changes_json_to_html_ids(
+        json_data, current_item_data) -> dict:
     # TODO - make sure to (eventually) handle calls that misalign with the group expectations.
+    print(json_data)
+    print(current_item_data)
     if type(json_data) == dict:
         # TODO: still probs check counting here.
         return {"change_text": json_data["change"], "button_choice": "next"}
     # The JSON_DATA is a list
     expected_number = len(json_data)
     current_number = 1 if type(current_item_data) == dict else len(current_item_data)
+    print(current_number)
+    print(expected_number)
     return {"change_text": json_data[current_number]["change"],
             "button_choice": "another" if current_number < expected_number - 1 else "next"}
 
@@ -42,6 +47,7 @@ def env_changes(item_name):
     # Save data
     data = {r.EC_CHANGE_J_KEY: request.form["change_text"]}
     write_json_category_to_file(item_name, r.ENV_CHANGES_CAT_KEY, data)
+    # TODO: don't write to group it's already in there!!
     maybe_write_category_to_group(session[r.GROUP_NAME_SK], item_name, r.ENV_CHANGES_CAT_KEY, data)
 
     return either_move_next_category_or_repeat(item_name, "add.env_changes", request.form)

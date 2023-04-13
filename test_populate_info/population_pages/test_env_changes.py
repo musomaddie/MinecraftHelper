@@ -1,6 +1,6 @@
 import pytest
 
-from conftest import assert_dictionary_values
+from conftest import assert_dictionary_values, ITEM_1
 from populate_info.population_pages.env_changes_population import env_changes_json_to_html_ids
 
 
@@ -26,7 +26,7 @@ class TestEnvChangesJsonToHtml:
         result = env_changes_json_to_html_ids(env_changes_json_2, [])
         assert_dictionary_values(
             result,
-            [("change_text", "change 1"), ("button_choice", "again")]
+            [("change_text", "change 1"), ("button_choice", "another")]
         )
 
     def test_two_items_one_added(self, env_changes_json_2):
@@ -48,6 +48,6 @@ class TestEnvChangesJsonToHtml:
         )
 
 
-def test_env_changes_get(client, session_with_group):
-    response = client.get("/env_changes/Testing Item")
+def test_env_changes_get(client, session_with_group, item_file_name_only):
+    response = client.get(f"/env_changes/{ITEM_1}")
     assert response.status_code == 200
