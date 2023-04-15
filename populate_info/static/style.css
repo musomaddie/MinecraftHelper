@@ -1,110 +1,60 @@
+:root {
+    --color_primary: #673ed7;
+    --color_on_primary: #ffffff;
+    --color_neutral_90: #e6e1e6;
+    --color_neutral_var_50: #79757f;
+}
+
 html {
-    font-family: 'Open Sans', sans-serif;
-    padding: 1rem;
+    font-family: 'Roboto Flex', sans-serif;
 }
 
-table, p {
-    font-size: 16px;
+h1 {
+    line-height: 2.5rem;
+    font-size: 2rem;
+    font-weight: 400;
 }
 
-td {
-    padding-top: 5px;
-    padding-bottom: 5px;
+.label1 {
+    line-height: 1.25rem;
+    font-size: 0.825rem;
+    font-weight: 500;
 }
 
-.left_padding {
-    padding-left: 25px;
-}
+/* NEW BUTTON MAGIC. */
 
-.right_align {
-    text-align: end;
-}
-
-.submit_button {
-    background-color: #7542e3;
-    margin-top: 15px;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 22px;
-    text-align: center;
-    display: inline-block;
-    font-size: 16px;
-    color: white;
-}
-
-.submit_button:hover {
-    box-shadow: 0 12px 16px rgba(0, 0, 0, 0.24);
-}
-
-.fill_entire_cell {
-    border: none;
-    width: 90%;
-    height: 90px;
-}
-
-.right_margin {
-    margin-right: 16px;
-}
-
-.flashes {
-    list-style-type: none;
-    text-align: center;
-    border: #7542e3 1px dot-dash;
-    /*Why isn't the border showing?*/
-}
-
-.existing_group_toggle {
-    border: 2px solid #7542e3;
-    border-radius: 25px;
-    padding: 10px;
-}
-
-#toggle-group-overall {
-    display: table;
-    width: 500px;
-    counter-reset: button-cover;
-}
-
-.toggle-group-button-cover {
+/*Positions things holding the button (required so it doesn't float to the top the page?*/
+/*TODO: figure out positioning to be on the same line as other things.*/
+.switch-group-button-cover {
+    /*TODO: fine tune these values!! */
     display: table-cell;
     position: relative;
-    width: 200px;
-    height: 160px;
+    padding: 10px;
+    /*Using padding here avoid conflict with other layout items! */
+    /*width: 200px;*/
+    /*height: 160px;*/
     box-sizing: border-box;
 }
 
-.group-button-cover {
-    height: 120px;
-    margin: 20px;
-    background-color: #B1ADF7;
-    box-shadow: 0 10px 20px -8px #d0ceeb;
-    border-radius: 4px;
-}
-
+/*Position the switch itself correctly. */
+/*TODO - play with this (again)*/
 .group-button-cover,
-.knobs,
-.layer {
+.thumb,
+.track {
     position: absolute;
+    padding-top: 10px;
+    padding-bottom: 10px;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
 }
 
-.group-button {
-    position: relative;
-    top: 45%;
-    width: 94px;
-    height: 56px;
-    margin: -20px auto 0 auto;
-    overflow: hidden;
+.thumb {
+    z-index: 2;
 }
 
-.group-button.r,
-.group-button.r .layer {
-    border-radius: 100px;
-}
-
+/*Hide the checkbox itself. */
 .group-checkbox {
     position: relative;
     width: 100%;
@@ -116,76 +66,53 @@ td {
     z-index: 3;
 }
 
-.knobs {
-    z-index: 2;
+/* Width appears to control the whole button width. */
+/*!* Track apperance and positioning ???. */
+.group-button {
+    position: relative;
+    top: 45%;
+    height: 32px;
+    width: 52px;
+    /*!* this margin is used to center? it (I think)*/
+    margin: -20px auto 0 auto;
+    overflow: hidden;
 }
 
-.layer {
+.track {
     width: 100%;
-    background-color: #ebf7fc;
+    background-color: var(--color_neutral_90);
     transition: 0.3s ease all;
     z-index: 1;
+    border-radius: 100px;
 }
 
-#group-button .knobs:before {
-    content: "Use Group";
+/*The switch is currently off. */
+/*NOTE - making this change will switch button behaviour. Make sure to account for this. (as I'm changing what = off and what = on */
+#group-button .thumb:before {
+    content: "";
     position: absolute;
     top: 4px;
     left: 4px;
-    width: 40px;
-    height: 30px;
-    color: #fff;
-    font-size: 10px;
-    font-weight: bold;
+    width: 16px;
+    height: 16px;
     text-align: center;
     line-height: 1;
-    padding: 9px 4px;
-    background-color: #03a9f4;
-    border-radius: 50%;
+    background-color: var(--color_neutral_var_50);
+    padding: 4px 4px;
+    border-radius: 100%;
     transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
 }
 
-#group-button .group-checkbox:checked + .knobs:before {
-    content: "Don't Use Group";
-    left: 42px;
-    background-color: #f44336;
+/* Appearance when switch is on! */
+/*TODO: I need to change the track colour!*/
+#group-button .group-checkbox:checked + .thumb:before {
+    content: "";
+    top: 0;
+    left: 20px;
+    height: 24px;
+    width: 24px;
+    background-color: var(--color_on_primary);
 }
 
-#group-button .group-checkbox:checked ~ .layer {
-    background-color: #fcebeb;
-}
 
-#group-button .knobs,
-#group-button .knobs:before,
-#group-button .layer {
-    transition: 0.3s ease all;
-}
 
-table.with_row_dividers {
-    border-collapse: collapse;
-}
-
-.with_row_dividers tr {
-    border-bottom: 1px dashed #7542e3;
-}
-
-.crafting_grid_table {
-    border-collapse: collapse;
-}
-
-.crafting_grid_row {
-    height: 100px;
-}
-
-.crafting_grid_cell {
-    text-align: center;
-}
-
-.wider_box {
-    width: 500px;
-}
-
-.should_select {
-    outline: 3px dashed mediumvioletred;
-    outline-offset: 3px;
-}

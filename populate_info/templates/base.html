@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz@8..144&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <meta charset="UTF-8">
@@ -20,18 +19,22 @@
     {% endif %}
 {% endwith %}
 
-<h1> Minecraft block / item Information Helper </h1>
+<h1> Minecraft block / item information helper </h1>
 {% if show_group %}
-    <div class="existing_group_toggle" id="toggle-group-overall">
-        Load default values from existing group: {{ group_name }}
+    <p class="label1">
+        {#    TODO: emphasis GROUP NAME! #}
+        Existing group is: {{ group_name }}
+    </p>
+    <div class="existing_group_toggle" id="switch-group-overall">
         <form method="post">
-            <div class="toggle-group-button-cover">
+            <p class="label1"> Auto-populate based on group: </p>
+            <div class="switch-group-button-cover">
                 <div class="group-button-cover">
                     <div class="group-button r" id="group-button">
                         <input type="checkbox" class="group-checkbox" name="group_checkbox"
-                               id="toggle-checkbox"/>
-                        <div class="knobs"></div>
-                        <div class="layer"></div>
+                               id="switch-checkbox"/>
+                        <div class="thumb"></div>
+                        <div class="track"></div>
                     </div>
                 </div>
             </div>

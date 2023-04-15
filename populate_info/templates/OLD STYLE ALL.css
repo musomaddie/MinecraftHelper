@@ -1,0 +1,79 @@
+table, p {
+    font-size: 16px;
+}
+
+td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.left_padding {
+    padding-left: 25px;
+}
+
+.right_align {
+    text-align: end;
+}
+
+.submit_button {
+    background-color: #7542e3;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 22px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    color: white;
+}
+
+.submit_button:hover {
+    box-shadow: 0 12px 16px rgba(0, 0, 0, 0.24);
+}
+
+.fill_entire_cell {
+    border: none;
+    width: 90%;
+    height: 90px;
+}
+
+.right_margin {
+    margin-right: 16px;
+}
+
+.flashes {
+    list-style-type: none;
+    text-align: center;
+    border: #7542e3 1px dot-dash;
+    /*Why isn't the border showing?*/
+}
+
+table.with_row_dividers {
+    border-collapse: collapse;
+}
+
+.with_row_dividers tr {
+    border-bottom: 1px dashed #7542e3;
+}
+
+.crafting_grid_table {
+    border-collapse: collapse;
+}
+
+.crafting_grid_row {
+    height: 100px;
+}
+
+.crafting_grid_cell {
+    text-align: center;
+}
+
+.wider_box {
+    width: 500px;
+}
+
+.should_select {
+    outline: 3px dashed mediumvioletred;
+    outline-offset: 3px;
+}
+

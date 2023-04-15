@@ -1,0 +1,63 @@
+/*OLD BUTTON MAGIC!!*/
+
+/*position it correctly.*/
+.group-button-cover,
+.thumb,
+.track {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#group-button .thumb:before {
+    content: "Use Group";
+    position: absolute;
+    /*Positions the button body.*/
+    top: 4px;
+    left: 4px;
+    /*!* Controls size of knob part of the button.*/
+    width: 40px;
+    height: 30px;
+    /*Font colour (of chosen selection)*/
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    background-color: #03a9f4;
+    border-radius: 50%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+/*Appearance when the knob is pressed. */
+#group-button .group-checkbox:checked + .thumb:before {
+    content: "Don't Use Group";
+    left: 42px;
+    background-color: #f44336;
+}
+
+/*Switch animation.*/
+#group-button .thumb,
+#group-button .thumb:before,
+#group-button .track {
+    transition: 0.3s ease all;
+}
+
+
+.group-button.r,
+.group-button.r .track {
+    border-radius: 100px;
+}
+
+
+/*Applies to the track ONLY (i.e. selected vs unselected ?).*/
+
+
+#group-button .group-checkbox:checked ~ .track {
+    background-color: #fcebeb;
+}
+
+
