@@ -1,26 +1,22 @@
-:root {
-    --color-primary: #673ed7;
-    --color-on-primary: #ffffff;
-    --color-neutral-0: #000000;
-    --color-neutral-90: #e6e1e6;
-    --color-neutral-var-50: #79757f;
-    --colour-outline: #79757f;
-    --color-background: #fffbff;
-    --color-secondary-container: #d4e3ff;
-    --color-on-secondary-container: #001c39;
-}
+@import url(tokens.css);
+@import url(colors.module.css);
+@import url(typography.module.css);
+@import url(theme.light.css) (prefers-color-scheme: light);
 
 html {
     font-family: 'Roboto Flex', sans-serif;
-    background-color: ;
+    background-color: var(--md-sys-color-background);
 }
 
 h1 {
-    line-height: 40px;
-    font-size: 32px;
-    font-weight: 400;
+    font-style: var(--md-sys-typescale-headline-large-font-family-style);
+    font-weight: var(--md-sys-typescale-headline-large-font-weight);
+    font-size: var(--md-sys-typescale-headline-large-font-size);
+    letter-spacing: var(--md-sys-typescale-headline-large-letter-spacing);
+    line-height: var(--md-sys-typescale-headline-large-line-height);
 }
 
+/*TODO - replace usages. */
 .body_large {
     line-height: 24px;
     font-size: 16px;
@@ -36,11 +32,6 @@ h1 {
     height: 40px;
     display: table-cell;
     position: relative;
-    /*padding: 10px;*/
-    /*!*Using padding here avoid conflict with other layout items! *!*/
-    /*!*width: 200px;*!*/
-    /*!*height: 160px;*!*/
-    /*box-sizing: border-box;*/
 }
 
 /*Position the switch itself correctly. */
@@ -79,16 +70,15 @@ h1 {
     height: 32px;
     width: 52px;
     margin: -20px auto 0 auto;
-    /*overflow: hidden;*/
 }
 
 .track {
     width: 100%;
-    background-color: var(--color-neutral-90);
+    background-color: var(--md-ref-palette-neutral90);
     transition: 0.3s ease all;
     z-index: 1;
     border-radius: 100px;
-    border: 2px var(--colour-outline) solid;
+    border: 2px var(--md-sys-color-outline-light) solid;
 }
 
 /*Appearance when switch is off. */
@@ -101,7 +91,7 @@ h1 {
     height: 16px;
     text-align: center;
     line-height: 1;
-    background-color: var(--color-neutral-var-50);
+    background-color: var(--md-ref-palette-neutral-variant50);
     padding: 4px 4px;
     border-radius: 100%;
     transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
@@ -113,12 +103,13 @@ h1 {
     left: 24px;
     height: 24px;
     width: 24px;
-    background-color: var(--color-on-primary);
+    background-color: var(--md-sys-color-on-primary);
 }
 
 .on-track {
-    background-color: var(--color-primary);
+    background-color: var(--md-sys-color-primary);
     border: none;
+    /*TODO: add a little bit of box shadow (same as others - DEFINE MYSELF.*/
 }
 
 /*Position group toggle items in line!*/
@@ -135,9 +126,9 @@ h1 {
 }
 
 #existing_group_sub {
-    background-color: var(--color-secondary-container);
-    box-shadow: var(--color-neutral-0);
-    color: var(--color-on-secondary-container);
+    background-color: var(--md-sys-color-secondary-container);
+    box-shadow: var(--md-ref-palette-neutral0);
+    color: var(--md-sys-color-on-secondary-container);
     line-height: 20px;
     font-size: 14px;
     font-weight: 500;
@@ -150,4 +141,12 @@ h1 {
 
 #existing_group_sub:hover {
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+}
+
+.group-chip {
+    border: 1px solid var(--md-ref-palette-neutral-variant50);
+    color: var(--md-sys-color-on-surface);
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 500;
 }
