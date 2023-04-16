@@ -3,6 +3,8 @@
 <head>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz@8..144&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
     <meta charset="UTF-8">
@@ -34,7 +36,7 @@
                         <input type="checkbox" class="group-checkbox" name="group_checkbox"
                                id="switch-checkbox"/>
                         <div class="thumb"></div>
-                        <div class="track"></div>
+                        <div id="track" class="track"></div>
                     </div>
                 </div>
             </div>
@@ -56,6 +58,18 @@
         if (!JSON.parse('{{ is_toggle_selected|tojson }}')) {
             document.getElementById("toggle-checkbox").checked = true;
         }
+
+        // Needed for nice switch layout.
+        const checkbox = document.getElementById("switch-checkbox");
+        const track = document.getElementById("track")
+        checkbox.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                track.classList.add("on-track")
+                // Also set out the text
+            } else {
+                track.classList.remove("on-track");
+            }
+        });
     });
 </script>
 </body>

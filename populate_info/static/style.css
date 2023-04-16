@@ -3,6 +3,7 @@
     --color_on_primary: #ffffff;
     --color_neutral_90: #e6e1e6;
     --color_neutral_var_50: #79757f;
+    --color_outline: #79757f;
 }
 
 html {
@@ -66,16 +67,14 @@ h1 {
     z-index: 3;
 }
 
-/* Width appears to control the whole button width. */
-/*!* Track apperance and positioning ???. */
+/*!* Track appearance and positioning ???. */
 .group-button {
     position: relative;
     top: 45%;
     height: 32px;
     width: 52px;
-    /*!* this margin is used to center? it (I think)*/
     margin: -20px auto 0 auto;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .track {
@@ -84,9 +83,10 @@ h1 {
     transition: 0.3s ease all;
     z-index: 1;
     border-radius: 100px;
+    border: 2px var(--color_outline) solid;
 }
 
-/*The switch is currently off. */
+/*Appearance when switch is off. */
 /*NOTE - making this change will switch button behaviour. Make sure to account for this. (as I'm changing what = off and what = on */
 #group-button .thumb:before {
     content: "";
@@ -104,14 +104,17 @@ h1 {
 }
 
 /* Appearance when switch is on! */
-/*TODO: I need to change the track colour!*/
 #group-button .group-checkbox:checked + .thumb:before {
-    content: "";
     top: 0;
-    left: 20px;
+    left: 24px;
     height: 24px;
     width: 24px;
     background-color: var(--color_on_primary);
+}
+
+.on-track {
+    background-color: var(--color_primary);
+    border: none;
 }
 
 
