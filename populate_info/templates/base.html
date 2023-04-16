@@ -45,7 +45,7 @@
             <input class="submit_button" type="submit"
                    id="existing_group_sub"
                    name="update_use_group_values"
-                   value="Apply!"/>
+                   value="Update"/>
         </div>
     </form>
     <br>
@@ -67,7 +67,6 @@
         checkbox.addEventListener('change', (event) => {
             if (event.currentTarget.checked) {
                 track.classList.add("on-track")
-                // Also set out the text
             } else {
                 track.classList.remove("on-track");
             }

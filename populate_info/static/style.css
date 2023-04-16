@@ -1,10 +1,13 @@
 :root {
-    --color_primary: #673ed7;
-    --color_on_primary: #ffffff;
-    --color_neutral_90: #e6e1e6;
-    --color_neutral_var_50: #79757f;
-    --color_outline: #79757f;
-    --color_background: #fffbff
+    --color-primary: #673ed7;
+    --color-on-primary: #ffffff;
+    --color-neutral-0: #000000;
+    --color-neutral-90: #e6e1e6;
+    --color-neutral-var-50: #79757f;
+    --colour-outline: #79757f;
+    --color-background: #fffbff;
+    --color-secondary-container: #d4e3ff;
+    --color-on-secondary-container: #001c39;
 }
 
 html {
@@ -24,8 +27,9 @@ h1 {
     font-weight: 400;
 }
 
-/* NEW BUTTON MAGIC. */
-
+/***************************************************************/
+/* SWITCH APPEARANCE */
+/***************************************************************/
 /*Positions things holding the button (required so it doesn't float to the top the page?*/
 .switch-group-button-cover {
     width: 60px;
@@ -80,15 +84,14 @@ h1 {
 
 .track {
     width: 100%;
-    background-color: var(--color_neutral_90);
+    background-color: var(--color-neutral-90);
     transition: 0.3s ease all;
     z-index: 1;
     border-radius: 100px;
-    border: 2px var(--color_outline) solid;
+    border: 2px var(--colour-outline) solid;
 }
 
 /*Appearance when switch is off. */
-/*NOTE - making this change will switch button behaviour. Make sure to account for this. (as I'm changing what = off and what = on */
 #group-button .thumb:before {
     content: "";
     position: absolute;
@@ -98,7 +101,7 @@ h1 {
     height: 16px;
     text-align: center;
     line-height: 1;
-    background-color: var(--color_neutral_var_50);
+    background-color: var(--color-neutral-var-50);
     padding: 4px 4px;
     border-radius: 100%;
     transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
@@ -110,11 +113,11 @@ h1 {
     left: 24px;
     height: 24px;
     width: 24px;
-    background-color: var(--color_on_primary);
+    background-color: var(--color-on-primary);
 }
 
 .on-track {
-    background-color: var(--color_primary);
+    background-color: var(--color-primary);
     border: none;
 }
 
@@ -131,9 +134,20 @@ h1 {
     padding-left: 20px;
 }
 
-/*.next_left,*/
-/*.next_center,*/
-/*.next_right {*/
-/*    flex-basis: auto;*/
-/*}*/
+#existing_group_sub {
+    background-color: var(--color-secondary-container);
+    box-shadow: var(--color-neutral-0);
+    color: var(--color-on-secondary-container);
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
 
+#existing_group_sub:hover {
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+}
