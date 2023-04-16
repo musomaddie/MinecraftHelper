@@ -23,30 +23,31 @@
 
 <h1> Minecraft block / item information helper </h1>
 {% if show_group %}
-    <p class="label1">
+    <p class="body_large">
         {#    TODO: emphasis GROUP NAME! #}
         Existing group is: {{ group_name }}
     </p>
-    <div class="existing_group_toggle" id="switch-group-overall">
-        <form method="post">
-            <p class="label1"> Auto-populate based on group: </p>
-            <div class="switch-group-button-cover">
-                <div class="group-button-cover">
-                    <div class="group-button r" id="group-button">
-                        <input type="checkbox" class="group-checkbox" name="group_checkbox"
-                               id="switch-checkbox"/>
-                        <div class="thumb"></div>
-                        <div id="track" class="track"></div>
-                    </div>
+    <form method="post" class="next_to_container">
+        <div class="next_left">
+            <p class="body_large"> Auto-populate based on group: </p>
+        </div>
+        <div class="switch-group-button-cover next_center">
+            <div class="group-button-cover">
+                <div class="group-button r" id="group-button">
+                    <input type="checkbox" class="group-checkbox" name="group_checkbox"
+                           id="switch-checkbox"/>
+                    <div class="thumb"></div>
+                    <div id="track" class="track"></div>
                 </div>
             </div>
-
+        </div>
+        <div class="next_right">
             <input class="submit_button" type="submit"
                    id="existing_group_sub"
                    name="update_use_group_values"
                    value="Apply!"/>
-        </form>
-    </div>
+        </div>
+    </form>
     <br>
 {% endif %}
 {% block body %} {% endblock %}

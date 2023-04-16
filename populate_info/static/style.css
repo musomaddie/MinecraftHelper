@@ -4,41 +4,42 @@
     --color_neutral_90: #e6e1e6;
     --color_neutral_var_50: #79757f;
     --color_outline: #79757f;
+    --color_background: #fffbff
 }
 
 html {
     font-family: 'Roboto Flex', sans-serif;
+    background-color: ;
 }
 
 h1 {
-    line-height: 2.5rem;
-    font-size: 2rem;
+    line-height: 40px;
+    font-size: 32px;
     font-weight: 400;
 }
 
-.label1 {
-    line-height: 1.25rem;
-    font-size: 0.825rem;
-    font-weight: 500;
+.body_large {
+    line-height: 24px;
+    font-size: 16px;
+    font-weight: 400;
 }
 
 /* NEW BUTTON MAGIC. */
 
 /*Positions things holding the button (required so it doesn't float to the top the page?*/
-/*TODO: figure out positioning to be on the same line as other things.*/
 .switch-group-button-cover {
-    /*TODO: fine tune these values!! */
+    width: 60px;
+    height: 40px;
     display: table-cell;
     position: relative;
-    padding: 10px;
-    /*Using padding here avoid conflict with other layout items! */
-    /*width: 200px;*/
-    /*height: 160px;*/
-    box-sizing: border-box;
+    /*padding: 10px;*/
+    /*!*Using padding here avoid conflict with other layout items! *!*/
+    /*!*width: 200px;*!*/
+    /*!*height: 160px;*!*/
+    /*box-sizing: border-box;*/
 }
 
 /*Position the switch itself correctly. */
-/*TODO - play with this (again)*/
 .group-button-cover,
 .thumb,
 .track {
@@ -117,5 +118,22 @@ h1 {
     border: none;
 }
 
+/*Position group toggle items in line!*/
+.next_to_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+}
 
+.next_center,
+.next_right {
+    padding-left: 20px;
+}
+
+/*.next_left,*/
+/*.next_center,*/
+/*.next_right {*/
+/*    flex-basis: auto;*/
+/*}*/
 
