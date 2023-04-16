@@ -110,12 +110,12 @@ class TestMaybeUpdateButton:
     def test_true_dont_use(self):
         my_session = {}
         assert maybe_group_toggle_update_saved(my_session, {"update_use_group_values": "", "group_checkbox": ""})
-        assert not my_session[r.USE_GROUP_VALUES_SK]
+        assert my_session[r.USE_GROUP_VALUES_SK]
 
     def test_true_use(self):
         my_session = {}
         assert maybe_group_toggle_update_saved(my_session, {"update_use_group_values": ""})
-        assert my_session[r.USE_GROUP_VALUES_SK]
+        assert not my_session[r.USE_GROUP_VALUES_SK]
 
 
 class TestRemoveSharedPart:

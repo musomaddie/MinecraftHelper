@@ -19,12 +19,8 @@ def start_adding_item(item_name):
     item_file_name = r.get_item_fn(item_name)
     # Don't save to the JSON file until the end, use session for now.
     session[r.CUR_ITEM_SK] = item_name
-    # Temporarily set for testing - TODO
     session[r.GROUP_NAME_SK] = "TESTING_GROUP"
-    # TODO: add corresponding boolean for group name.
     group_name = session.get(r.GROUP_NAME_SK, "")
-
-    # TODO - check that the auto group will select crafting when it should!
 
     # Return basic page if this is a get request!!
     if request.method == "GET":

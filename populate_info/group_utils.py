@@ -143,7 +143,8 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
     if "update_use_group_values" in request_form:
         # if we've been told to update it we need to use the value passed to set this value (because who knows how
         # many times it's been toggled?!)
-        session[r.USE_GROUP_VALUES_SK] = "group_checkbox" not in request_form
+        print("updating value")
+        session[r.USE_GROUP_VALUES_SK] = "group_checkbox" in request_form
         return True
     return False
 
