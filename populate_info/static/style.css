@@ -164,3 +164,9 @@ h2 {
     padding-left: 16px;
     padding-right: 16px;
 }
+
+hr {
+    color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-primary);
+    height: 3px;
+}
