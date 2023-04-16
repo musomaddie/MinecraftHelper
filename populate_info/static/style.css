@@ -25,13 +25,6 @@ h2 {
 
 }
 
-/*TODO - replace usages. */
-.body_large {
-    line-height: 24px;
-    font-size: 16px;
-    font-weight: 400;
-}
-
 /***************************************************************/
 /* SWITCH APPEARANCE */
 /***************************************************************/
@@ -148,8 +141,9 @@ h2 {
     padding-right: 24px;
 }
 
+.submit_button:hover,
 #existing_group_sub:hover {
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.24);
 }
 
 .group-chip {
@@ -169,4 +163,34 @@ hr {
     color: var(--md-sys-color-primary);
     background-color: var(--md-sys-color-primary);
     height: 3px;
+}
+
+.text_input {
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    border: 1px solid var(--md-sys-color-outline);
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface);
+}
+
+.submit_button,
+#existing_group_sub {
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    padding-left: 24px;
+    padding-right: 24px;
+    box-shadow: var(--md-ref-palette-neutral0);
+}
+
+#existing_group_sub {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    line-height: 20px;
+}
+
+.submit_button {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
 }

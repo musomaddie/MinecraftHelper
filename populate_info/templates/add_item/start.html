@@ -4,21 +4,18 @@
         <a href={{ item_url }}>(wiki) </a>
     </h2>
 
-    The group name is {{ group_name }}
+    <p class="body-large"> The group name is {{ group_name }}. </p>
 
-    <form method="post">
-        <table>
-            <tr>
-                <td>
-                    <label for="group_name">Set group name to: </label>
-                </td>
-                <td class="left_padding">
-                    {#                    TODO: create a dropdown selector of existing group names #}
-                    <input type="text" id="group_name" name="group_name" required/>
-                </td>
-            </tr>
-        </table>
-        <input class="submit_button" type="submit" value="Set group name" name="group_name_btn"/>
+    <form method="post" class="next_to_container">
+        <label for="group_name" class="body-large next_left">
+            Set group name to: </label>
+        <div class="next_center body-large">
+            <input type="text" id="group_name" name="group_name" class="text_input label-large" required/>
+        </div>
+        <div class="next_right">
+            <input type="submit" value="Set group name" name="group_name_btn"
+                   class="submit_button label-large"/>
+        </div>
     </form>
 
     <br>
