@@ -16,6 +16,15 @@ h1 {
     line-height: var(--md-sys-typescale-headline-large-line-height);
 }
 
+h2 {
+    font-style: var(--md-sys-typescale-body-medium-font-family-style);
+    font-weight: var(--md-sys-typescale-headline-medium-font-weight);
+    font-size: var(--md-sys-typescale-headline-medium-font-size);
+    letter-spacing: var(--md-sys-typescale-headline-medium-letter-spacing);
+    line-height: var(--md-sys-typescale-headline-medium-line-height);
+
+}
+
 /*TODO - replace usages. */
 .body_large {
     line-height: 24px;
@@ -145,8 +154,13 @@ h1 {
 
 .group-chip {
     border: 1px solid var(--md-ref-palette-neutral-variant50);
+    background-color: var(--md-sys-color-surface-container-low);
     color: var(--md-sys-color-on-surface);
     line-height: 20px;
     font-size: 14px;
     font-weight: 500;
+    width: fit-content;
+    height: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
