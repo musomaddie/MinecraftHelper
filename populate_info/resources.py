@@ -71,8 +71,8 @@ def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     if not session.get(USE_GROUP_VALUES_SK, False):
         return []
     helper_dict = {
-        "breaking": "breaking_cbox",
-        "crafting": "crafting_cbox",
-        "environment change": "env_changes_cbox"
+        "breaking": "breaking-cbox",
+        "crafting": "crafting-cbox",
+        "environment change": "env-changes-cbox"
     }
     return [helper_dict[cat_name] for cat_name in category_names if cat_name in helper_dict]
