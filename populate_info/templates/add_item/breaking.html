@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="next_right">
-            <select name="specific_tool" id="spec_tool_select">
+            <select name="specific_tool" id="spec_tool_select" class="hidden">
                 <option></option>
                 <option value="fishing_rod">Fishing Rod</option>
                 <option value="flint_and_still">Flint and Steel</option>
@@ -118,7 +118,30 @@
     </form>
     <script>
         $(document).ready(function () {
-            // Quit early if we know we shouldn't be updating these values.
+            // Set up class listener for buttons to hide things
+            const select_menu = document.getElementById("spec_tool_select");
+
+            document.getElementById("requires-tool-no")
+                .addEventListener(
+                    'change', (event) => {
+                        if (event.currentTarget.checked) {
+                            select_menu.classList.add("hidden");
+                        }
+                    });
+            document.getElementById("requires-tool-yes").addEventListener(
+                'change', (event) => {
+                    if (event.currentTarget.checked && !select_menu.classList.contains("hidden")) {
+                        select_menu.classList.add("hidden");
+                    }
+                });
+            document.getElementById("requires-tool-specific").addEventListener(
+                'change', (event) => {
+                    if (event.currentTarget.checked) {
+                        select_menu.classList.remove("hidden");
+                    }
+                });
+
+
             return
             const switches_and_tracks = {}
             Object.entries(switches_and_tracks).forEach(
@@ -133,6 +156,7 @@
                             }
                         });
                 });
+            // Quit early if we know we shouldn't be updating these values.
             if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
                 return
             }
