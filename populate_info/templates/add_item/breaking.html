@@ -2,6 +2,19 @@
 {% block body %}
     <h2> Get {{ item_name }} by breaking itself</h2>
     <form method="post">
+        <label class="body-large" for="requires-tool">
+            Is a tool required?
+        </label>
+        <div class="switch-container">
+            <div class="switch-cover">
+                <div class="switch-button">
+                    <input type="checkbox" class="switch-checkbox"
+                           name="requires-tool-cbox" id="requires-tool"/>
+                    <div class="thumb"></div>
+                    <div id="requires-tool-track" class="track"></div>
+                </div>
+            </div>
+        </div>
         <table class="with_row_dividers">
             <tr>
                 <td> Is a tool required?</td>
@@ -106,10 +119,21 @@
     <script>
         $(document).ready(function () {
             // Quit early if we know we shouldn't be updating these values.
-            let v = JSON.parse('{{ show_group|tojson }}')
-            let r = JSON.parse('{{ is_toggle_selected }}')
-            console.log(v, r);
-
+            const switches_and_tracks = {
+                "requires-tool": "requires-tool-track"
+            }
+            Object.entries(switches_and_tracks).forEach(
+                function (entry) {
+                    document.getElementById(entry[0]).addEventListener(
+                        'change', (event) => {
+                            let track = document.getElementById(entry[1]);
+                            if (event.currentTarget.checked) {
+                                track.classList.add("on-track")
+                            } else {
+                                track.classList.remove("on-track");
+                            }
+                        });
+                });
             if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
                 return
             }
@@ -120,6 +144,7 @@
             for (let key in groupInfo["dropdown_select"]) {
                 document.getElementById(key).value = groupInfo["dropdown_select"][key]
             }
-        });
+        })
+        ;
     </script>
 {% endblock %}
