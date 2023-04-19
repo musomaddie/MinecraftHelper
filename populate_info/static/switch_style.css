@@ -1,0 +1,85 @@
+/*Positions things holding the button (required so it doesn't float to the top the page?*/
+.switch-container {
+    width: 60px;
+    height: 40px;
+    display: table-cell;
+    position: relative;
+}
+
+/*Position the switch itself correctly. */
+.switch-cover,
+.thumb,
+.track {
+    position: absolute;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.thumb {
+    z-index: 2;
+}
+
+/*Hide the checkbox itself. */
+.switch-checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+/*!* Track appearance and positioning ???. */
+.switch-button {
+    position: relative;
+    top: 45%;
+    height: 32px;
+    width: 52px;
+    margin: -20px auto 0 auto;
+}
+
+.track {
+    width: 100%;
+    background-color: var(--md-ref-palette-neutral90);
+    transition: 0.3s ease all;
+    z-index: 1;
+    border-radius: 100px;
+    border: 2px var(--md-sys-color-outline-light) solid;
+}
+
+/*Appearance when switch is off. */
+.switch-button .thumb:before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 1;
+    background-color: var(--md-ref-palette-neutral-variant50);
+    padding: 4px 4px;
+    border-radius: 100%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+/* Appearance when switch is on! */
+.switch-button .switch-checkbox:checked + .thumb:before {
+    top: 0;
+    left: 24px;
+    height: 24px;
+    width: 24px;
+    background-color: var(--md-sys-color-on-primary);
+}
+
+.on-track {
+    background-color: var(--md-sys-color-primary);
+    border: none;
+    /*TODO: add a little bit of box shadow (same as others - DEFINE MYSELF.*/
+}
