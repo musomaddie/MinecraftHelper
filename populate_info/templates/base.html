@@ -53,26 +53,11 @@
 {% endif %}
 {% block body %} {% endblock %}
 <script>
-    $(document).ready(function () {
-        // Needed for nice switch layout.
-        const checkbox = document.getElementById("switch-checkbox");
-        const track = document.getElementById("track")
-        checkbox.addEventListener('change', (event) => {
-            if (event.currentTarget.checked) {
-                track.classList.add("on-track")
-            } else {
-                track.classList.remove("on-track");
-            }
-        });
-
-        if (!JSON.parse('{{ show_group|tojson }}')) {
-            return;
-        }
-        if (JSON.parse('{{ is_toggle_selected|tojson }}')) {
-            document.getElementById("switch-checkbox").checked = true;
-            track.classList.add("on-track")
-        }
-    });
+    config_vars = {
+        "show-group": {{ show_group|tojson }},
+        "is-toggle-selected": {{ is_toggle_selected|tojson }}
+    };
 </script>
+<script src="{{ url_for('static', filename='scripts/base.js' ) }}"></script>
 </body>
 </html>
