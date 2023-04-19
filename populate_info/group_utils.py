@@ -140,11 +140,10 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
 
      Returns true if the toggle has changed, false otherwise. (to help control data flow).
      :param session: """
-    if "update_use_group_values" in request_form:
+    if "update-use-group-values" in request_form:
         # if we've been told to update it we need to use the value passed to set this value (because who knows how
         # many times it's been toggled?!)
-        print("updating value")
-        session[r.USE_GROUP_VALUES_SK] = "group_checkbox" in request_form
+        session[r.USE_GROUP_VALUES_SK] = "group-checkbox" in request_form
         return True
     return False
 

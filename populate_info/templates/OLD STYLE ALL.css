@@ -15,7 +15,7 @@ td {
     text-align: end;
 }
 
-.submit_button {
+.submit-button {
     background-color: #7542e3;
     margin-top: 15px;
     border: none;
@@ -27,7 +27,7 @@ td {
     color: white;
 }
 
-.submit_button:hover {
+.submit-button:hover {
     box-shadow: 0 12px 16px rgba(0, 0, 0, 0.24);
 }
 

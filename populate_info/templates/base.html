@@ -29,23 +29,23 @@
         <span class="group-chip">{{ group_name }}</span>
     </p>
     <form method="post" class="next-to-container">
-        <div class="next_left">
-            <p class="body_large"> Auto-populate based on group: </p>
+        <div class="next-left">
+            <p class="body-large"> Auto-populate based on group: </p>
         </div>
-        <div class="switch-container next_center">
+        <div class="switch-container next-center">
             <div class="switch-cover">
                 <div class="switch-button r" id="group-button">
                     <input type="checkbox" class="switch-checkbox"
-                           name="group_checkbox" id="switch-checkbox"/>
+                           name="group-checkbox" id="switch-checkbox"/>
                     <div class="thumb"></div>
                     <div id="track" class="track"></div>
                 </div>
             </div>
         </div>
-        <div class="next_right">
-            <input class="submit_button" type="submit"
-                   id="existing_group_sub"
-                   name="update_use_group_values"
+        <div class="next-right">
+            <input class="submit-button" type="submit"
+                   id="existing-group-sub"
+                   name="update-use-group-values"
                    value="Update"/>
         </div>
     </form>
@@ -54,8 +54,8 @@
 {% block body %} {% endblock %}
 <script>
     config_vars = {
-        "show-group": {{ show_group|tojson }},
-        "is-toggle-selected": {{ is_toggle_selected|tojson }}
+        "is-toggle-selected": {{ show_group|tojson }},
+        "show-group": {{ is_toggle_selected|tojson }}
     };
 </script>
 <script src="{{ url_for('static', filename='scripts/base.js' ) }}"></script>

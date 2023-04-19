@@ -44,12 +44,12 @@ h3 {
     align-items: center;
 }
 
-.next_center,
-.next_right {
+.next-center,
+.next-right {
     padding-left: 20px;
 }
 
-#existing_group_sub {
+#existing-group-sub {
     background-color: var(--md-sys-color-secondary-container);
     box-shadow: var(--md-ref-palette-neutral0);
     color: var(--md-sys-color-on-secondary-container);
@@ -63,8 +63,8 @@ h3 {
     padding-right: 24px;
 }
 
-.submit_button:hover,
-#existing_group_sub:hover {
+.submit-button:hover,
+#existing-group-sub:hover {
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.24);
 }
 
@@ -87,15 +87,15 @@ hr {
     height: 3px;
 }
 
-.text_input {
+.text-input {
     border-radius: var(--md-sys-shape-corner-extra-small);
     border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface);
 }
 
-.submit_button,
-#existing_group_sub {
+.submit-button,
+#existing-group-sub {
     font-size: 14px;
     font-weight: 500;
     height: 40px;
@@ -106,13 +106,13 @@ hr {
     box-shadow: var(--md-ref-palette-neutral0);
 }
 
-#existing_group_sub {
+#existing-group-sub {
     background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
     line-height: 20px;
 }
 
-.submit_button {
+.submit-button {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
 }

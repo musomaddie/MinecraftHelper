@@ -1,4 +1,4 @@
-.segmented_button_container {
+.segmented-button-container {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -11,12 +11,12 @@
 }
 
 
-.segmented_button_container > input[type="radio"] {
+.segmented-button-container > input[type="radio"] {
     display: none;
 }
 
 /*Not selected button */
-.segmented_button_container > label {
+.segmented-button-container > label {
     display: inline-block;
     height: 40px;
     text-align: center;

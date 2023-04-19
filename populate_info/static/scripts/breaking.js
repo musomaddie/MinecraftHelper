@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Start with the fastest tool default set to no so that updates from group will change it.
     document.getElementById("fastest-tool-no").checked = true
-    const select_fastest = document.getElementById("fastest_specific_tool_select");
+    const select_fastest = document.getElementById("fastest-specific-tool-select");
 
     document.getElementById("requires-tool-no")
         .addEventListener(
@@ -15,7 +15,7 @@ $(document).ready(function () {
                 remove_from_class_list_listener(event, select_fastest, "hidden"));
 
     // Set up class listener for buttons to hide things
-    const select_required = document.getElementById("spec_tool_select");
+    const select_required = document.getElementById("spec-tool-select");
 
     document.getElementById("requires-tool-no")
         .addEventListener(
