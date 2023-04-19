@@ -81,61 +81,34 @@
                 </select>
             </div>
         </div>
-    </form>
-    <form>
+        <div class="next-to-container">
+            <p class="body-large">Is silk touch required? </p>
+            <div class="next-center">
+                <div class="segmented-button-container">
+                    <input type="radio" name="requires-silk" id="silk-no"
+                           class="button-segment-radio" required/>
+                    <label for="silk-no" class="body-large">
+                        No
+                    </label>
+                    <input type="radio" name="requires-silk" id="silk-yes"
+                           class="button-segment-radio" required/>
+                    <label for="silk-yes" class="body-large">
+                        Yes
+                    </label>
+                </div>
+            </div>
+        </div>
 
-
-        <table class="with_row_dividers">
-            <tr>
-                <td>
-                    <input type="radio" id="requires-tool-spec"
-                           value="tool-spec" name="requires-tool" required/>
-                </td>
-                <td>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="left_padding right_align">
-                    <label for="fastest_tool"> Is there a fastest tool?</label>
-                </td>
-                <td class="left_padding right_align">
-                    <input type="checkbox" id="fastest_tool"
-                           value="fastest_yes" name="fastest_tool"/>
-                </td>
-                <td class="left_padding right_align">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Is Silk Touch required?
-                </td>
-                <td class="left_padding right_align">
-                    <label for="requires_silk_no">No: </label>
-                </td>
-                <td>
-                    <input type="radio" id="requires_silk_no"
-                           value="silk_no" name="requires_silk" required/>
-                </td>
-                <td class="left_padding right_align">
-                    <label for="requires_silk_yes">Yes: </label>
-                </td>
-                <td>
-                    <input type="radio" id="requires_silk_yes"
-                           value="silk_yes" name="requires_silk" required/>
-                </td>
-            </tr>
-        </table>
-        <input class="submit-button right_margin" type="submit"
-               value="Submit & add another breaking method"
-               name="another"/>
-        <input class="submit-button" type="submit"
-               value="Submit & move to the next obtainment method"
-               name="next"/>
+        <div class="next-to-container">
+            <input class="submit-button right_margin" type="submit"
+                   value="Submit & add another breaking method"
+                   name="another"/>
+            <div class="next-right">
+                <input class="submit-button" type="submit"
+                       value="Submit & move to the next obtainment method"
+                       name="next"/>
+            </div>
+        </div>
     </form>
     <script src="{{ url_for('static', filename='scripts/breaking.js') }}"></script>
     <script>

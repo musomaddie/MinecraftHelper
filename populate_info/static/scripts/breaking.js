@@ -1,8 +1,11 @@
 $(document).ready(function () {
-    // Start with the fastest tool default set to no so that updates from group will change it.
+    // Start by setting default values for the dropdown, so they can later be overridden by group selections!
+    document.getElementById("requires-tool-no").checked = true
     document.getElementById("fastest-tool-no").checked = true
-    const select_fastest = document.getElementById("fastest-specific-tool-select");
+    document.getElementById("silk-no").checked = true
 
+    // Set up listeners to reveal hidden menus when appropriate.
+    const select_fastest = document.getElementById("fastest-specific-tool-select");
     document.getElementById("requires-tool-no")
         .addEventListener(
             'change',
@@ -14,9 +17,7 @@ $(document).ready(function () {
             (event) =>
                 remove_from_class_list_listener(event, select_fastest, "hidden"));
 
-    // Set up class listener for buttons to hide things
     const select_required = document.getElementById("spec-tool-select");
-
     document.getElementById("requires-tool-no")
         .addEventListener(
             'change',
