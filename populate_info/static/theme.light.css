@@ -33,4 +33,5 @@
     /*Any custom ones are below here.*/
     --md-sys-color-surface-container-low: var(--md-ref-palette-neutral95);
     --md-sys-shape-corner-extra-small: 4px;
+    --md-sys-shape-corner-full: 20px;
 }

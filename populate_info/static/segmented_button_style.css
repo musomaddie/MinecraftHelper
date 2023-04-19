@@ -1,0 +1,40 @@
+.segmented_button_container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    position: relative;
+    border: solid 1px var(--md-sys-color-outline);
+    border-radius: 40px;
+    overflow: hidden;
+    text-align: center;
+}
+
+
+.segmented_button_container > input[type="radio"] {
+    display: none;
+}
+
+/*Not selected button */
+.segmented_button_container > label {
+    display: inline-block;
+    height: 40px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface);
+    width: 100px;
+}
+
+.button-segment-radio:hover + label,
+.button-segment-radio:hover {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+.button-segment-radio:checked + label {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.button-segment-radio:checked:hover + label {
+    background-color: var(--md-sys-color-surface-variant);
+}

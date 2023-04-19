@@ -55,7 +55,7 @@ h3 {
     font-weight: 500;
     height: 40px;
     border: none;
-    border-radius: 20px;
+    border-radius: var(--md-sys-shape-corner-full);
     padding-left: 24px;
     padding-right: 24px;
 }

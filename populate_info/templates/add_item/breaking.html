@@ -2,39 +2,33 @@
 {% block body %}
     <h2> Get {{ item_name }} by breaking itself</h2>
     <form method="post">
-        <label class="body-large" for="requires-tool">
-            Is a tool required?
-        </label>
-        <div class="switch-container">
-            <div class="switch-cover">
-                <div class="switch-button">
-                    <input type="checkbox" class="switch-checkbox"
-                           name="requires-tool-cbox" id="requires-tool"/>
-                    <div class="thumb"></div>
-                    <div id="requires-tool-track" class="track"></div>
-                </div>
-            </div>
+        <p class="body-large"> Is a tool required? </p>
+        <div class="segmented_button_container">
+            <input type="radio" name="requires-tool" value="tool-no"
+                   class="button-segment-radio" id="requires-tool-no"
+                   required/>
+            <label for="requires-tool-no" class="body-large">
+                None
+            </label>
+
+            <input type="radio" name="requires-tool" value="tool-yes"
+                   class="button-segment-radio" id="requires-tool-yes"
+                   required/>
+            <label for="requires-tool-yes" class="body-large">
+                Any
+            </label>
+
+            <input type="radio" name="requires-tool" value="tool-specific"
+                   class="button-segment-radio" id="requires-tool-specific"
+                   required/>
+            <label for="requires-tool-specific" class="body-large">
+                Specific
+            </label>
         </div>
+
+
         <table class="with_row_dividers">
             <tr>
-                <td> Is a tool required?</td>
-                <td class="left_padding right_align">
-                    <label for="requires_tool_no"> No: </label>
-                </td>
-                <td>
-                    <input type="radio" id="requires_tool_no"
-                           value="tool_no" name="requires_tool" required/>
-                </td>
-                <td class="left_padding right_align">
-                    <label for="requires_tool_any">Any tool</label>
-                </td>
-                <td>
-                    <input type="radio" id="requires_tool_any"
-                           value="tool_any" name="requires_tool" required/>
-                </td>
-                <td class="left_padding right_align">
-                    <label for="requires_tool_spec">Specific tool:</label>
-                </td>
                 <td>
                     <input type="radio" id="requires_tool_spec"
                            value="tool_spec" name="requires_tool" required/>
@@ -119,9 +113,8 @@
     <script>
         $(document).ready(function () {
             // Quit early if we know we shouldn't be updating these values.
-            const switches_and_tracks = {
-                "requires-tool": "requires-tool-track"
-            }
+            return
+            const switches_and_tracks = {}
             Object.entries(switches_and_tracks).forEach(
                 function (entry) {
                     document.getElementById(entry[0]).addEventListener(
