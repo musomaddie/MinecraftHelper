@@ -37,7 +37,7 @@ h3 {
 }
 
 /*Position group toggle items in line!*/
-.next_to_container {
+.next-to-container {
     display: flex;
     flex-direction: row;
     justify-content: start;

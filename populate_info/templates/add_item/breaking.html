@@ -1,54 +1,85 @@
 {% extends "base.html" %}
 {% block body %}
     <h2> Get {{ item_name }} by breaking itself</h2>
-    <form method="post" class="next_to_container">
-        <p class="body-large next_left"> Is a tool required? </p>
-        <div class="next_center">
-            <div class="segmented_button_container">
-                <input type="radio" name="requires-tool" value="tool-no"
-                       class="button-segment-radio" id="requires-tool-no"
-                       required/>
-                <label for="requires-tool-no" class="body-large">
-                    None
-                </label>
+    <form method="post">
+        <div class="next-to-container">
+            <p class="body-large next_left"> Is a tool required? </p>
+            <div class="next_center">
+                <div class="segmented_button_container">
+                    <input type="radio" name="requires-tool" value="tool-no"
+                           class="button-segment-radio" id="requires-tool-no"
+                           required/>
+                    <label for="requires-tool-no" class="body-large">
+                        None
+                    </label>
 
-                <input type="radio" name="requires-tool" value="tool-yes"
-                       class="button-segment-radio" id="requires-tool-yes"
-                       required/>
-                <label for="requires-tool-yes" class="body-large">
-                    Any
-                </label>
+                    <input type="radio" name="requires-tool" value="tool-yes"
+                           class="button-segment-radio" id="requires-tool-yes"
+                           required/>
+                    <label for="requires-tool-yes" class="body-large">
+                        Any
+                    </label>
 
-                <input type="radio" name="requires-tool" value="tool-specific"
-                       class="button-segment-radio" id="requires-tool-specific"
-                       required/>
-                <label for="requires-tool-specific" class="body-large">
-                    Specific
-                </label>
+                    <input type="radio" name="requires-tool" value="tool-specific"
+                           class="button-segment-radio" id="requires-tool-specific"
+                           required/>
+                    <label for="requires-tool-specific" class="body-large">
+                        Specific
+                    </label>
+                </div>
+            </div>
+            <div class="next_right">
+                <select name="specific_tool" id="spec_tool_select" class="hidden label-large">
+                    <option value="fishing_rod">Fishing Rod</option>
+                    <option value="flint_and_still">Flint and Steel</option>
+                    <option value="shears">Shears</option>
+                    <option value="axe">Axe</option>
+                    <option value="hoe">Hoe</option>
+                    <option value="pickaxe">Pickaxe</option>
+                    <option value="shovel"> Shovel</option>
+                    <option value="stone_axe">Stone Axe</option>
+                    <option value="iron_axe">Iron Axe</option>
+                    <option value="diamond_axe">Diamond Axe</option>
+                    <option value="stone_hoe">Stone Hoe</option>
+                    <option value="iron_hoe">Iron Hoe</option>
+                    <option value="diamond_hoe">Diamond Hoe</option>
+                    <option value="stone_pickaxe">Stone Pickaxe</option>
+                    <option value="iron_pickaxe">Iron Pickaxe</option>
+                    <option value="diamond_pickaxe">Diamond Pickaxe</option>
+                    <option value="stone_shovel">Stone Shovel</option>
+                    <option value="iron_shovel">Iron Shovel</option>
+                    <option value="diamond_shovel">Diamond Shovel</option>
+                </select>
             </div>
         </div>
-        <div class="next_right">
-            <select name="specific_tool" id="spec_tool_select" class="hidden label-large">
-                <option value="fishing_rod">Fishing Rod</option>
-                <option value="flint_and_still">Flint and Steel</option>
-                <option value="shears">Shears</option>
-                <option value="axe">Axe</option>
-                <option value="hoe">Hoe</option>
-                <option value="pickaxe">Pickaxe</option>
-                <option value="shovel"> Shovel</option>
-                <option value="stone_axe">Stone Axe</option>
-                <option value="iron_axe">Iron Axe</option>
-                <option value="diamond_axe">Diamond Axe</option>
-                <option value="stone_hoe">Stone Hoe</option>
-                <option value="iron_hoe">Iron Hoe</option>
-                <option value="diamond_hoe">Diamond Hoe</option>
-                <option value="stone_pickaxe">Stone Pickaxe</option>
-                <option value="iron_pickaxe">Iron Pickaxe</option>
-                <option value="diamond_pickaxe">Diamond Pickaxe</option>
-                <option value="stone_shovel">Stone Shovel</option>
-                <option value="iron_shovel">Iron Shovel</option>
-                <option value="diamond_shovel">Diamond Shovel</option>
-            </select>
+        <div class="next-to-container">
+            <p class="body-large next_left">Is there a fastest tool? </p>
+            <div class="next_center">
+                <div class="segmented_button_container">
+                    <input type="radio" name="fastest-tool" value="fastest-no"
+                           class="button-segment-radio" id="fastest-tool-no"
+                           required/>
+                    <label for="fastest-tool-no" class="body-large">
+                        No
+                    </label>
+                    <input type="radio" name="fastest-tool" value="fastest-yes"
+                           class="button-segment-radio" id="fastest-tool-yes"
+                           required/>
+                    <label for="fastest-tool-yes" class="body-large">
+                        Yes
+                    </label>
+                </div>
+            </div>
+            <div class="next_right">
+                <select name="fastest_specific_tool" id="fastest_specific_tool_select" class="hidden">
+                    <option value="flint_and_steel">Flint and Steel</option>
+                    <option value="shears">Shears</option>
+                    <option value="axe">Axe</option>
+                    <option value="hoe">Hoe</option>
+                    <option value="pickaxe">Pickaxe</option>
+                    <option value="shovel">Shovel</option>
+                </select>
+            </div>
         </div>
     </form>
     <form>
@@ -77,15 +108,6 @@
                            value="fastest_yes" name="fastest_tool"/>
                 </td>
                 <td class="left_padding right_align">
-                    <select name="fastest_specific_tool" id="fastest_specific_tool_select">
-                        <option></option>
-                        <option value="flint_and_steel">Flint and Steel</option>
-                        <option value="shears">Shears</option>
-                        <option value="axe">Axe</option>
-                        <option value="hoe">Hoe</option>
-                        <option value="pickaxe">Pickaxe</option>
-                        <option value="shovel">Shovel</option>
-                    </select>
                 </td>
             </tr>
             <tr>
