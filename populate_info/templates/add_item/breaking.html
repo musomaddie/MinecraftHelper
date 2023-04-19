@@ -1,30 +1,58 @@
 {% extends "base.html" %}
 {% block body %}
     <h2> Get {{ item_name }} by breaking itself</h2>
-    <form method="post">
-        <p class="body-large"> Is a tool required? </p>
-        <div class="segmented_button_container">
-            <input type="radio" name="requires-tool" value="tool-no"
-                   class="button-segment-radio" id="requires-tool-no"
-                   required/>
-            <label for="requires-tool-no" class="body-large">
-                None
-            </label>
+    <form method="post" class="next_to_container">
+        <p class="body-large next_left"> Is a tool required? </p>
+        <div class="next_center">
+            <div class="segmented_button_container">
+                <input type="radio" name="requires-tool" value="tool-no"
+                       class="button-segment-radio" id="requires-tool-no"
+                       required/>
+                <label for="requires-tool-no" class="body-large">
+                    None
+                </label>
 
-            <input type="radio" name="requires-tool" value="tool-yes"
-                   class="button-segment-radio" id="requires-tool-yes"
-                   required/>
-            <label for="requires-tool-yes" class="body-large">
-                Any
-            </label>
+                <input type="radio" name="requires-tool" value="tool-yes"
+                       class="button-segment-radio" id="requires-tool-yes"
+                       required/>
+                <label for="requires-tool-yes" class="body-large">
+                    Any
+                </label>
 
-            <input type="radio" name="requires-tool" value="tool-specific"
-                   class="button-segment-radio" id="requires-tool-specific"
-                   required/>
-            <label for="requires-tool-specific" class="body-large">
-                Specific
-            </label>
+                <input type="radio" name="requires-tool" value="tool-specific"
+                       class="button-segment-radio" id="requires-tool-specific"
+                       required/>
+                <label for="requires-tool-specific" class="body-large">
+                    Specific
+                </label>
+            </div>
         </div>
+        <div class="next_right">
+            <select name="specific_tool" id="spec_tool_select">
+                <option></option>
+                <option value="fishing_rod">Fishing Rod</option>
+                <option value="flint_and_still">Flint and Steel</option>
+                <option value="shears">Shears</option>
+                <option value="axe">Axe</option>
+                <option value="hoe">Hoe</option>
+                <option value="pickaxe">Pickaxe</option>
+                <option value="shovel"> Shovel</option>
+                <option value="stone_axe">Stone Axe</option>
+                <option value="iron_axe">Iron Axe</option>
+                <option value="diamond_axe">Diamond Axe</option>
+                <option value="stone_hoe">Stone Hoe</option>
+                <option value="iron_hoe">Iron Hoe</option>
+                <option value="diamond_hoe">Diamond Hoe</option>
+                <option value="stone_pickaxe">Stone Pickaxe</option>
+                <option value="iron_pickaxe">Iron Pickaxe</option>
+                <option value="diamond_pickaxe">Diamond Pickaxe</option>
+                <option value="stone_shovel">Stone Shovel</option>
+                <option value="iron_shovel">Iron Shovel</option>
+                <option value="diamond_shovel">Diamond Shovel</option>
+            </select>
+        </div>
+    </form>
+    <form>
 
 
         <table class="with_row_dividers">
@@ -34,28 +62,6 @@
                            value="tool_spec" name="requires_tool" required/>
                 </td>
                 <td>
-                    <select name="specific_tool" id="spec_tool_select">
-                        <option></option>
-                        <option value="fishing_rod">Fishing Rod</option>
-                        <option value="flint_and_still">Flint and Steel</option>
-                        <option value="shears">Shears</option>
-                        <option value="axe">Axe</option>
-                        <option value="hoe">Hoe</option>
-                        <option value="pickaxe">Pickaxe</option>
-                        <option value="shovel"> Shovel</option>
-                        <option value="stone_axe">Stone Axe</option>
-                        <option value="iron_axe">Iron Axe</option>
-                        <option value="diamond_axe">Diamond Axe</option>
-                        <option value="stone_hoe">Stone Hoe</option>
-                        <option value="iron_hoe">Iron Hoe</option>
-                        <option value="diamond_hoe">Diamond Hoe</option>
-                        <option value="stone_pickaxe">Stone Pickaxe</option>
-                        <option value="iron_pickaxe">Iron Pickaxe</option>
-                        <option value="diamond_pickaxe">Diamond Pickaxe</option>
-                        <option value="stone_shovel">Stone Shovel</option>
-                        <option value="iron_shovel">Iron Shovel</option>
-                        <option value="diamond_shovel">Diamond Shovel</option>
-                    </select>
                 </td>
             </tr>
             <tr>
