@@ -36,8 +36,8 @@ def start_adding_item(item_name):
         # show_group=should_show_group(group_name))
 
     # Update group name and reload this page (if applicable).
-    if "group_name_btn" in request.form:
-        new_group_name = request.form["group_name"]
+    if "group-name-btn" in request.form:
+        new_group_name = request.form["group-name"]
         update_group(group_name, new_group_name, item_name)
         session[r.GROUP_NAME_SK] = new_group_name
         return redirect(url_for("add.start_adding_item", item_name=item_name))
@@ -50,7 +50,7 @@ def start_adding_item(item_name):
         methods.append("add.breaking")
     if "crafting" in request.form.keys():
         methods.append("add.crafting")
-    if "env_changes" in request.form.keys():
+    if "env-changes" in request.form.keys():
         methods.append("add.env_changes")
     session[r.METHOD_LIST_SK] = methods
 

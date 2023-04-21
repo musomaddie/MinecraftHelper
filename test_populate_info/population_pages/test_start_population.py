@@ -18,7 +18,8 @@ def test_start_adding_item_post_group_name(client):
         session_before[r.GROUP_NAME_SK] = "Old Group"
     with client:
         response = client.post(
-            f"/add_item/{ITEM_1}", data={"group_name": GROUP_1, "group_name_btn": "Set group name"}
+            f"/add_item/{ITEM_1}", data={
+                "group-name": GROUP_1, "group-name-btn": "Set group name"}
         )
         assert response.status_code == 302
         assert session[r.GROUP_NAME_SK] == GROUP_1
@@ -29,7 +30,8 @@ def test_start_adding_item_post_toggle_updated(client):
         assert r.USE_GROUP_VALUES_SK not in session_before
     with client:
         response = client.post(
-            f"/add_item/{ITEM_1}", data={"update_use_group_values": ""})
+            f"/add_item/{ITEM_1}", data={""
+                                         "update-use-group-values": ""})
         assert response.status_code == 302
         # We don't care what the session value is (that's another test), but we care if it's there.
         assert r.USE_GROUP_VALUES_SK in session
@@ -63,7 +65,7 @@ def test_start_adding_item_all_categories(client):
     with client:
         response = client.post(
             f"/add_item/{ITEM_1}",
-            data={"breaking": "some info", "crafting": "more info", "env_changes": "more info"}
+            data={"breaking": "some info", "crafting": "more info", "env-changes": "more info"}
         )
         assert response.status_code == 302
         assert r.METHOD_LIST_SK in session
