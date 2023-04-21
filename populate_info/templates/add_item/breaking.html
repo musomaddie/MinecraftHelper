@@ -13,8 +13,8 @@
                         None
                     </label>
 
-                    <input type="radio" name="requires-tool" value="tool-yes"
-                           class="button-segment-radio" id="requires-tool-yes"
+                    <input type="radio" name="requires-tool" value="tool-any"
+                           class="button-segment-radio" id="requires-tool-any"
                            required/>
                     <label for="requires-tool-yes" class="body-large">
                         Any
@@ -85,14 +85,14 @@
             <p class="body-large">Is silk touch required? </p>
             <div class="next-center">
                 <div class="segmented-button-container">
-                    <input type="radio" name="requires-silk" id="silk-no"
-                           class="button-segment-radio" required/>
-                    <label for="silk-no" class="body-large">
+                    <input type="radio" name="requires-silk" id="requires-silk-no"
+                           value="silk-no-v" class="button-segment-radio" required/>
+                    <label for="requires-silk-no" class="body-large">
                         No
                     </label>
-                    <input type="radio" name="requires-silk" id="silk-yes"
+                    <input type="radio" name="requires-silk" id="requires-silk-yes" value="silk-yes-v"
                            class="button-segment-radio" required/>
-                    <label for="silk-yes" class="body-large">
+                    <label for="requires-silk-yes" class="body-large">
                         Yes
                     </label>
                 </div>
@@ -110,36 +110,13 @@
             </div>
         </div>
     </form>
-    <script src="{{ url_for('static', filename='scripts/breaking.js') }}"></script>
     <script>
-
-        $(document).ready(function () {
-            return
-            const switches_and_tracks = {}
-            Object.entries(switches_and_tracks).forEach(
-                function (entry) {
-                    document.getElementById(entry[0]).addEventListener(
-                        'change', (event) => {
-                            let track = document.getElementById(entry[1]);
-                            if (event.currentTarget.checked) {
-                                track.classList.add("on-track")
-                            } else {
-                                track.classList.remove("on-track");
-                            }
-                        });
-                });
-            // Quit early if we know we shouldn't be updating these values.
-            if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
-                return
-            }
-            let groupInfo = JSON.parse(' {{ group_info|tojson }}');
-            groupInfo["to_mark_checked"].forEach(
-                element => document.getElementById(element).checked = true
-            );
-            for (let key in groupInfo["dropdown_select"]) {
-                document.getElementById(key).value = groupInfo["dropdown_select"][key]
-            }
-        })
-        ;
+        breaking_config_vars = {
+            "show-group": {{ is_toggle_selected|tojson }},
+            "group-info": {{ group_info|tojson }},
+            "is-toggle-selected": {{ is_toggle_selected|tojson }}
+        }
+        console.log(breaking_config_vars);
     </script>
+    <script src="{{ url_for('static', filename='scripts/breaking.js') }}"></script>
 {% endblock %}

@@ -8,18 +8,18 @@ from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 
 REQ_TOOL_HTML_TO_JSON = {
-    "tool_no": "none",
-    "tool_any": "any",
-    "tool_spec": "specific"
+    "tool-no": "none",
+    "tool-any": "any",
+    "tool-specific": "specific"
 }
 REQ_TOOL_JSON_TO_HTML = {
-    value: f"requires_{key}" for key, value in REQ_TOOL_HTML_TO_JSON.items()}
+    value: f"requires-{key}" for key, value in REQ_TOOL_HTML_TO_JSON.items()}
 
 SILK_TOUCH_HTML_TO_JSON = {
-    "silk_yes": True,
-    "silk_no": False
+    "silk-yes-v": True,
+    "silk-no-v": False
 }
-SILK_TOUCH_JSON_TO_HTML = {value: f"requires_{key}" for key, value in SILK_TOUCH_HTML_TO_JSON.items()}
+SILK_TOUCH_JSON_TO_HTML = {True: f"requires-silk-yes", False: f"requires-silk-no"}
 
 
 def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, list[str]]:
@@ -27,20 +27,24 @@ def breaking_json_to_html_ids(breaking_data: dict) -> dict[str, list[str]]:
     should be passed to the webpage."""
     result = {
         # always has requires tool and silk.
-        "to_mark_checked": [
+        "to-mark-checked": [
             REQ_TOOL_JSON_TO_HTML[breaking_data[r.BREAKING_REQ_TOOL_KEY]],
             SILK_TOUCH_JSON_TO_HTML[breaking_data[r.BREAKING_SILK_TOUCH_KEY]]
         ],
-        "dropdown_select": {}
+        "reveal": [],
+        "dropdown-select": {}
     }
     # Add the special cases
     if breaking_data[r.BREAKING_REQ_TOOL_KEY] == "specific":
-        result["dropdown_select"]["specific_tool_select"] = r.idify_tool_name(
+        result["dropdown-select"]["specific-tool-select"] = r.idify_tool_name(
             breaking_data[r.BREAKING_REQ_SPECIFIC_TOOL_KEY])
+        result["reveal"].append("spec-tool-select")
+    # TODO - make sure to add a possible no key for the fastest silk.
     if r.BREAKING_FASTEST_TOOL_KEY in breaking_data:
-        result["to_mark_checked"].append("fastest_tool")
-        result["dropdown_select"]["fastest_specific_tool_select"] = r.idify_tool_name(
+        result["to-mark-checked"].append("fastest-tool-yes")
+        result["dropdown-select"]["fastest-specific-tool-select"] = r.idify_tool_name(
             breaking_data[r.BREAKING_FASTEST_TOOL_KEY])
+        result["reveal"].append("fastest-specific-tool-select")
     return result
 
 
@@ -65,16 +69,15 @@ def breaking(item_name):
     # TODO: how do handle group with multiple?? -> what button should be pressed?? -> return to this later - do normal
     #  thing first.
     data = {
-        r.BREAKING_REQ_TOOL_KEY: REQ_TOOL_HTML_TO_JSON[request.form["requires_tool"]],
-        r.BREAKING_SILK_TOUCH_KEY: SILK_TOUCH_HTML_TO_JSON[request.form["requires_silk"]]
+        r.BREAKING_REQ_TOOL_KEY: REQ_TOOL_HTML_TO_JSON[request.form["requires-tool"]],
+        r.BREAKING_SILK_TOUCH_KEY: SILK_TOUCH_HTML_TO_JSON[request.form["requires-silk"]]
     }
 
-    # Add the specific tool name if it is required.
     if data[r.BREAKING_REQ_TOOL_KEY] == "specific":
-        data[r.BREAKING_REQ_SPECIFIC_TOOL_KEY] = r.clean_up_tool_name(request.form["specific_tool"])
+        data[r.BREAKING_REQ_SPECIFIC_TOOL_KEY] = r.clean_up_tool_name(request.form["specific-tool"])
 
-    if "fastest_tool" in request.form:
-        data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest_specific_tool"])
+    if request.form["fastest-tool"] == "fastest-yes":
+        data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest-specific-tool"])
 
     # Save data to JSON - TODO: delete when testing otherwise this could get interesting!
     write_json_category_to_file(item_name, r.BREAKING_CAT_KEY, data)

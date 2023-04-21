@@ -5,7 +5,7 @@ from conftest import ITEM_1, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.breaking_population import breaking_json_to_html_ids
 
 r_tool = "Iron Axe"
-r_tool_expected = "iron_axe"
+r_tool_expected = "iron-axe"
 f_tool = "Shears"
 f_tool_expected = "shears"
 
@@ -14,9 +14,9 @@ class TestBreakingJsonToHtmlIds:
 
     @pytest.mark.parametrize(
         ("input_tool_value", "expected_value"),
-        [("any", "requires_tool_any"),
-         ("none", "requires_tool_no"),
-         ("specific", "requires_tool_spec")]
+        [("any", "requires-tool-any"),
+         ("none", "requires-tool-no"),
+         ("specific", "requires-tool-spec")]
     )
     def test_requires_tool(self, input_tool_value, expected_value):
         if input_tool_value == "specific":
@@ -27,29 +27,29 @@ class TestBreakingJsonToHtmlIds:
             result = breaking_json_to_html_ids(
                 {"requires tool": input_tool_value, "silk touch": False}
             )
-        assert expected_value in result["to_mark_checked"]
+        assert expected_value in result["to-mark-checked"]
 
     @pytest.mark.parametrize(
         ("input_silk_touch", "expected_value"),
-        [(True, "requires_silk_yes"), (False, "requires_silk_no")]
+        [(True, "requires-silk-yes"), (False, "requires-silk-no")]
     )
     def test_silk_touch(self, input_silk_touch, expected_value):
         result = breaking_json_to_html_ids(
             {"requires tool": "any", "silk touch": input_silk_touch})
-        assert expected_value in result["to_mark_checked"]
+        assert expected_value in result["to-mark-checked"]
 
     def test_required_tool(self):
         result = breaking_json_to_html_ids(
             {"requires tool": "specific", "required tool": r_tool, "silk touch": False}
         )
-        assert r_tool_expected == result["dropdown_select"]["specific_tool_select"]
+        assert r_tool_expected == result["dropdown-select"]["specific-tool-select"]
 
     def test_fastest_tool(self):
         result = breaking_json_to_html_ids(
             {"requires tool": "any", "silk touch": False, "fastest tool": f_tool}
         )
-        assert "fastest_tool" in result["to_mark_checked"]
-        assert f_tool.lower() == result["dropdown_select"]["fastest_specific_tool_select"]
+        assert "fastest-tool-yes" in result["to-mark-checked"]
+        assert f_tool.lower() == result["dropdown-select"]["fastest-specific-tool-select"]
 
 
 class TestBreakingPost:
@@ -57,8 +57,10 @@ class TestBreakingPost:
     def test_happy(self, client, session_with_group, item_file_name_only):
         response = client.post(
             f"/breaking/{ITEM_1}", data={
-                "requires_tool": "tool_no",
-                "requires_silk": "silk_no",
+                "requires-tool": "tool-no",
+                "requires-silk": "silk-no-v",
+                "fastest-tool": "fastest-no",
+
             }
         )
         assert response.status_code == 302

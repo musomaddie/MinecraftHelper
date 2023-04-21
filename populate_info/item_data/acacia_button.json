@@ -1,4 +1,10 @@
 {
   "item name": "Acacia Button",
-  "group name": "TESTING_GROUP"
+  "group name": "TESTING_GROUP",
+  "breaking": {
+    "requires tool": "specific",
+    "silk touch": false,
+    "required tool": "Iron-Axe",
+    "fastest tool": "Pickaxe"
+  }
 }
