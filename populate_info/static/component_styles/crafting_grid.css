@@ -1,0 +1,46 @@
+.crafting-grid-table {
+    border: 3px solid var(--md-sys-color-outline);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.crafting-grid-input {
+    border: none;
+    text-align: center;
+    width: 150px;
+    height: 100px;
+    overflow-wrap: anywhere;
+}
+
+.crafting-grid-input:hover {
+    box-shadow: inset 0 0 5px var(--md-sys-color-on-surface-variant);
+    border-radius: 15px;
+}
+
+.crafting-grid-input:focus {
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+    border: none;
+    border-radius: 15px;
+}
+
+.dotted-bottom-right {
+    border-right: 1px dashed var(--md-sys-color-secondary);
+    border-bottom: 1px dashed var(--md-sys-color-secondary);
+}
+
+.dotted-bottom {
+    border-bottom: 1px dashed var(--md-sys-color-secondary);
+}
+
+.dotted-right {
+    border-right: 1px dashed var(--md-sys-color-secondary);
+}
+
+.emphasis-right {
+    border-right: 2px solid var(--md-sys-color-primary);
+}
+
+.emphasis-bottom {
+    border-bottom: 2px solid var(--md-sys-color-primary);
+}

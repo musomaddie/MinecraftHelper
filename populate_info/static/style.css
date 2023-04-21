@@ -5,6 +5,7 @@
 @import url(component_styles/checkbox_style.css);
 @import url(component_styles/segmented_button_style.css);
 @import url(component_styles/switch_style.css);
+@import url(component_styles/crafting_grid.css);
 
 html {
     font-family: 'Roboto Flex', sans-serif;
