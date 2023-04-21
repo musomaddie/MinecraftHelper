@@ -55,13 +55,13 @@ def get_item_url(item_name: str) -> str:
 
 def clean_up_tool_name(tool_id: str) -> str:
     """ Taking in a tool name cleans it up ready for display. """
-    tool_id.replace("_", " ")
+    tool_id.replace("-", " ")
     return tool_id.title()
 
 
 def idify_tool_name(tool_name: str) -> str:
     """ Inverse behaviour to clean_up_tool_name. """
-    return tool_name.lower().replace(" ", "_")
+    return tool_name.lower().replace(" ", "-")
 
 
 # ####################################### JSON to HTML helpers ###########################################
