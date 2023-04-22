@@ -92,7 +92,11 @@ hr {
     border-radius: var(--md-sys-shape-corner-extra-small);
     border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface);
-    background-color: var(--md-sys-color-surface);
+    background-color: white;
+}
+
+.narrow-width {
+    width: 50px;
 }
 
 .submit-button,
@@ -130,4 +134,34 @@ select {
     border-radius: 8px;
     padding-left: 12px;
     padding-right: 12px;
+}
+
+
+/*Fancy grid layout (I hope)*/
+.grid-layout {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto auto;
+}
+
+.grid-row-1 {
+    grid-row: 1;
+}
+
+.grid-row-2 {
+    grid-row: 2;
+}
+
+.grid-col-1 {
+    text-align: right;
+    grid-column: 1;
+}
+
+.grid-col-2 {
+    grid-column: 2;
+}
+
+.grid-row-3 {
+    grid-row: 3;
 }

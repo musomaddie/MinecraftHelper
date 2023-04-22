@@ -57,49 +57,64 @@
             </tr>
         </table>
         <br>
-
-    </form>
-
-    <form method="post">
-        <br>
-        <table>
-            <tr>
-                <td>
-                    <label for="number_created">
-                        How many {{ item_name }}'s are created?
+        <div class="grid-layout">
+            <label for="number-created" class="body-large grid-row-1 grid-col-1">
+                How many {{ item_name }}'s are created?
+            </label>
+            <div class="grid-row-1 grid-col-2">
+                <input type="number" id="number-created" class="text-input label-large narrow-width">
+            </div>
+            <p class="body-large grid-row-2 grid-col-1">Does this recipe work within the 2x2 crafting grid? </p>
+            <div class="grid-col-2 grid-row-2">
+                <div class="segmented-button-container">
+                    {#                TODO: default value here. #}
+                    <input type="radio" name="small-grid" value="grid-no"
+                           class="button-segment-radio" id="small-grid-no"
+                           required/>
+                    <label for="small-grid-no" class="body-large">
+                        No
                     </label>
-                </td>
-                <td class="left_padding">
-                    <input type="number" id="number_created" name="number_created" required/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="works_in_four_cbox">Does this recipe work within the 2x2 crafting grid? </label>
-                </td>
-                <td class="left_padding">
-                    <input type="checkbox" id="works_in_four_cbox" name="works_four"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="flexible_positioning_cbox">
-                        Can the items (IF MULTIPLE) in this recipe be positioned flexibly? (i.e. the relative position
-                        between items
-                        doesn't matter).
+
+                    <input type="radio" name="small-grid" value="grid-yes"
+                           class="button-segment-radio" id="small-grid-yes"
+                           required/>
+                    <label for="small-grid-yes" class="body-large">
+                        Yes
                     </label>
-                </td>
-                <td class="left_padding">
-                    <input type="checkbox" id="flexible_positioning_cbox" name="flexible_position"/>
-                </td>
-            </tr>
-        </table>
-        <input class="submit-button right_margin" type="submit"
-               value="Submit & add another crafting method"
-               name="another"/>
-        <input class="submit-button" type="submit"
-               value="Submit & move to the next obtainment method"
-               name="next"/>
+                </div>
+            </div>
+            <p class="grid-row-3 grid-col-1" style="width: 600px">
+                Can the items (IF MULTIPLE) in this recipe be positioned flexibly? (i.e. the relative position
+                between items doesn't matter).
+            </p>
+            <div class="grid-row-3 grid-col-2">
+                <div class="segmented-button-container">
+                    <input type="radio" name="flexible-positioning" class="button-segment-radio"
+                           value="flexible-no" id="flexible-positioning-no"
+                           required/>
+                    <label for="flexible-positioning-no" class="body-large">
+                        No
+                    </label>
+                    <input type="radio" name="flexible-positioning" class="button-segment-radio"
+                           value="flexible-yes" id="flexible-positioning-yes"
+                           required/>
+                    <label for="flexible-positioning-yes" class="body-large">
+                        Yes
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="next-to-container">
+            <input class="submit-button" type="submit"
+                   value="Submit & add another crafting method"
+                   name="another"/>
+            <div class="next-right">
+                <input class="submit-button" type="submit"
+                       value="Submit & move to the next obtainment method"
+                       name="next"/>
+            </div>
+        </div>
     </form>
     <script>
         $(document).ready(function () {
