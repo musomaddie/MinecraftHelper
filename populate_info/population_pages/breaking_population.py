@@ -10,7 +10,7 @@ from populate_info.population_pages import item_blueprint
 REQ_TOOL_HTML_TO_JSON = {
     "tool-no": "none",
     "tool-any": "any",
-    "tool-specific": "specific"
+    "tool-spec": "specific"
 }
 REQ_TOOL_JSON_TO_HTML = {
     value: f"requires-{key}" for key, value in REQ_TOOL_HTML_TO_JSON.items()}
@@ -73,6 +73,7 @@ def breaking(item_name):
         r.BREAKING_SILK_TOUCH_KEY: SILK_TOUCH_HTML_TO_JSON[request.form["requires-silk"]]
     }
 
+    # Add the specific tool name if it is required.
     if data[r.BREAKING_REQ_TOOL_KEY] == "specific":
         data[r.BREAKING_REQ_SPECIFIC_TOOL_KEY] = r.clean_up_tool_name(request.form["specific-tool"])
 
