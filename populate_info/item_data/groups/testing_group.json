@@ -27,15 +27,38 @@
       "silk touch": false
     }
   ],
-  "crafting": {
-    "slots": {
-      "1": "Item here",
-      "2": "another item here!"
+  "crafting": [
+    {
+      "slots": {
+        "1": "Item here",
+        "2": "another item here!"
+      },
+      "number created": 4,
+      "works in smaller grid": true,
+      "relative positioning": "strict"
     },
-    "number created": 4,
-    "works in smaller grid": true,
-    "relative positioning": "strict"
-  },
+    {
+      "slots": {},
+      "number created": 2,
+      "relative positioning": "strict"
+    },
+    {
+      "slots": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9"
+      },
+      "number created": 2,
+      "relative positioning": "strict",
+      "works in smaller grid": false
+    }
+  ],
   "environment changes": [
     {
       "change": "change 1 description"

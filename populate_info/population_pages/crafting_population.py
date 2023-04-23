@@ -52,12 +52,11 @@ def crafting(item_name):
 
     data = {
         r.CRAFTING_SLOTS_J_KEY: {},
-        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number-created"])
-        # r.CRAFTING_SMALL_GRID_J_KEY: "works_four" in request.form,
-        # r.CRAFTING_RELATIVE_POSITIONING_J_KEY: (
-        #     "flexible" if "flexible_position" in request.form else "strict")
+        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number-created"]),
+        r.CRAFTING_RELATIVE_POSITIONING_J_KEY:
+            "flexible" if request.form["flexible-positioning"] == "flexible-yes" else "strict",
+        r.CRAFTING_SMALL_GRID_J_KEY: request.form["small-grid"] == "grid-yes"
     }
-    # Add the optionals - small grid and flexible.
     has_an_item = False
     for i in range(1, 10):
         if request.form[f"cs{i}"] != "":
