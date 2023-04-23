@@ -31,7 +31,7 @@ class TestBreakingJsonToHtmlIds:
 
     @pytest.mark.parametrize(
         ("input_silk_touch", "expected_value"),
-        [(True, "requires-silk-yes-v"), (False, "requires-silk-no-v")]
+        [(True, "requires-silk-yes"), (False, "requires-silk-no")]
     )
     def test_silk_touch(self, input_silk_touch, expected_value):
         result = breaking_json_to_html_ids(
@@ -48,7 +48,7 @@ class TestBreakingJsonToHtmlIds:
         result = breaking_json_to_html_ids(
             {"requires tool": "any", "silk touch": False, "fastest tool": f_tool}
         )
-        assert "fastest-tool" in result["to-mark-checked"]
+        assert "fastest-tool-yes" in result["to-mark-checked"]
         assert f_tool.lower() == result["dropdown-select"]["fastest-specific-tool-select"]
 
 

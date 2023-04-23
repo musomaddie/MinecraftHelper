@@ -30,7 +30,7 @@ class TestCraftingJsonToHtml:
         crafting_json["slots"] = json_slots
         result = crafting_json_to_html_ids(crafting_json)
         assert_dictionary_values(
-            result["to_fill"],
+            result["to-fill"],
             [(key, value) for key, value in html_slots.items()],
             assert_exact=False)
 
@@ -38,31 +38,31 @@ class TestCraftingJsonToHtml:
         crafting_json["number created"] = 2
         result = crafting_json_to_html_ids(crafting_json)
         assert_dictionary_values(
-            result["to_fill"],
-            [("number_created", 2)],
+            result["to-fill"],
+            [("number-created", 2)],
             assert_exact=False
         )
 
     def test_checked_still_exists_no_data(self, crafting_json):
-        assert "to_mark_checked" in crafting_json_to_html_ids(crafting_json)
+        assert "to-mark-checked" in crafting_json_to_html_ids(crafting_json)
 
     @pytest.mark.parametrize(
-        ("json_smaller_grid", "is_expected_in_html"),
-        [(True, True),
-         (False, False)]
+        ("json_smaller_grid", "expected_html_id"),
+        [(True, "small-grid-yes"),
+         (False, "small-grid-no")]
     )
-    def test_smaller_grid_true(self, json_smaller_grid, is_expected_in_html, crafting_json):
+    def test_smaller_grid_true(self, json_smaller_grid, expected_html_id, crafting_json):
         crafting_json["works in smaller grid"] = json_smaller_grid
         result = crafting_json_to_html_ids(crafting_json)
-        assert is_expected_in_html == ("works_in_four_cbox" in result["to_mark_checked"])
+        assert expected_html_id in result["to-mark-checked"]
 
     @pytest.mark.parametrize(
-        ("json_relative_positioning", "is_expected_in_html"),
-        [("strict", False), ("flexible", True)])
-    def test_relative_positioning(self, json_relative_positioning, is_expected_in_html, crafting_json):
+        ("json_relative_positioning", "expected_html_id"),
+        [("strict", "flexible-positioning-no"), ("flexible", "flexible-positioning-yes")])
+    def test_relative_positioning(self, json_relative_positioning, expected_html_id, crafting_json):
         crafting_json["relative positioning"] = json_relative_positioning
         result = crafting_json_to_html_ids(crafting_json)
-        assert is_expected_in_html == ("flexible_positioning_cbox" in result["to_mark_checked"])
+        assert expected_html_id in result["to-mark-checked"]
 
 
 class TestCraftingPost:
@@ -74,7 +74,8 @@ class TestCraftingPost:
 
     @pytest.fixture
     def post_data(self):
-        return {f"cs{i}": "" for i in range(1, 10)} | {"number_created": 2}
+        return {f"cs{i}": "" for i in range(1, 10)} | {
+            "number-created": 2, "flexible-positioning": "flexible-no", "small-grid": "grid-no"}
 
     @pytest.mark.parametrize(
         "slot_numbers",
@@ -104,7 +105,7 @@ class TestCraftingPost:
     @pytest.mark.parametrize("in_small_grid", [True, False])
     def test_works_in_smaller_grid(self, in_small_grid, post_data, client, session_with_group, item_file_name_only):
         if in_small_grid:
-            post_data["works_four"] = "value here"
+            post_data["small-grid"] = "grid-yes" if in_small_grid else "grid-no"
         response = client.post(self.url, data=post_data)
 
         assert response.status_code == 302
@@ -114,7 +115,7 @@ class TestCraftingPost:
     def test_flexible_positioning(self, flexible_positioning_checked, post_data, client, session_with_group,
                                   item_file_name_only):
         if flexible_positioning_checked:
-            post_data["flexible_position"] = ""
+            post_data["flexible-positioning"] = "flexible-yes" if flexible_positioning_checked else "flexible-no"
         response = client.post(self.url, data=post_data)
 
         assert response.status_code == 302
