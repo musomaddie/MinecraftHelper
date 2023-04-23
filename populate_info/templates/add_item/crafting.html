@@ -115,6 +115,14 @@
         </div>
     </form>
     <script>
+        crafting_config_vars = {
+            "show-group": {{ show_group|tojson }},
+            "group-info": {{ group_info|tojson }},
+            "is-toggle-selected": {{ is_toggle_selected|tojson }}
+        }
+    </script>
+    <script src="{{ url_for('static', filename='scripts/crafting.js') }}"></script>
+    <script>
         $(document).ready(function () {
             return;
             // Quit early if we know we shouldn't be updating these values.

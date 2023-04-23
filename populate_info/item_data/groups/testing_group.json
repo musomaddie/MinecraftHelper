@@ -57,6 +57,24 @@
       "number created": 2,
       "relative positioning": "strict",
       "works in smaller grid": false
+    },
+    {
+      "slots": {
+        "1": "Item here",
+        "2": "another item here!"
+      },
+      "number created": 4,
+      "relative positioning": "strict",
+      "works in smaller grid": true
+    },
+    {
+      "slots": {
+        "1": "Item here",
+        "2": "another item here!"
+      },
+      "number created": 4,
+      "relative positioning": "strict",
+      "works in smaller grid": true
     }
   ],
   "environment changes": [

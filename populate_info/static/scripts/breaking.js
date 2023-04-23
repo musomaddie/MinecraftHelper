@@ -11,7 +11,6 @@ $(document).ready(function () {
         element => document.getElementById(element).classList.remove("hidden"));
     breaking_config_vars["group-info"]["to-mark-checked"].forEach(
         element => {
-            console.log(element);
             document.getElementById(element).checked = true
         }
     );
