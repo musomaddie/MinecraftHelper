@@ -13,9 +13,9 @@ HTML_TO_JSON = {
     "cs4": "4", "cs5": "5", "cs6": "6",
     "cs7": "7", "cs8": "8", "cs9": "9",
     # Remaining values
-    "number_created": r.CRAFTING_N_CREATED_J_KEY,
-    "works_in_four_cbox": r.CRAFTING_SMALL_GRID_J_KEY,
-    "flexible_positioning_cbox": r.CRAFTING_RELATIVE_POSITIONING_J_KEY
+    "number-created": r.CRAFTING_N_CREATED_J_KEY,
+    "small-grid": r.CRAFTING_SMALL_GRID_J_KEY,
+    "flexible-positioning": r.CRAFTING_RELATIVE_POSITIONING_J_KEY
 }
 JSON_TO_HTML = {value: key for key, value in HTML_TO_JSON.items()}
 
@@ -52,11 +52,12 @@ def crafting(item_name):
 
     data = {
         r.CRAFTING_SLOTS_J_KEY: {},
-        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number_created"]),
-        r.CRAFTING_SMALL_GRID_J_KEY: "works_four" in request.form,
-        r.CRAFTING_RELATIVE_POSITIONING_J_KEY: (
-            "flexible" if "flexible_position" in request.form else "strict")
+        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number-created"])
+        # r.CRAFTING_SMALL_GRID_J_KEY: "works_four" in request.form,
+        # r.CRAFTING_RELATIVE_POSITIONING_J_KEY: (
+        #     "flexible" if "flexible_position" in request.form else "strict")
     }
+    # Add the optionals - small grid and flexible.
     has_an_item = False
     for i in range(1, 10):
         if request.form[f"cs{i}"] != "":

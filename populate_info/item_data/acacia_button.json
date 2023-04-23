@@ -1,22 +1,4 @@
 {
   "item name": "Acacia Button",
-  "group name": "TESTING_GROUP",
-  "breaking": [
-    {
-      "requires tool": "none",
-      "silk touch": false
-    },
-    {
-      "requires tool": "none",
-      "silk touch": false
-    },
-    {
-      "requires tool": "none",
-      "silk touch": false
-    },
-    {
-      "requires tool": "none",
-      "silk touch": false
-    }
-  ]
+  "group name": "TESTING_GROUP"
 }

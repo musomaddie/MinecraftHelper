@@ -61,23 +61,21 @@
             <label for="number-created" class="body-large grid-row-1 grid-col-1">
                 How many {{ item_name }}'s are created?
             </label>
+            <input type="number" id="number-created" name="number-created" required/>
             <div class="grid-row-1 grid-col-2">
-                <input type="number" id="number-created" class="text-input label-large narrow-width">
             </div>
             <p class="body-large grid-row-2 grid-col-1">Does this recipe work within the 2x2 crafting grid? </p>
             <div class="grid-col-2 grid-row-2">
                 <div class="segmented-button-container">
                     {#                TODO: default value here. #}
                     <input type="radio" name="small-grid" value="grid-no"
-                           class="button-segment-radio" id="small-grid-no"
-                           required/>
+                           class="button-segment-radio" id="small-grid-no"/>
                     <label for="small-grid-no" class="body-large">
                         No
                     </label>
 
                     <input type="radio" name="small-grid" value="grid-yes"
-                           class="button-segment-radio" id="small-grid-yes"
-                           required/>
+                           class="button-segment-radio" id="small-grid-yes"/>
                     <label for="small-grid-yes" class="body-large">
                         Yes
                     </label>
@@ -118,6 +116,7 @@
     </form>
     <script>
         $(document).ready(function () {
+            return;
             // Quit early if we know we shouldn't be updating these values.
             if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
                 return
