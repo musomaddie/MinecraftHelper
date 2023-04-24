@@ -19,14 +19,14 @@ class TestEnvChangesJsonToHtml:
         result = env_changes_json_to_html_ids(env_changes_json, [])
         assert_dictionary_values(
             result,
-            [("change_text", "change 1 description"),
-             ("button_choice", "next")])
+            [("change-text", "change 1 description"),
+             ("button-choice", "next")])
 
     def test_two_items_none_added(self, env_changes_json_2):
         result = env_changes_json_to_html_ids(env_changes_json_2, [])
         assert_dictionary_values(
             result,
-            [("change_text", "change 1"), ("button_choice", "another")]
+            [("change-text", "change 1"), ("button-choice", "another")]
         )
 
     def test_two_items_one_added(self, env_changes_json_2):
@@ -34,7 +34,7 @@ class TestEnvChangesJsonToHtml:
             env_changes_json_2, {"change": "change 1"})
         assert_dictionary_values(
             result,
-            [("change_text", "change 2"), ("button_choice", "next")]
+            [("change-text", "change 2"), ("button-choice", "next")]
         )
 
     def test_three_items_two_added(self, env_changes_json_2):
@@ -44,7 +44,7 @@ class TestEnvChangesJsonToHtml:
         )
         assert_dictionary_values(
             result,
-            [("change_text", "change 3"), ("button_choice", "next")]
+            [("change-text", "change 3"), ("button-choice", "next")]
         )
 
 
