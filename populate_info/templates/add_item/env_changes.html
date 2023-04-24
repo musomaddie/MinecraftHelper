@@ -3,27 +3,32 @@
 
     <h2> How can {{ item_name }} be dropped by environmental changes?? </h2>
     <form method="post">
-        <table>
-            <tr>
-                <td>
-                    <label for="change_text"> What is the environmental change? </label>
-                </td>
-                <td class="left_padding">
-                    <input type="text" id="change_text" name="change_text" class="wider_box"/>
-                </td>
-            </tr>
-        </table>
-        <input class="submit-button right-margin" type="submit"
-               value="Submit & add another environmental change"
-               id="next"
-               name="another"/>
-        <input class="submit-button" type="submit"
-               value="Submit & move to the next obtainment method"
-               id="another"
-               name="next"/>
+        <div class="next-to-container">
+            <label for="change-text" class="body-large">What is the environmental change? </label>
+            <input type="text" id="change-text" name="change-text" class="next-right wider_box"/>
+        </div>
+        <br>
+
+        <div class="next-to-container">
+            <input class="submit-button right-margin" type="submit"
+                   value="Submit & add another environmental change"
+                   id="next"
+                   name="another"/>
+            <input class="next-right submit-button" type="submit"
+                   value="Submit & move to the next obtainment method"
+                   id="another"
+                   name="next"/>
+        </div>
     </form>
     <script>
+        env_changes_vars = {
+            "group-info": {{ group_info|tojson }},
+        }
+    </script>
+    <script src="{{ url_for('static', filename='scripts/env_changes.js') }}"></script>
+    <script>
         $(document).ready(function () {
+            return;
             // Quit early
             if (!(JSON.parse('{{ show_group|tojson  }}') && JSON.parse('{{ is_toggle_selected|tojson }}'))) {
                 return

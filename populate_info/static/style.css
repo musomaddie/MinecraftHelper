@@ -47,7 +47,7 @@ h3 {
 
 .next-center,
 .next-right {
-    padding-left: 20px;
+    margin-left: 20px;
 }
 
 #existing-group-sub {
@@ -164,4 +164,9 @@ select {
 
 .grid-row-3 {
     grid-row: 3;
+}
+
+.should-select {
+    outline: 3px dashed var(--md-sys-color-secondary);
+    outline-offset: 3px;
 }
