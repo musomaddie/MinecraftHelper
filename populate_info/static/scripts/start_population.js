@@ -23,11 +23,13 @@ $(document).ready(function () {
         });
 
     // Quit if we shouldn't be updating these values.
+    console.log(start_config["group-categories"]);
     if (!start_config["show-group"]) {
         return
     }
     start_config["group-categories"].forEach(
         element => {
+            console.log(element);
             document.getElementById(element).checked = true
             let span = document.getElementById(ids_to_spans[element]);
             let tickedSpan = document.createElement("span");

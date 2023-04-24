@@ -3,6 +3,8 @@ $(document).ready(function () {
         return;
     }
 
+    console.log(env_changes_vars["group-info"]["button-choice"]);
+
     document.getElementById("change-text").value = env_changes_vars["group-info"]["change-text"]
     document.getElementById(env_changes_vars["group-info"]["button-choice"]).classList.add("should-select");
 });

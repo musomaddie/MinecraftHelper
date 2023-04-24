@@ -12,14 +12,33 @@ def _get_group_info_for_category(group_name: str, category_key: str) -> dict:
     return load_json_from_file(r.get_group_fn(group_name))[category_key]
 
 
+def _group_already_has_info(group_name: str, category_name: str, category_info: dict) -> bool:
+    """
+    Returns true iff there already exists the given category info for the given category name in the given group.
+
+    :param group_name:
+    :param category_name:
+    :param category_info:
+    :return:
+    """
+    # TODO - handle the group key just not existing
+    existing_group_cat_info = _get_group_info_for_category(group_name, category_name)
+    if type(existing_group_cat_info) == dict:
+        return existing_group_cat_info == category_info
+    elif type(existing_group_cat_info) == list:
+        return category_info in existing_group_cat_info
+    return False
+
+
 def _replace_placeholder(replace_name: str, data: dict) -> dict:
     """ Replaces the placeholder in dictionary items with the given name.
 
     Returns the dictionary even though it is modified in place for easier call chaining."""
     # Try slots
     if type(data) == list:
-        for item in data:
-            return _replace_placeholder(replace_name, item)
+        return [_replace_placeholder(replace_name, item) for item in data]
+        # for item in data:
+        #     return _replace_placeholder(replace_name, item)
     for key, value in data.get("slots", {}).items():
         if "<PLACEHOLDER>" in value:
             data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
@@ -110,7 +129,6 @@ def get_group_categories(group_name: str) -> list[str]:
         return []
     data = load_json_from_file(r.get_group_fn(group_name))
     # Get all the keys of data without item name and item list.
-    keys = list(data.keys())
     return [key for key in list(data.keys()) if key != r.GROUP_NAME_KEY and key != r.GROUP_ITEMS_KEY]
 
 
@@ -151,11 +169,12 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
 def maybe_write_category_to_group(group_name: str, item_name: str, category_name: str, category_info: dict):
     """ Writes information about this category to the group file if the group name is interesting, and will generalise
     information within the category if appropriate. (generalised information will contain "<PLACEHOLDER>" where item
-    specific information would otherwise live.
+    specific information would otherwise live).
     """
     if not is_group_name_interesting(group_name):
         return
-    # TODO: don't add the information to the group AGAIN if it already exists.
+    if _group_already_has_info(group_name, category_name, category_info):
+        return
     _maybe_generalise_category_info(group_name, item_name, category_name, category_info)
     write_json_category_to_file_given_filename(
         r.get_group_fn(group_name), category_name, category_info
@@ -163,7 +182,7 @@ def maybe_write_category_to_group(group_name: str, item_name: str, category_name
 
 
 def should_show_group(group_name: str):
-    """ Returns true if values should be auto-populated from this group.
+    """ Returns true if values should be autopopulated from this group.
 
     This is true when the group name is interesting and there is another item in it."""
     if not is_group_name_interesting(group_name):

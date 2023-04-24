@@ -12,11 +12,11 @@
         <div class="next-to-container">
             <input class="submit-button right-margin" type="submit"
                    value="Submit & add another environmental change"
-                   id="next"
+                   id="another"
                    name="another"/>
             <input class="next-right submit-button" type="submit"
                    value="Submit & move to the next obtainment method"
-                   id="another"
+                   id="next"
                    name="next"/>
         </div>
     </form>
@@ -26,20 +26,5 @@
         }
     </script>
     <script src="{{ url_for('static', filename='scripts/env_changes.js') }}"></script>
-    <script>
-        $(document).ready(function () {
-            return;
-            // Quit early
-            if (!(JSON.parse('{{ show_group|tojson  }}') && JSON.parse('{{ is_toggle_selected|tojson }}'))) {
-                return
-            }
-
-            let groupInfo = JSON.parse('{{ group_info|tojson }}');
-            document.getElementById("change_text").value = groupInfo["change_text"];
-            document.getElementById(groupInfo["button_choice"]).classList.add("should_select")
-        });
-
-    </script>
-
 
 {% endblock %}

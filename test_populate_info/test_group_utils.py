@@ -1,4 +1,5 @@
 import copy
+import json
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +9,9 @@ from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary
 from populate_info.group_utils import (
     _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_breaking_info,
     get_group_categories,
-    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json)
+    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json,
+    _group_already_has_info, maybe_write_category_to_group)
+from populate_info.json_utils import write_json_category_to_file_given_filename
 
 FILE_LOC = "populate_info.group_utils"
 
@@ -147,6 +150,34 @@ class TestReplacePlaceholder:
         assert crafting_dict == {"slots": {1: "Existing Planks", "3": "Anvil"}, "number created": 2}
 
 
+class TestAlreadyHasInfo:
+    @pytest.fixture
+    def group_file_data(self):
+        group_name = "A Testing Group"
+        with open(r.get_group_fn(group_name), "w") as f:
+            json.dump({
+                "group name": group_name,
+                "items": ITEM_1,
+                "fake testing key": {"key 1": "value 1"}},
+                f)
+        return group_name
+
+    def test_missing_info_returns_false(self, group_file_data):
+        assert not _group_already_has_info(group_file_data, "fake testing key", {})
+
+    def test_dict_contains_returns_true(self, group_file_data):
+        assert _group_already_has_info(group_file_data, "fake testing key", {"key 1": "value 1"})
+
+    def test_list_contains_returns_true(self, group_file_data):
+        write_json_category_to_file_given_filename(
+            r.get_group_fn(group_file_data), "fake testing key", {"key 2": "value 2"})
+        assert _group_already_has_info(group_file_data, "fake testing key", {"key 1": "value 1"})
+        assert _group_already_has_info(group_file_data, "fake testing key", {"key 2": "value 2"})
+
+    def test_different_dict_returns_true(self, group_file_data):
+        assert not _group_already_has_info(group_file_data, "fake testing key", {"key 3": "value 3"})
+
+
 class TestShouldShowGroup:
     @pytest.mark.parametrize("item_name", [ITEM_1, ITEM_2])
     def test_true(self, client, group_file_with_2_items, item_name):
@@ -179,11 +210,23 @@ class TestWriteGroupDataToJson:
 
 
 class TestMaybeWriteCategoryToGroup:
-    def test_maybe_write_category_to_group_happy(self):
-        assert False
 
-    def test_maybe_write_category_to_group_noninteresting_name(self):
-        assert False
+    category_name = "category name"
+    category_info = {"key 1": "value 1"}
 
-    def test_maybe_write_category_to_group_already_in_group(self):
-        assert False
+    def test_maybe_write_category_to_group_happy(self, group_file_with_1_item):
+        maybe_write_category_to_group(group_file_with_1_item, ITEM_2, self.category_name, self.category_info)
+        result = get_file_contents(r.get_group_fn(group_file_with_1_item))
+        assert_dictionary_values(
+            result[self.category_name],
+            [(key, value) for key, value in self.category_info.items()]
+        )
+
+    def test_maybe_write_category_to_group_already_in_group(self, group_file_all_categories):
+        maybe_write_category_to_group(
+            group_file_all_categories, ITEM_1, r.ENV_CHANGES_CAT_KEY, {"change": "description 1"})
+        result = get_file_contents(r.get_group_fn(group_file_all_categories))
+        assert_dictionary_values(
+            result[r.ENV_CHANGES_CAT_KEY],
+            [("change", "description 1")],
+            assert_exact=True)

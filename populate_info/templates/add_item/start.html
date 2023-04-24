@@ -44,6 +44,7 @@
             "show-group": {{ show_group|tojson }},
             "group-categories": {{ group_categories|tojson }}
         };
+        console.log(start_config);
     </script>
     <script src="{{ url_for('static', filename='scripts/start_population.js') }}"></script>
 
