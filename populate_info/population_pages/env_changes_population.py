@@ -34,8 +34,6 @@ def env_changes(item_name):
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.env_changes", item_name=item_name))
 
-    # TODO - handle lists in getting JSON data to website. (in all categories).
-
     # Save data
     data = {r.EC_CHANGE_J_KEY: request.form["change-text"]}
     # TODO: add dup check to individual file as well.

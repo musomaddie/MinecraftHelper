@@ -7,6 +7,7 @@ $(document).ready(function () {
         document.getElementById("requires-silk-no").checked = true
         return
     }
+    document.getElementById(breaking_config_vars["group-info"]["button-choice"]).classList.add("should-select");
     breaking_config_vars["group-info"]["reveal"].forEach(
         element => document.getElementById(element).classList.remove("hidden"));
     breaking_config_vars["group-info"]["to-mark-checked"].forEach(

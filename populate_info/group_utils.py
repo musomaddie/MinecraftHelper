@@ -97,7 +97,9 @@ def add_to_group(group_name: str, item_name: str):
 def get_next_group_data(group_data, item_data):
     if type(group_data) == dict:
         return group_data
-    return group_data[1 if type(item_data) == dict else len(item_data)]
+    if type(item_data) == dict:
+        return group_data[0 if len(item_data) == 0 else 1]
+    return group_data[len(item_data)]
 
 
 def get_button_choice(group_data, item_data) -> str:
