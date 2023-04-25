@@ -14,6 +14,7 @@ class TestEnvChangesJsonToHtml:
         return [{"change": "change 1"}, {"change": "change 2"}]
 
     # TODO: for all of them, add a test for no items.
+    # TODO - don't bother checking the button values here - this is tested within the group util.
 
     def test_one_item_none_added(self, env_changes_json):
         result = env_changes_json_to_html_ids(env_changes_json, [])

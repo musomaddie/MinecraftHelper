@@ -94,6 +94,20 @@ def add_to_group(group_name: str, item_name: str):
     add_to_group_file(group_name, item_name)
 
 
+def get_next_group_data(group_data, item_data):
+    if type(group_data) == dict:
+        return group_data
+    return group_data[1 if type(item_data) == dict else len(item_data)]
+
+
+def get_button_choice(group_data, item_data) -> str:
+    if type(group_data) == dict:
+        return "next"
+    expected_number = len(group_data)
+    current_number = 1 if type(item_data) == dict else len(item_data)
+    return "another" if current_number < expected_number - 1 else "next"
+
+
 def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:
     """ Gets all the breaking information from the existing group.
     """

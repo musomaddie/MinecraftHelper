@@ -8,9 +8,8 @@ import populate_info.resources as r
 from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.group_utils import (
     _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_breaking_info,
-    get_group_categories,
-    get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group, write_group_name_to_item_json,
-    _group_already_has_info, maybe_write_category_to_group)
+    get_group_categories, get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group,
+    write_group_name_to_item_json, _group_already_has_info, maybe_write_category_to_group, get_button_choice)
 from populate_info.json_utils import write_json_category_to_file_given_filename
 
 FILE_LOC = "populate_info.group_utils"
@@ -26,6 +25,32 @@ class TestAddToGroup:
     def test_non_interesting_group_name(self, mock_add_to_file):
         add_to_group("", ITEM_1)
         assert not mock_add_to_file.called
+
+
+class TestGetButtonChoice:
+    @pytest.fixture
+    def group_data_w2(self):
+        return [
+            {"dictionary 1": "first value"}, {"dictionary 2": "first value"}
+        ]
+
+    def test_one_item_none_added(self):
+        group_data = {"key": "value"}
+        item_data = []
+        assert get_button_choice(group_data, item_data) == "next"
+
+    def test_two_items_none_added(self, group_data_w2):
+        item_data = []
+        assert get_button_choice(group_data_w2, item_data) == "another"
+
+    def test_two_items_one_added(self, group_data_w2):
+        item_data = {"dictionary 1": "first value"}
+        assert get_button_choice(group_data_w2, item_data) == "next"
+
+    def test_three_items_two_added(self, group_data_w2):
+        group_data_w2.append({"dictionary 3": "first value"})
+        item_data = [{"dictionary 1": "first value"}, {"dictionary 2": "first value"}]
+        assert get_button_choice(group_data_w2, item_data) == "next"
 
 
 class TestGetGroupCategories:
@@ -210,7 +235,6 @@ class TestWriteGroupDataToJson:
 
 
 class TestMaybeWriteCategoryToGroup:
-
     category_name = "category name"
     category_info = {"key 1": "value 1"}
 
