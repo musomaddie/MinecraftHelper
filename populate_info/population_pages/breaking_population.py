@@ -36,10 +36,7 @@ def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -
 
     # TODO - handle case where the number in the old group and this group no longer match up correctly.
 
-    print(group_data)
-
     data_to_populate = get_next_group_data(group_data, item_data)
-    print(data_to_populate)
     result = {
         # always has requires tool and silk.
         "to-mark-checked": [

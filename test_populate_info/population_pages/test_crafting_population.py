@@ -6,8 +6,46 @@ import populate_info.resources as r
 from conftest import ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.crafting_population import crafting_json_to_html_ids
 
+item_1_json = {
+    "slots": {"1": ITEM_1},
+    "number created": 1,
+    "works in smaller grid": False,
+    "relative positioning": "strict"
+}
+item_1_html = {
+    "to-fill": {"number-created": 1, "cs1": ITEM_1},
+    "to-mark-checked": ["flexible-positioning-no", "small-grid-no"],
+    "button-choice": "another"
+}
+
+item_2_json = {
+    "slots": {"2": ITEM_1},
+    "number created": 2,
+    "works in smaller grid": True,
+    "relative positioning": "strict"
+}
+item_2_html = {
+    "to-fill": {"number-created": 2, "cs2": ITEM_1},
+    "to-mark-checked": ["flexible-positioning-no", "small-grid-yes"],
+    "button-choice": "another",
+}
+
+item_3_json = {
+    "slots": {"3": ITEM_1},
+    "number created": 3,
+    "works in smaller grid": False,
+    "relative positioning": "flexible",
+}
+
+item_3_html = {
+    "to-fill": {"number-created": 3, "cs3": ITEM_1},
+    "to-mark-checked": ["flexible-positioning-yes", "small-grid-no"],
+    "button-choice": "next"
+}
+
 
 class TestCraftingJsonToHtml:
+
     @pytest.fixture
     def crafting_json(self):
         return {"slots": {"1": ITEM_1}, "number created": 1,
@@ -28,7 +66,7 @@ class TestCraftingJsonToHtml:
     )
     def test_slots(self, json_slots, html_slots, crafting_json):
         crafting_json["slots"] = json_slots
-        result = crafting_json_to_html_ids(crafting_json)
+        result = crafting_json_to_html_ids(crafting_json, {})
         assert_dictionary_values(
             result["to-fill"],
             [(key, value) for key, value in html_slots.items()],
@@ -36,7 +74,7 @@ class TestCraftingJsonToHtml:
 
     def test_number(self, crafting_json):
         crafting_json["number created"] = 2
-        result = crafting_json_to_html_ids(crafting_json)
+        result = crafting_json_to_html_ids(crafting_json, {})
         assert_dictionary_values(
             result["to-fill"],
             [("number-created", 2)],
@@ -44,7 +82,7 @@ class TestCraftingJsonToHtml:
         )
 
     def test_checked_still_exists_no_data(self, crafting_json):
-        assert "to-mark-checked" in crafting_json_to_html_ids(crafting_json)
+        assert "to-mark-checked" in crafting_json_to_html_ids(crafting_json, {})
 
     @pytest.mark.parametrize(
         ("json_smaller_grid", "expected_html_id"),
@@ -53,7 +91,7 @@ class TestCraftingJsonToHtml:
     )
     def test_smaller_grid_true(self, json_smaller_grid, expected_html_id, crafting_json):
         crafting_json["works in smaller grid"] = json_smaller_grid
-        result = crafting_json_to_html_ids(crafting_json)
+        result = crafting_json_to_html_ids(crafting_json, {})
         assert expected_html_id in result["to-mark-checked"]
 
     @pytest.mark.parametrize(
@@ -61,8 +99,30 @@ class TestCraftingJsonToHtml:
         [("strict", "flexible-positioning-no"), ("flexible", "flexible-positioning-yes")])
     def test_relative_positioning(self, json_relative_positioning, expected_html_id, crafting_json):
         crafting_json["relative positioning"] = json_relative_positioning
-        result = crafting_json_to_html_ids(crafting_json)
+        result = crafting_json_to_html_ids(crafting_json, {})
         assert expected_html_id in result["to-mark-checked"]
+
+    @pytest.mark.parametrize(
+        ("item_data", "expected_result"),
+        [
+            # 0 / 3
+            ({}, item_1_html),
+            # 1 / 3
+            (item_1_json, item_2_html),
+            # 2 / 3
+            ([item_1_json, item_2_json], item_3_html)
+        ]
+    )
+    def test_multiple_crafting_info(self, item_data, expected_result):
+        # All tests can use the same group data.
+        group_data = [item_1_json, item_2_json, item_3_json]
+
+        result = crafting_json_to_html_ids(group_data, item_data)
+
+        assert_dictionary_values(
+            result, [(key, value) for key, value in expected_result.items()],
+            True
+        )
 
 
 class TestCraftingPost:
@@ -124,6 +184,6 @@ class TestCraftingPost:
         )
 
 
-def test_crafting_get(client, session_with_group):
-    response = client.get("/crafting/Testing Item")
+def test_crafting_get(client, session_with_group, item_file_name_only):
+    response = client.get(f"/crafting/{ITEM_1}")
     assert response.status_code == 200

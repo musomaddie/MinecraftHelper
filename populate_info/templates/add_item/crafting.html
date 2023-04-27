@@ -107,11 +107,11 @@
         <div class="next-to-container">
             <input class="submit-button" type="submit"
                    value="Submit & add another crafting method"
-                   name="another"/>
+                   id="another" name="another"/>
             <div class="next-right">
                 <input class="submit-button" type="submit"
                        value="Submit & move to the next obtainment method"
-                       name="next"/>
+                       id="next" name="next"/>
             </div>
         </div>
     </form>
@@ -123,24 +123,5 @@
         }
     </script>
     <script src="{{ url_for('static', filename='scripts/crafting.js') }}"></script>
-    <script>
-        $(document).ready(function () {
-            return;
-            // Quit early if we know we shouldn't be updating these values.
-            if (!(JSON.parse('{{ show_group|tojson }}') && JSON.parse(' {{ is_toggle_selected|tojson }}'))) {
-                return
-            }
-            let group_info = JSON.parse('{{ group_info|tojson }}');
-            if ($.isEmptyObject(group_info)) {
-                return
-            }
-            group_info["to_mark_checked"].forEach(
-                element => document.getElementById(element).checked = true
-            );
-            for (let key in group_info["to_fill"]) {
-                document.getElementById(key).value = group_info["to_fill"][key];
-            }
-        });
-    </script>
 
 {% endblock %}

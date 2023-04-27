@@ -9,6 +9,24 @@ r_tool_expected = "iron-axe"
 f_tool = "Shears"
 f_tool_expected = "shears"
 
+item_1_json = {"requires tool": "none", "silk touch": False}
+item_1_html = {
+    "to-mark-checked": ["requires-tool-no", "requires-silk-no", "fastest-tool-no"],
+    "button-choice": "another"
+}
+
+item_2_json = {"requires tool": "any", "silk touch": False}
+item_2_html = {
+    "to-mark-checked": ["requires-tool-any", "requires-silk-no", "fastest-tool-no"],
+    "button-choice": "another"
+}
+
+item_3_json = {"requires tool": "none", "silk touch": True}
+item_3_html = {
+    "to-mark-checked": ["requires-tool-no", "requires-silk-yes", "fastest-tool-no"],
+    "button-choice": "next"
+}
+
 
 class TestBreakingJsonToHtmlIds:
 
@@ -61,42 +79,18 @@ class TestBreakingJsonToHtmlIds:
         assert "fastest-tool-yes" in result["to-mark-checked"]
         assert f_tool.lower() == result["dropdown-select"]["fastest-specific-tool-select"]
 
-    # @pytest.mark.parametrize(
-    #     ("item_data", "group_data", "expected_result"),
-    #     [
-    #         # 0 / 1
-    #         ({}, {"requires tool": "none", "requires_silk": False},
-    #          {"to-mark-checked": ["requires-tool-no", "requires-silk-no"],
-    #           "button-choice": "next"}),
-    #         # 0 / 3
-    #         ({}, [
-    #             "requires tool": "none",
-    #         ])
-    #     ]
-    # )
     @pytest.mark.parametrize(
         ("item_data", "expected_result"),
         [
             # 0 / 3
-            ({},
-             {"to-mark-checked": ["requires-tool-no", "requires-silk-no", "fastest-tool-no"],
-              "button-choice": "another"}),
+            ({}, item_1_html),
             # 1 / 3
-            ({"requires tool": "any", "requires silk": False},
-             {"to-mark-checked": ["requires-tool-any", "requires-silk-no", "fastest-tool-no"],
-              "button-choice": "another"}),
+            (item_1_json, item_2_html),
             # 2/ 3
-            ([{"requires tool": "any", "requires silk": False}, {"requires tool": "none", "requires silk": False}],
-             {"to-mark-checked": ["requires-tool-no", "requires-silk-yes", "fastest-tool-no"],
-              "button-choice": "next"})]
-    )
+            ([item_1_json, item_2_json], item_3_html)])
     def test_multiple_breaking_info(self, item_data, expected_result):
         # They use the same group data every time.
-        group_data = [
-            {"requires tool": "none", "silk touch": False},
-            {"requires tool": "any", "silk touch": False},
-            {"requires tool": "none", "silk touch": True}
-        ]
+        group_data = [item_1_json, item_2_json, item_3_json]
 
         result = breaking_json_to_html_ids(group_data, item_data)
 

@@ -5,6 +5,8 @@ $(document).ready(function () {
         document.getElementById("small-grid-no").checked = true
     }
 
+    document.getElementById(crafting_config_vars["group-info"]["button-choice"]).classList.add("should-select")
+
     Object.entries(crafting_config_vars["group-info"]["to-fill"]).forEach(
         (entry) => {
             // entry 0 -> id entry 1 -> value
