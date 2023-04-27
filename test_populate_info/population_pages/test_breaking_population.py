@@ -79,13 +79,16 @@ class TestBreakingJsonToHtmlIds:
         [
             # 0 / 3
             ({},
-             {"to-mark-checked": ["requires-tool-no", "requires-silk-no"], "button-choice": "another"}),
+             {"to-mark-checked": ["requires-tool-no", "requires-silk-no", "fastest-tool-no"],
+              "button-choice": "another"}),
             # 1 / 3
             ({"requires tool": "any", "requires silk": False},
-             {"to-mark-checked": ["requires-tool-yes", "requires-silk-no"], "button-choice": "another"}),
+             {"to-mark-checked": ["requires-tool-any", "requires-silk-no", "fastest-tool-no"],
+              "button-choice": "another"}),
             # 2/ 3
             ([{"requires tool": "any", "requires silk": False}, {"requires tool": "none", "requires silk": False}],
-             {"to-mark-checked": ["requires-tool-no", "requires-silk-yes"], "button-choice": "next"})]
+             {"to-mark-checked": ["requires-tool-no", "requires-silk-yes", "fastest-tool-no"],
+              "button-choice": "next"})]
     )
     def test_multiple_breaking_info(self, item_data, expected_result):
         # They use the same group data every time.
@@ -116,8 +119,8 @@ class TestBreakingPost:
         )
         assert response.status_code == 302
         assert_dictionary_values(
-            get_file_contents(r.get_item_fn(ITEM_1)),
-            [(r.BREAKING_CAT_KEY, {r.BREAKING_REQ_TOOL_KEY: "none", r.BREAKING_SILK_TOUCH_KEY: False})], True)
+            get_file_contents(r.get_item_fn(ITEM_1))[r.BREAKING_CAT_KEY],
+            [("requires tool", "none"), ("silk touch", False)], True)
 
     # TODO - why haven't I actually tested this input fully?? (I should check there's nothing pending on windows).
 
