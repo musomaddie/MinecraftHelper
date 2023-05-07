@@ -31,6 +31,13 @@ def get_next_item() -> str:
     return all_items[len(current_items)]
 
 
+def add_to_seen_file(item_name: str) -> None:
+    """ Adds the given item to the list of items that have been completed. """
+    items = load_json_from_file(r.ADDED_ITEM_FN)["items"]
+    items.append(item_name)
+    write_json_to_file(r.ADDED_ITEM_FN, {"items": items})
+
+
 def get_current_category_info(item_name: str, category_name: str) -> dict:
     """ Fetches current information for the given category, or an empty dictionary if the category is not found in
     the file. """

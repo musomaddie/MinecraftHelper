@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_debugtoolbar import DebugToolbarExtension
 
 
 def create_app(test_config=None):
@@ -8,6 +9,8 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY="top secret shhhhhh",
     )
+    toolbar = DebugToolbarExtension(app)
+    app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)

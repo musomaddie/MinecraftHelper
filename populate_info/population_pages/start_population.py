@@ -3,7 +3,7 @@ from flask import redirect, render_template, request, session, url_for
 import populate_info.resources as r
 from populate_info.group_utils import (
     get_group_categories, maybe_group_toggle_update_saved, update_group,
-    write_group_name_to_item_json)
+    write_group_name_to_item_json, should_show_group)
 from populate_info.json_utils import create_json_file, get_next_item
 from populate_info.navigation_utils import move_next_category
 from populate_info.population_pages import item_blueprint
@@ -16,10 +16,8 @@ def start_adding_item(item_name):
 
     :param item_name:
     """
-    item_file_name = r.get_item_fn(item_name)
-    # Don't save to the JSON file until the end, use session for now.
+    # Reset the session variables.
     session[r.CUR_ITEM_SK] = item_name
-    session[r.GROUP_NAME_SK] = "TESTING_GROUP"
     group_name = session.get(r.GROUP_NAME_SK, "")
 
     # Return basic page if this is a get request!!
@@ -31,9 +29,9 @@ def start_adding_item(item_name):
             group_name=group_name,
             is_toggle_selected=session.get(r.USE_GROUP_VALUES_SK, True),
             group_categories=r.category_names_to_html_ids(get_group_categories(group_name)),
-            # Temporarily on for testing TODO
-            show_group=True)
-        # show_group=should_show_group(group_name))
+            # TODO - toggle for testing.
+            # show_group=True,
+            show_group=should_show_group(group_name))
 
     # Update group name and reload this page (if applicable).
     if "group-name-btn" in request.form:
@@ -61,4 +59,5 @@ def start_adding_item(item_name):
 
 @item_blueprint.route("/")
 def start():
+    session.clear()
     return redirect(url_for("add.start_adding_item", item_name=get_next_item()))

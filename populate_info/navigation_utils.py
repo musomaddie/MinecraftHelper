@@ -1,12 +1,14 @@
 from flask import redirect, session, url_for
 
 import populate_info.resources as r
-from populate_info.json_utils import get_next_item
+from populate_info.json_utils import get_next_item, add_to_seen_file
 
 
 def move_next_category(item_name: str):
     """ Moves to the next category. """
     if len(session[r.METHOD_LIST_SK]) == 0:
+        add_to_seen_file(item_name)
+        session[r.GROUP_NAME_SK] = ""
         return redirect(url_for("add.start_adding_item", item_name=get_next_item()))
     next_category = session[r.METHOD_LIST_SK].pop(0)
     session[r.METHOD_LIST_SK] = session[r.METHOD_LIST_SK]
