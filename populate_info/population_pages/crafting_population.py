@@ -25,6 +25,8 @@ JSON_TO_HTML = {value: key for key, value in HTML_TO_JSON.items()}
 
 def crafting_json_to_html_ids(
         group_data: typing.Union[dict, list], item_data: typing.Union[dict, list]) -> dict:
+    if len(group_data) == 0:
+        return {}
     data_to_populate = get_next_group_data(group_data, item_data)
     result_data = {
         "to-fill":

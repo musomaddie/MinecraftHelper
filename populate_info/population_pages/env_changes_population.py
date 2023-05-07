@@ -11,6 +11,8 @@ from populate_info.population_pages import item_blueprint
 
 def env_changes_json_to_html_ids(
         group_data, current_item_data) -> dict:
+    if len(group_data) == 0:
+        return {}
     data_to_populate = get_next_group_data(group_data, current_item_data)
     return {"change-text": data_to_populate["change"],
             "button-choice": get_button_choice(group_data, current_item_data)}

@@ -1,0 +1,30 @@
+{
+  "group name": "Wooden Button",
+  "items": [
+    "Acacia Button"
+  ],
+  "breaking": {
+    "requires tool": "any",
+    "silk touch": false,
+    "fastest tool": "Axe"
+  },
+  "crafting": {
+    "slots": {
+      "1": "<PLACEHOLDER> Planks"
+    },
+    "number created": 1,
+    "relative positioning": "strict",
+    "works in smaller grid": true
+  },
+  "environment changes": [
+    {
+      "change": "attached block moved removed or destroyed"
+    },
+    {
+      "change": "water or lava flows into space"
+    },
+    {
+      "change": "piston tries to push it or move a block into its space"
+    }
+  ]
+}
