@@ -56,8 +56,7 @@ def test_start_adding_item_next_category(client):
     contents = get_file_contents(r.get_item_fn(ITEM_1))
     assert_dictionary_values(
         get_file_contents(r.get_item_fn(ITEM_1)),
-        # TODO - when the manual group value is deleted update this string.
-        [(r.ITEM_NAME_KEY, ITEM_1), (r.GROUP_NAME_KEY, "TESTING_GROUP")])
+        [(r.ITEM_NAME_KEY, ITEM_1)])
 
 
 def test_start_adding_item_all_categories(client):

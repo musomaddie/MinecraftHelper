@@ -3,7 +3,7 @@ from unittest.mock import patch
 from flask import session
 
 import populate_info.resources as r
-from conftest import ITEM_1
+from conftest import ITEM_1, ITEM_2
 from populate_info.navigation_utils import either_move_next_category_or_repeat, move_next_category
 
 url_for_patch_str = "populate_info.navigation_utils.url_for"
@@ -39,7 +39,7 @@ class TestMoveNextCategory:
     def test_none_left(self, mock_redirect, mock_url_for, request_context):
         session[r.METHOD_LIST_SK] = []
         result = move_next_category(ITEM_1)
-        mock_url_for.assert_called_once_with("add.start_adding_item", item_name=ITEM_1)
+        mock_url_for.assert_called_once_with("add.start_adding_item", item_name=ITEM_2)
 
 
 class TestEitherMoveNextCategoryOrRepeat:
