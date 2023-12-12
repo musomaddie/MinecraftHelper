@@ -7,9 +7,10 @@ import pytest
 import populate_info.resources as r
 from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.group_utils import (
-    _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_breaking_info,
-    get_group_categories, get_group_crafting_info, maybe_group_toggle_update_saved, should_show_group,
-    write_group_name_to_item_json, _group_already_has_info, maybe_write_category_to_group, get_button_choice)
+    _maybe_generalise_category_info, _remove_shared_part, _replace_placeholder, add_to_group, get_group_categories,
+    maybe_group_toggle_update_saved, should_show_group,
+    write_group_name_to_item_json, _group_already_has_info, maybe_write_category_to_group, get_button_choice,
+    get_group_info)
 from populate_info.json_utils import write_json_category_to_file_given_filename
 
 FILE_LOC = "populate_info.group_utils"
@@ -65,10 +66,14 @@ class TestGetGroupCategories:
         assert get_group_categories("") == []
 
 
-class TestGetGroupBreakingInfo:
+class TestGetGroupInfo:
 
-    def test_simple(self, group_file_all_categories):
-        result = get_group_breaking_info(group_file_all_categories, ITEM_1)
+    def test_noninteresting_group_name(self):
+        result = get_group_info("", ITEM_1, r.BREAKING_CAT_KEY)
+        assert result == {}
+
+    def test_breaking(self, group_file_all_categories):
+        result = get_group_info(group_file_all_categories, ITEM_1, r.BREAKING_CAT_KEY)
         assert "requires tool" in result
         assert result["requires tool"] == "any"
         assert "fastest tool" in result
@@ -76,24 +81,15 @@ class TestGetGroupBreakingInfo:
         assert "silk touch"
         assert not result["silk touch"]
 
-    def test_noninteresting_group_name(self):
-        result = get_group_breaking_info("", ITEM_1)
-        assert result == {}
-
-
-class TestGetGroupCraftingInfo:
-    def test_simple(self, group_file_all_categories):
-        result = get_group_crafting_info(group_file_all_categories, ITEM_1)
+    def test_crafting(self, group_file_all_categories):
+        result = get_group_info(group_file_all_categories, ITEM_1, r.CRAFTING_CAT_KEY)
         assert_dictionary_values(
             result,
-            [("slots", {"1": ITEM_1, "2": ITEM_2, "3": ITEM_3}),
-             ("number created", 1),
-             ("relative positioning", "strict"),
-             ("works in smaller grid", False)])
-
-    def test_noninteresting_group_name(self):
-        result = get_group_crafting_info("", ITEM_1)
-        assert result == {}
+            [
+                ("slots", {"1": ITEM_1, "2": ITEM_2, "3": ITEM_3}),
+                ("number created", 1),
+                ("relative positioning", "strict"),
+                ("works in smaller grid", False)])
 
 
 class TestMaybeGeneraliseCategoryInfo:

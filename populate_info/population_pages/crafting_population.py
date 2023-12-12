@@ -4,9 +4,9 @@ from flask import redirect, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import (
-    get_group_crafting_info, maybe_group_toggle_update_saved, maybe_write_category_to_group, get_next_group_data,
+    maybe_group_toggle_update_saved, maybe_write_category_to_group, get_next_group_data,
     get_button_choice)
-from populate_info.json_utils import write_json_category_to_file, get_current_category_info
+from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 from populate_info.population_pages.template_renderer import render_population_template
@@ -51,12 +51,10 @@ def crafting(item_name):
     if request.method == "GET":
         return render_population_template(
             "add_item/crafting.html",
-            item_name=item_name,
-            group_name=group_name,
-            group_info=crafting_json_to_html_ids(
-                get_group_crafting_info(group_name, item_name),
-                get_current_category_info(item_name, r.CRAFTING_CAT_KEY)
-            ))
+            item_name,
+            group_name,
+            r.CRAFTING_CAT_KEY,
+            crafting_json_to_html_ids)
 
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.crafting", item_name=item_name))

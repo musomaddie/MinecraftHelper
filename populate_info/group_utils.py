@@ -35,10 +35,8 @@ def _replace_placeholder(replace_name: str, data: dict) -> dict:
 
     Returns the dictionary even though it is modified in place for easier call chaining."""
     # Try slots
-    if type(data) == list:
+    if isinstance(data, list):
         return [_replace_placeholder(replace_name, item) for item in data]
-        # for item in data:
-        #     return _replace_placeholder(replace_name, item)
     for key, value in data.get("slots", {}).items():
         if "<PLACEHOLDER>" in value:
             data.get("slots")[key] = value.replace("<PLACEHOLDER>", replace_name)
@@ -110,29 +108,12 @@ def get_button_choice(group_data, item_data) -> str:
     return "another" if current_number < expected_number - 1 else "next"
 
 
-def get_group_breaking_info(group_name: str, item_name: str) -> dict[str: str]:
-    """ Gets all the breaking information from the existing group.
-    """
-    # TODO: update tests for placeholder
-    return _replace_placeholder(_remove_shared_part(item_name, group_name),
-                                _get_group_info_for_category(group_name, r.BREAKING_CAT_KEY))
-
-
-def get_group_crafting_info(group_name: str, item_name) -> dict[str: str]:
-    """ Gets all the crafting information from the existing group.
-    """
+def get_group_info(group_name: str, item_name: str, category_key: str) -> dict[str: str]:
+    """ Returns all the group information for the given group. """
     # TODO: update tests for placeholder
     return _replace_placeholder(
         _remove_shared_part(item_name, group_name),
-        _get_group_info_for_category(group_name, r.CRAFTING_CAT_KEY)
-    )
-
-
-def get_group_env_changes_info(group_name: str, item_name) -> dict[str: str]:
-    """ Gets all environment changes from the existing group. """
-    return _replace_placeholder(
-        _remove_shared_part(item_name, group_name),
-        _get_group_info_for_category(group_name, r.ENV_CHANGES_CAT_KEY)
+        _get_group_info_for_category(group_name, category_key)
     )
 
 

@@ -4,9 +4,9 @@ from flask import redirect, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import (
-    get_group_breaking_info, maybe_group_toggle_update_saved, maybe_write_category_to_group, get_next_group_data,
+    maybe_group_toggle_update_saved, maybe_write_category_to_group, get_next_group_data,
     get_button_choice)
-from populate_info.json_utils import write_json_category_to_file, get_current_category_info
+from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 from populate_info.population_pages.template_renderer import render_population_template
@@ -75,12 +75,10 @@ def breaking(item_name):
     if request.method == "GET":
         return render_population_template(
             "add_item/breaking.html",
-            item_name, group_name,
-            # TODO -> I should be able to call this within the method as well if I manage to pass the function correctly.
-            breaking_json_to_html_ids(
-                get_group_breaking_info(group_name, item_name),
-                get_current_category_info(item_name, r.BREAKING_CAT_KEY))
-        )
+            item_name,
+            group_name,
+            r.BREAKING_CAT_KEY,
+            breaking_json_to_html_ids)
 
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.breaking", item_name=item_name))
