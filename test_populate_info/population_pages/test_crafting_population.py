@@ -130,7 +130,7 @@ class TestCraftingPost:
 
     @staticmethod
     def get_crafting_from_file():
-        return get_file_contents(r.get_item_fn(ITEM_1))[r.CRAFTING_CAT_KEY]
+        return get_file_contents(r.get_item_fn(ITEM_1))[r.CK_CRAFTING]
 
     @pytest.fixture
     def post_data(self):

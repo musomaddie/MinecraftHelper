@@ -1,5 +1,7 @@
 import pytest
 
+import populate_info.population_pages.crafting_population
+import populate_info.resources
 import populate_info.resources as r
 from conftest import ITEM_1, assert_dictionary_values, get_file_contents
 from populate_info.population_pages.breaking_population import breaking_json_to_html_ids
@@ -113,7 +115,7 @@ class TestBreakingPost:
         )
         assert response.status_code == 302
         assert_dictionary_values(
-            get_file_contents(r.get_item_fn(ITEM_1))[r.BREAKING_CAT_KEY],
+            get_file_contents(r.get_item_fn(ITEM_1))[populate_info.resources.CK_BREAKING],
             [("requires tool", "none"), ("silk touch", False)], True)
 
     # TODO - why haven't I actually tested this input fully?? (I should check there's nothing pending on windows).

@@ -15,26 +15,26 @@ def test_start_adding_item_get(client):
 
 def test_start_adding_item_post_group_name(client):
     with client.session_transaction() as session_before:
-        session_before[r.GROUP_NAME_SK] = "Old Group"
+        session_before[r.SK_GROUP_NAME] = "Old Group"
     with client:
         response = client.post(
             f"/add_item/{ITEM_1}", data={
                 "group-name": GROUP_1, "group-name-btn": "Set group name"}
         )
         assert response.status_code == 302
-        assert session[r.GROUP_NAME_SK] == GROUP_1
+        assert session[r.SK_GROUP_NAME] == GROUP_1
 
 
 def test_start_adding_item_post_toggle_updated(client):
     with client.session_transaction() as session_before:
-        assert r.USE_GROUP_VALUES_SK not in session_before
+        assert r.SK_USE_GROUP_VALUES not in session_before
     with client:
         response = client.post(
             f"/add_item/{ITEM_1}", data={""
                                          "update-use-group-values": ""})
         assert response.status_code == 302
         # We don't care what the session value is (that's another test), but we care if it's there.
-        assert r.USE_GROUP_VALUES_SK in session
+        assert r.SK_USE_GROUP_VALUES in session
 
 
 def test_start_redirects(client):
@@ -49,14 +49,14 @@ def test_start_adding_item_next_category(client):
         response = client.post(
             f"/add_item/{ITEM_1}", data={"breaking": "some info"})
         assert response.status_code == 302
-        assert r.METHOD_LIST_SK in session
-        assert len(session[r.METHOD_LIST_SK]) == 0
+        assert r.SK_METHOD_LIST in session
+        assert len(session[r.SK_METHOD_LIST]) == 0
 
     # Regardless of what else happens here, I know what the file should look like.
     contents = get_file_contents(r.get_item_fn(ITEM_1))
     assert_dictionary_values(
         get_file_contents(r.get_item_fn(ITEM_1)),
-        [(r.ITEM_NAME_KEY, ITEM_1)])
+        [(r.KEY_ITEM_NAME, ITEM_1)])
 
 
 def test_start_adding_item_all_categories(client):
@@ -67,9 +67,9 @@ def test_start_adding_item_all_categories(client):
             data={"breaking": "some info", "crafting": "more info", "env-changes": "more info"}
         )
         assert response.status_code == 302
-        assert r.METHOD_LIST_SK in session
-        assert len(session[r.METHOD_LIST_SK]) == 2
-        assert "add.crafting" in session[r.METHOD_LIST_SK]
-        assert "add.env_changes" in session[r.METHOD_LIST_SK]
+        assert r.SK_METHOD_LIST in session
+        assert len(session[r.SK_METHOD_LIST]) == 2
+        assert "add.crafting" in session[r.SK_METHOD_LIST]
+        assert "add.env_changes" in session[r.SK_METHOD_LIST]
 
 # TODO - test the HTML ids when told to use group!!

@@ -10,20 +10,20 @@ def add_to_group_file(group_name: str, item_name: str):
     filename = r.get_group_fn(group_name)
     data = (load_json_from_file(filename)
             if path.exists(filename)
-            else {r.GROUP_NAME_KEY: group_name, r.GROUP_ITEMS_KEY: []})
-    data[r.GROUP_ITEMS_KEY].append(item_name)
+            else {r.KEY_GROUP_NAME: group_name, r.KEY_GROUP_ITEMS: []})
+    data[r.KEY_GROUP_ITEMS].append(item_name)
     write_json_to_file(filename, data)
 
 
 def create_json_file(item_name: str):
     filename = r.get_item_fn(item_name)
-    write_json_to_file(filename, {r.ITEM_NAME_KEY: item_name})
+    write_json_to_file(filename, {r.KEY_ITEM_NAME: item_name})
 
 
 def get_next_item() -> str:
     """:return: name of next unpopulated block or item. """
-    current_items = load_json_from_file(r.ADDED_ITEM_FN)[r.ITEM_LIST_KEY]
-    all_items = load_json_from_file(r.FULL_ITEMS_LIST_FN)[r.ITEM_LIST_KEY]
+    current_items = load_json_from_file(r.ADDED_ITEM_FN)[r.KEY_ITEM_LIST]
+    all_items = load_json_from_file(r.FULL_ITEMS_LIST_FN)[r.KEY_ITEM_LIST]
 
     if len(current_items) >= len(all_items):
         return None
@@ -55,7 +55,7 @@ def remove_from_group_file(group_name: str, item_name: str):
         return
     data = load_json_from_file(filename)
     try:
-        data[r.GROUP_ITEMS_KEY].remove(item_name)
+        data[r.KEY_GROUP_ITEMS].remove(item_name)
     except ValueError:
         # If it doesn't exist the file will be unchanged so there is no point us modifying it further.
         return

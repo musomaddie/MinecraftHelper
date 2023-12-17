@@ -10,15 +10,19 @@ from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
 
+KEY_N_CREATED = "number created"
+KEY_SMALL_GRID = "works in smaller grid"
+KEY_RELATIVE_POSITIONING = "relative positioning"
+KEY_SLOTS = "slots"
 HTML_TO_JSON = {
     # Slots
     "cs1": "1", "cs2": "2", "cs3": "3",
     "cs4": "4", "cs5": "5", "cs6": "6",
     "cs7": "7", "cs8": "8", "cs9": "9",
     # Remaining values
-    "number-created": r.CRAFTING_N_CREATED_J_KEY,
-    "small-grid": r.CRAFTING_SMALL_GRID_J_KEY,
-    "flexible-positioning": r.CRAFTING_RELATIVE_POSITIONING_J_KEY
+    "number-created": KEY_N_CREATED,
+    "small-grid": KEY_SMALL_GRID,
+    "flexible-positioning": KEY_RELATIVE_POSITIONING
 }
 JSON_TO_HTML = {value: key for key, value in HTML_TO_JSON.items()}
 
@@ -30,12 +34,12 @@ def crafting_json_to_html_ids(
     data_to_populate = get_next_group_data(group_data, item_data)
     result_data = {
         "to-fill":
-            {JSON_TO_HTML[slot]: item for slot, item in data_to_populate[r.CRAFTING_SLOTS_J_KEY].items()} |
-            {JSON_TO_HTML[r.CRAFTING_N_CREATED_J_KEY]: data_to_populate[r.CRAFTING_N_CREATED_J_KEY]},
+            {JSON_TO_HTML[slot]: item for slot, item in data_to_populate[KEY_SLOTS].items()} |
+            {JSON_TO_HTML[KEY_N_CREATED]: data_to_populate[KEY_N_CREATED]},
         "to-mark-checked": [
-            f"small-grid-{'yes' if data_to_populate[r.CRAFTING_SMALL_GRID_J_KEY] else 'no'}",
+            f"small-grid-{'yes' if data_to_populate[KEY_SMALL_GRID] else 'no'}",
             f"flexible-positioning-"
-            f"{'yes' if data_to_populate[r.CRAFTING_RELATIVE_POSITIONING_J_KEY] == 'flexible' else 'no'}"],
+            f"{'yes' if data_to_populate[KEY_RELATIVE_POSITIONING] == 'flexible' else 'no'}"],
         "button-choice": get_button_choice(group_data, item_data)
     }
 
@@ -46,32 +50,32 @@ def crafting_json_to_html_ids(
 @item_blueprint.route("/crafting/<item_name>", methods=["GET", "POST"])
 def crafting(item_name):
     """ Handles populating the crafting obtainment method. """
-    group_name = session.get(r.GROUP_NAME_SK, "")
+    group_name = session.get(r.SK_GROUP_NAME, "")
     if request.method == "GET":
         return render_population_template(
             "add_item/crafting.html",
             item_name,
             group_name,
-            r.CRAFTING_CAT_KEY,
+            r.CK_CRAFTING,
             crafting_json_to_html_ids)
 
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.crafting", item_name=item_name))
 
     data = {
-        r.CRAFTING_SLOTS_J_KEY: {},
-        r.CRAFTING_N_CREATED_J_KEY: int(request.form["number-created"]),
-        r.CRAFTING_RELATIVE_POSITIONING_J_KEY:
+        KEY_SLOTS: {},
+        KEY_N_CREATED: int(request.form["number-created"]),
+        KEY_RELATIVE_POSITIONING:
             "flexible" if request.form["flexible-positioning"] == "flexible-yes" else "strict",
-        r.CRAFTING_SMALL_GRID_J_KEY: request.form["small-grid"] == "grid-yes"
+        KEY_SMALL_GRID: request.form["small-grid"] == "grid-yes"
     }
     has_an_item = False
     for i in range(1, 10):
         if request.form[f"cs{i}"] != "":
             has_an_item = True
-            data[r.CRAFTING_SLOTS_J_KEY][f"{i}"] = request.form[f"cs{i}"]
+            data[KEY_SLOTS][f"{i}"] = request.form[f"cs{i}"]
 
     # TODO - sanity check that there is at least one crafting information.
-    save_values_to_file(item_name, r.CRAFTING_CAT_KEY, data)
+    save_values_to_file(item_name, r.CK_CRAFTING, data)
 
     return either_move_next_category_or_repeat(item_name, "add.crafting", request.form)

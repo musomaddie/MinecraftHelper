@@ -8,44 +8,31 @@ FULL_ITEMS_LIST_FN = f"{DIR}all_items/full_item_list.json"
 
 
 def get_item_fn(item_name):
+    """ Returns the filename corresponding to the given item. """
     return f"{DIR}{item_name.replace(' ', '_').lower()}.json"
 
 
 def get_group_fn(group_name: str):
+    """ Returns the filename corresponding to the given group. """
     return f"{DIR}groups/{group_name.lower().replace(' ', '_')}.json"
 
 
 # ########################################## JSON KEYS #########################################
-GROUP_NAME_KEY = "group name"
-ITEM_NAME_KEY = "item name"
-ITEM_LIST_KEY = "items"
-GROUP_ITEMS_KEY = "items"
+KEY_GROUP_NAME = "group name"
+KEY_ITEM_NAME = "item name"
+KEY_ITEM_LIST = "items"
+KEY_GROUP_ITEMS = "items"
 
 # ############# Category keys
-BREAKING_CAT_KEY = "breaking"
-CRAFTING_CAT_KEY = "crafting"
-ENV_CHANGES_CAT_KEY = "environment changes"
-
-# ##### Breaking
-BREAKING_REQ_TOOL_KEY = "requires tool"
-BREAKING_REQ_SPECIFIC_TOOL_KEY = "required tool"
-BREAKING_FASTEST_TOOL_KEY = "fastest tool"
-BREAKING_SILK_TOUCH_KEY = "silk touch"
-
-# #### Crafting
-CRAFTING_SLOTS_J_KEY = "slots"
-CRAFTING_N_CREATED_J_KEY = "number created"
-CRAFTING_SMALL_GRID_J_KEY = "works in smaller grid"
-CRAFTING_RELATIVE_POSITIONING_J_KEY = "relative positioning"
-
-# ###### Environment changes.
-EC_CHANGE_J_KEY = "change"
+CK_BREAKING = "breaking"
+CK_CRAFTING = "crafting"
+CK_ENV_CHANGES = "environment changes"
 
 # ############################## SESSION KEYS #############################################
-CUR_ITEM_SK = "current_item"  # the item we are currently gathering information on.
-GROUP_NAME_SK = "group"
-USE_GROUP_VALUES_SK = "use_group_values"
-METHOD_LIST_SK = "methods"
+SK_CUR_ITEM = "current_item"  # the item we are currently gathering information on.
+SK_GROUP_NAME = "group"
+SK_USE_GROUP_VALUES = "use_group_values"
+SK_METHOD_LIST = "methods"
 
 
 # ###################################### MISC ##############################################
@@ -68,7 +55,7 @@ def idify_tool_name(tool_name: str) -> str:
 
 def category_names_to_html_ids(category_names: list[str]) -> list[str]:
     # Check if I actually need this.
-    if not session.get(USE_GROUP_VALUES_SK, False):
+    if not session.get(SK_USE_GROUP_VALUES, False):
         return []
     helper_dict = {
         "breaking": "breaking-cbox",

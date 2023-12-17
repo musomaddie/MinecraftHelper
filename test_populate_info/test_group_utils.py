@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
+import populate_info.population_pages.crafting_population
+import populate_info.resources
 import populate_info.resources as r
 from conftest import GROUP_1, GROUP_3, ITEM_1, ITEM_2, ITEM_3, assert_dictionary_values, get_file_contents
 from populate_info.group_utils import (
@@ -69,11 +71,12 @@ class TestGetGroupCategories:
 class TestGetGroupInfo:
 
     def test_noninteresting_group_name(self):
-        result = get_group_info("", ITEM_1, r.BREAKING_CAT_KEY)
+        result = get_group_info("", ITEM_1, populate_info.resources.CK_BREAKING)
         assert result == {}
 
     def test_breaking(self, group_file_all_categories):
-        result = get_group_info(group_file_all_categories, ITEM_1, r.BREAKING_CAT_KEY)
+        result = get_group_info(group_file_all_categories, ITEM_1,
+                                populate_info.resources.CK_BREAKING)
         assert "requires tool" in result
         assert result["requires tool"] == "any"
         assert "fastest tool" in result
@@ -82,7 +85,7 @@ class TestGetGroupInfo:
         assert not result["silk touch"]
 
     def test_crafting(self, group_file_all_categories):
-        result = get_group_info(group_file_all_categories, ITEM_1, r.CRAFTING_CAT_KEY)
+        result = get_group_info(group_file_all_categories, ITEM_1, r.CK_CRAFTING)
         assert_dictionary_values(
             result,
             [
@@ -134,13 +137,13 @@ class TestMaybeUpdateButton:
     def test_true_dont_use(self):
         my_session = {}
         assert maybe_group_toggle_update_saved(my_session, {"" "update-use-group-values": "", "group-checkbox": ""})
-        assert my_session[r.USE_GROUP_VALUES_SK]
+        assert my_session[r.SK_USE_GROUP_VALUES]
 
     def test_true_use(self):
         my_session = {}
         assert maybe_group_toggle_update_saved(my_session, {
             "update-use-group-values": ""})
-        assert not my_session[r.USE_GROUP_VALUES_SK]
+        assert not my_session[r.SK_USE_GROUP_VALUES]
 
 
 class TestRemoveSharedPart:
@@ -203,12 +206,12 @@ class TestShouldShowGroup:
     @pytest.mark.parametrize("item_name", [ITEM_1, ITEM_2])
     def test_true(self, client, group_file_with_2_items, item_name):
         with client.session_transaction() as session:
-            session[r.CUR_ITEM_SK] = item_name
+            session[r.SK_CUR_ITEM] = item_name
         assert should_show_group(group_file_with_2_items)
 
     def test_false_no_other_items(self, client, group_file_with_1_item):
         with client.session_transaction() as session:
-            session[r.CUR_ITEM_SK] = ITEM_1
+            session[r.SK_CUR_ITEM] = ITEM_1
         assert not should_show_group(group_file_with_1_item)
 
     def test_should_show_group_false_poor_group_name(self):
@@ -221,13 +224,13 @@ class TestWriteGroupDataToJson:
     def test_simple(self, item_file_name_only):
         write_group_name_to_item_json(item_file_name_only, GROUP_1)
         result = get_file_contents(r.get_item_fn(item_file_name_only))
-        assert r.GROUP_NAME_KEY in result
-        assert result[r.GROUP_NAME_KEY] == GROUP_1
+        assert r.KEY_GROUP_NAME in result
+        assert result[r.KEY_GROUP_NAME] == GROUP_1
 
     def test_not_interesting(self, item_file_name_only):
         write_group_name_to_item_json(item_file_name_only, "")
         result = get_file_contents(r.get_item_fn(item_file_name_only))
-        assert r.GROUP_NAME_KEY not in result
+        assert r.KEY_GROUP_NAME not in result
 
 
 class TestMaybeWriteCategoryToGroup:
@@ -244,9 +247,9 @@ class TestMaybeWriteCategoryToGroup:
 
     def test_maybe_write_category_to_group_already_in_group(self, group_file_all_categories):
         maybe_write_category_to_group(
-            group_file_all_categories, ITEM_1, r.ENV_CHANGES_CAT_KEY, {"change": "description 1"})
+            group_file_all_categories, ITEM_1, r.CK_ENV_CHANGES, {"change": "description 1"})
         result = get_file_contents(r.get_group_fn(group_file_all_categories))
         assert_dictionary_values(
-            result[r.ENV_CHANGES_CAT_KEY],
+            result[r.CK_ENV_CHANGES],
             [("change", "description 1")],
             assert_exact=True)

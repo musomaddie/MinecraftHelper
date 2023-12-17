@@ -2,6 +2,8 @@ import typing
 
 from flask import redirect, request, session, url_for
 
+import populate_info.population_pages.crafting_population
+import populate_info.resources
 import populate_info.resources as r
 from populate_info.group_utils import (
     maybe_group_toggle_update_saved, get_next_group_data,
@@ -9,6 +11,11 @@ from populate_info.group_utils import (
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
+
+KEY_TOOL = "requires tool"
+KEY_TOOL_SPECIFIC = "required tool"
+KEY_TOOL_FASTEST = "fastest tool"
+KEY_SILK_TOUCH = "silk touch"
 
 REQ_TOOL_HTML_TO_JSON = {
     "tool-no": "none",
@@ -42,23 +49,23 @@ def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -
     result = {
         # always has requires tool and silk.
         "to-mark-checked": [
-            REQ_TOOL_JSON_TO_HTML[data_to_populate[r.BREAKING_REQ_TOOL_KEY]],
-            SILK_TOUCH_JSON_TO_HTML[data_to_populate[r.BREAKING_SILK_TOUCH_KEY]]
+            REQ_TOOL_JSON_TO_HTML[data_to_populate[KEY_TOOL]],
+            SILK_TOUCH_JSON_TO_HTML[data_to_populate[KEY_SILK_TOUCH]]
         ],
         "reveal": [],  # TODO - test this!!
         "button-choice": get_button_choice(group_data, item_data),
         "dropdown-select": {}
     }
     # Add the special cases
-    if data_to_populate[r.BREAKING_REQ_TOOL_KEY] == "specific":
+    if data_to_populate[KEY_TOOL] == "specific":
         result["dropdown-select"]["specific-tool-select"] = r.idify_tool_name(
-            data_to_populate[r.BREAKING_REQ_SPECIFIC_TOOL_KEY])
+            data_to_populate[KEY_TOOL_SPECIFIC])
         result["reveal"].append("spec-tool-select")
     # TODO - make sure to add a possible no key for the fastest silk.
-    if r.BREAKING_FASTEST_TOOL_KEY in data_to_populate:
+    if KEY_TOOL_FASTEST in data_to_populate:
         result["to-mark-checked"].append("fastest-tool-yes")
         result["dropdown-select"]["fastest-specific-tool-select"] = r.idify_tool_name(
-            data_to_populate[r.BREAKING_FASTEST_TOOL_KEY])
+            data_to_populate[KEY_TOOL_FASTEST])
         result["reveal"].append("fastest-specific-tool-select")
     else:
         result["to-mark-checked"].append("fastest-tool-no")
@@ -70,13 +77,13 @@ def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -
 def breaking(item_name):
     """ Handles populating the breaking obtainment method."""
     # TODO - update all uses of session[r.GROUP_NAME] to session.get with a default group name.
-    group_name = session.get(r.GROUP_NAME_SK, "")
+    group_name = session.get(r.SK_GROUP_NAME, "")
     if request.method == "GET":
         return render_population_template(
             "add_item/breaking.html",
             item_name,
             group_name,
-            r.BREAKING_CAT_KEY,
+            populate_info.resources.CK_BREAKING,
             breaking_json_to_html_ids)
 
     if maybe_group_toggle_update_saved(session, request.form):
@@ -84,17 +91,17 @@ def breaking(item_name):
 
     # Get the data.
     data = {
-        r.BREAKING_REQ_TOOL_KEY: REQ_TOOL_HTML_TO_JSON[request.form["requires-tool"]],
-        r.BREAKING_SILK_TOUCH_KEY: SILK_TOUCH_HTML_TO_JSON[request.form["requires-silk"]]
+        KEY_TOOL: REQ_TOOL_HTML_TO_JSON[request.form["requires-tool"]],
+        KEY_SILK_TOUCH: SILK_TOUCH_HTML_TO_JSON[request.form["requires-silk"]]
     }
 
     # Add the specific tool name if it is required.
-    if data[r.BREAKING_REQ_TOOL_KEY] == "specific":
-        data[r.BREAKING_REQ_SPECIFIC_TOOL_KEY] = r.clean_up_tool_name(request.form["specific-tool"])
+    if data[KEY_TOOL] == "specific":
+        data[KEY_TOOL_SPECIFIC] = r.clean_up_tool_name(request.form["specific-tool"])
 
     if request.form["fastest-tool"] == "fastest-yes":
-        data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest-specific-tool"])
+        data[KEY_TOOL_FASTEST] = r.clean_up_tool_name(request.form["fastest-specific-tool"])
 
-    save_values_to_file(item_name, r.BREAKING_CAT_KEY, data)
+    save_values_to_file(item_name, populate_info.resources.CK_BREAKING, data)
 
     return either_move_next_category_or_repeat(item_name, "add.breaking", request.form)

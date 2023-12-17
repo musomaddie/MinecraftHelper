@@ -126,13 +126,13 @@ def get_group_categories(group_name: str) -> list[str]:
         return []
     data = load_json_from_file(r.get_group_fn(group_name))
     # Get all the keys of data without item name and item list.
-    return [key for key in list(data.keys()) if key != r.GROUP_NAME_KEY and key != r.GROUP_ITEMS_KEY]
+    return [key for key in list(data.keys()) if key != r.KEY_GROUP_NAME and key != r.KEY_GROUP_ITEMS]
 
 
 def include_group_in_item_file(group_name: str, item_data: dict[str, str]):
     if not is_group_name_interesting(group_name):
         return
-    item_data[r.GROUP_NAME_KEY] = group_name
+    item_data[r.KEY_GROUP_NAME] = group_name
 
 
 def is_group_name_interesting(group_name: str) -> bool:
@@ -147,7 +147,7 @@ def is_group_name_interesting(group_name: str) -> bool:
 
 def load_group_items(group_name: str) -> list[str]:
     """ Returns a list of all items in the provided group."""
-    return load_json_from_file(r.get_group_fn(group_name))[r.GROUP_ITEMS_KEY]
+    return load_json_from_file(r.get_group_fn(group_name))[r.KEY_GROUP_ITEMS]
 
 
 def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
@@ -158,7 +158,7 @@ def maybe_group_toggle_update_saved(session, request_form: dict) -> bool:
     if "update-use-group-values" in request_form:
         # if we've been told to update it we need to use the value passed to set this value (because who knows how
         # many times it's been toggled?!)
-        session[r.USE_GROUP_VALUES_SK] = "group-checkbox" in request_form
+        session[r.SK_USE_GROUP_VALUES] = "group-checkbox" in request_form
         return True
     return False
 
@@ -215,5 +215,5 @@ def write_group_name_to_item_json(item_name: str, group_name: str):
     if not is_group_name_interesting(group_name):
         return
     data = load_json_from_file(r.get_item_fn(item_name))
-    data[r.GROUP_NAME_KEY] = group_name
+    data[r.KEY_GROUP_NAME] = group_name
     write_json_to_file(r.get_item_fn(item_name), data)

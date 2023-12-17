@@ -7,6 +7,8 @@ from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
 from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
 
+KEY_CHANGE = "change"
+
 
 def env_changes_json_to_html_ids(
         group_data, current_item_data) -> dict:
@@ -19,21 +21,21 @@ def env_changes_json_to_html_ids(
 
 @item_blueprint.route("/env_changes/<item_name>", methods=["GET", "POST"])
 def env_changes(item_name):
-    group_name = session.get(r.GROUP_NAME_SK, "")
+    group_name = session.get(r.SK_GROUP_NAME, "")
     if request.method == "GET":
         return render_population_template(
             "add_item/env_changes.html",
             item_name,
             group_name,
-            r.ENV_CHANGES_CAT_KEY,
+            r.CK_ENV_CHANGES,
             env_changes_json_to_html_ids)
 
     if maybe_group_toggle_update_saved(session, request.form):
         return redirect(url_for("add.env_changes", item_name=item_name))
 
     # Save data
-    data = {r.EC_CHANGE_J_KEY: request.form["change-text"]}
+    data = {KEY_CHANGE: request.form["change-text"]}
     # TODO: add dup check to individual file as well.
-    save_values_to_file(item_name, r.ENV_CHANGES_CAT_KEY, data)
+    save_values_to_file(item_name, r.CK_ENV_CHANGES, data)
 
     return either_move_next_category_or_repeat(item_name, "add.env_changes", request.form)

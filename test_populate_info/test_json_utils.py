@@ -16,12 +16,12 @@ class TestAddToGroupFile:
         assert path.exists(r.get_group_fn(GROUP_1))
         content = get_file_contents(r.get_group_fn(GROUP_1))
 
-        assert r.GROUP_NAME_KEY in content
-        assert content[r.GROUP_NAME_KEY] == GROUP_1
+        assert r.KEY_GROUP_NAME in content
+        assert content[r.KEY_GROUP_NAME] == GROUP_1
 
-        assert r.GROUP_ITEMS_KEY in content
-        assert len(content[r.GROUP_ITEMS_KEY]) == 1
-        assert content[r.GROUP_ITEMS_KEY][0] == ITEM_1
+        assert r.KEY_GROUP_ITEMS in content
+        assert len(content[r.KEY_GROUP_ITEMS]) == 1
+        assert content[r.KEY_GROUP_ITEMS][0] == ITEM_1
 
     @pytest.mark.parametrize("group_name", ("", None))
     def test_poor_group_name(self, group_name):
@@ -33,12 +33,12 @@ class TestAddToGroupFile:
         assert path.exists(r.get_group_fn(group_file_with_1_item))
         contents = get_file_contents(r.get_group_fn(group_file_with_1_item))
 
-        assert r.GROUP_NAME_KEY in contents
-        assert contents[r.GROUP_NAME_KEY] == group_file_with_1_item
+        assert r.KEY_GROUP_NAME in contents
+        assert contents[r.KEY_GROUP_NAME] == group_file_with_1_item
 
-        assert r.GROUP_ITEMS_KEY in contents
-        assert len(contents[r.GROUP_ITEMS_KEY]) == 2
-        assert contents[r.GROUP_ITEMS_KEY][1] == ITEM_2
+        assert r.KEY_GROUP_ITEMS in contents
+        assert len(contents[r.KEY_GROUP_ITEMS]) == 2
+        assert contents[r.KEY_GROUP_ITEMS][1] == ITEM_2
 
 
 class TestCreateJsonFile:
@@ -47,7 +47,7 @@ class TestCreateJsonFile:
         create_json_file(ITEM_3)
         assert path.exists(r.get_item_fn(ITEM_3))
         result = get_file_contents(r.get_item_fn(ITEM_3))
-        assert_dictionary_values(result, [[r.ITEM_NAME_KEY, ITEM_3]])
+        assert_dictionary_values(result, [[r.KEY_ITEM_NAME, ITEM_3]])
 
 
 class TestGetNextBlock:
@@ -56,12 +56,12 @@ class TestGetNextBlock:
 
     def test_get_next_item_has_items(self):
         with open(r.ADDED_ITEM_FN, "w") as f:
-            json.dump({r.ITEM_LIST_KEY: [ITEM_1]}, f)
+            json.dump({r.KEY_ITEM_LIST: [ITEM_1]}, f)
         assert json_utils.get_next_item() == ITEM_2
 
     def test_get_next_item_no_items_left(self):
         with open(r.ADDED_ITEM_FN, "w") as f:
-            json.dump({r.ITEM_LIST_KEY: [ITEM_1, ITEM_2, ITEM_3]}, f)
+            json.dump({r.KEY_ITEM_LIST: [ITEM_1, ITEM_2, ITEM_3]}, f)
         assert json_utils.get_next_item() is None
 
 
@@ -75,13 +75,13 @@ class TestRemoveFromGroupFile:
     def test_only_item(self, group_file_no_items):
         json_utils.add_to_group_file(GROUP_1, ITEM_1)
         json_utils.remove_from_group_file(GROUP_1, ITEM_1)
-        result = get_file_contents(r.get_group_fn(GROUP_1))[r.ITEM_LIST_KEY]
+        result = get_file_contents(r.get_group_fn(GROUP_1))[r.KEY_ITEM_LIST]
         assert result == []
 
     def test_other_items(self, group_file_with_1_item):
         json_utils.add_to_group_file(GROUP_1, ITEM_2)
         json_utils.remove_from_group_file(GROUP_1, ITEM_2)
-        result = get_file_contents(r.get_group_fn(GROUP_1))[r.ITEM_LIST_KEY]
+        result = get_file_contents(r.get_group_fn(GROUP_1))[r.KEY_ITEM_LIST]
         assert result == [ITEM_1]
 
     def test_without_item(self, group_file_with_1_item):
@@ -99,7 +99,7 @@ class TestWriteJsonCategoryToFile:
         write_json_category_to_file(item_file_name_only, cat_name, category_info)
         assert_dictionary_values(
             get_file_contents(r.get_item_fn(item_file_name_only)),
-            [(r.ITEM_NAME_KEY, item_file_name_only),
+            [(r.KEY_ITEM_NAME, item_file_name_only),
              (cat_name, category_info)]
         )
 
