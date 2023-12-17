@@ -2,11 +2,10 @@ from flask import session, request, redirect, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import (
-    maybe_group_toggle_update_saved, maybe_write_category_to_group, get_button_choice, get_next_group_data)
-from populate_info.json_utils import write_json_category_to_file
+    maybe_group_toggle_update_saved, get_button_choice, get_next_group_data)
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
-from populate_info.population_pages.template_renderer import render_population_template
+from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
 
 
 def env_changes_json_to_html_ids(
@@ -35,7 +34,6 @@ def env_changes(item_name):
     # Save data
     data = {r.EC_CHANGE_J_KEY: request.form["change-text"]}
     # TODO: add dup check to individual file as well.
-    write_json_category_to_file(item_name, r.ENV_CHANGES_CAT_KEY, data)
-    maybe_write_category_to_group(session.get(r.GROUP_NAME_SK, ""), item_name, r.ENV_CHANGES_CAT_KEY, data)
+    save_values_to_file(item_name, r.ENV_CHANGES_CAT_KEY, data)
 
     return either_move_next_category_or_repeat(item_name, "add.env_changes", request.form)

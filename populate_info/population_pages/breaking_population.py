@@ -4,12 +4,11 @@ from flask import redirect, request, session, url_for
 
 import populate_info.resources as r
 from populate_info.group_utils import (
-    maybe_group_toggle_update_saved, maybe_write_category_to_group, get_next_group_data,
+    maybe_group_toggle_update_saved, get_next_group_data,
     get_button_choice)
-from populate_info.json_utils import write_json_category_to_file
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
-from populate_info.population_pages.template_renderer import render_population_template
+from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
 
 REQ_TOOL_HTML_TO_JSON = {
     "tool-no": "none",
@@ -96,8 +95,6 @@ def breaking(item_name):
     if request.form["fastest-tool"] == "fastest-yes":
         data[r.BREAKING_FASTEST_TOOL_KEY] = r.clean_up_tool_name(request.form["fastest-specific-tool"])
 
-    # TODO -> can I put this in a common place too?
-    write_json_category_to_file(item_name, r.BREAKING_CAT_KEY, data)
-    maybe_write_category_to_group(session.get(r.GROUP_NAME_SK, ""), item_name, r.BREAKING_CAT_KEY, data)
+    save_values_to_file(item_name, r.BREAKING_CAT_KEY, data)
 
     return either_move_next_category_or_repeat(item_name, "add.breaking", request.form)

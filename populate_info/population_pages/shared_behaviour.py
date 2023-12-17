@@ -5,8 +5,8 @@ TODO -> consider renaming this.
 from flask import render_template, session
 
 import populate_info.resources as r
-from populate_info.group_utils import should_show_group, get_group_info
-from populate_info.json_utils import get_current_category_info
+from populate_info.group_utils import should_show_group, get_group_info, maybe_write_category_to_group
+from populate_info.json_utils import get_current_category_info, write_json_category_to_file
 
 
 def render_population_template(
@@ -27,3 +27,13 @@ def render_population_template(
             get_current_category_info(item_name, category_key)),
         show_group=should_show_group(group_name)
     )
+
+
+def save_values_to_file(
+        item_name: str,
+        category_key: str,
+        data: dict):
+    """ Saves the given item data to file (including possible group file). """
+    write_json_category_to_file(item_name, category_key, data)
+    # TODO (add to github too) - replace all session[] with session.get with default string.
+    maybe_write_category_to_group(session.get(r.GROUP_NAME_SK, ""), item_name, category_key, data)
