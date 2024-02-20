@@ -1,0 +1,21 @@
+{
+  "item name": "Acacia Door",
+  "breaking": {
+    "requires tool": "none",
+    "silk touch": false
+  },
+  "crafting": {
+    "slots": {},
+    "number created": 3,
+    "relative positioning": "strict",
+    "works in smaller grid": false
+  },
+  "environment changes": [
+    {
+      "change": ""
+    },
+    {
+      "change": ""
+    }
+  ]
+}
