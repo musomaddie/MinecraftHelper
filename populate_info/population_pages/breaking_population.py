@@ -32,7 +32,9 @@ SILK_TOUCH_HTML_TO_JSON = {
 SILK_TOUCH_JSON_TO_HTML = {True: f"requires-silk-yes", False: f"requires-silk-no"}
 
 
+# TODO -> extract this type of method into its own location and document it a hell of a lot better.
 def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -> dict[str, list[str]]:
+    # TODO -> make the group_data ALWAYS be a list (even if its just a list of one).
     """
     Takes an object taken from JSON that contains the breaking data and returns the corresponding information that
     should be passed to the webpage.
@@ -77,6 +79,7 @@ def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -
 def breaking(item_name):
     """ Handles populating the breaking obtainment method."""
     # TODO - update all uses of session[r.GROUP_NAME] to session.get with a default group name.
+    # TODO -> can I util any of this further??
     group_name = session.get(r.SK_GROUP_NAME, "")
     if request.method == "GET":
         return render_population_template(
