@@ -17,7 +17,7 @@ def create(
         name=group_name,
         item_names=parser.get_all_items(),
         current_item=item_name,
-        is_interesting=has_existing_items,
+        is_interesting=group_name != "",
         json_parser=parser,
         use_group_values=has_existing_items,
     )

@@ -22,6 +22,15 @@ class GroupJsonParser:
         """ Returns the filename corresponding to the group name of this. """
         return f"{GROUP_DIR}{self.group_name.lower().replace(' ', '_')}.json"
 
+    def _create_file(self):
+        """ Creates a file for this group. """
+        with open(self._filename(), "w") as f:
+            json.dump({"group name": self.group_name}, f, indent=2)
+
+    def _write_all_contents(self, contents: dict):
+        with open(self._filename(), "w") as f:
+            json.dump(contents, f, indent=2)
+
     def get_file_contents(self) -> dict:
         """ Returns the contents of this JSON file as dict."""
         if not path.exists(self._filename()):
@@ -39,4 +48,14 @@ class GroupJsonParser:
 
     def get_all_items(self):
         """ Returns all the items within this group. """
-        return self.get_file_contents().get("items", [])
+        return self.get_file_contents().get(KEY_ITEM_LIST, [])
+
+    def write_items(self, group_items: list[str]):
+        """ Adds the given item to the json file. """
+        # If the file doesn't exist, create one.
+        if not path.exists(self._filename()):
+            self._create_file()
+
+        existing_contents = self.get_file_contents()
+        existing_contents[KEY_ITEM_LIST] = group_items
+        self._write_all_contents(existing_contents)
