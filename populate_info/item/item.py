@@ -3,6 +3,7 @@ import json
 from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
+from flask import session, redirect, url_for
 
 from populate_info.item_group import group_factory
 # TODO -> clean up this import statement its kinda gross.
@@ -39,3 +40,27 @@ class Item:
 
         with open(self._filename(), "w") as f:
             json.dump({"item name": self.name}, f, indent=2)
+
+    def move_to_next_category(self):
+        """ Moves to the next category. """
+        # If there isn't another category we instead move to the next item. There is no need to save these results,
+        # this should happen prior to this call.
+        if len(session["methods"]) == 0:
+            return redirect(url_for("add.start_adding_item", item_name=self.get_next_item()))
+        next_category = session["methods"].pop(0)
+        # TODO -> do I need to reassign the session variable.
+        return redirect(url_for(next_category, item_name=self.name))
+
+    @staticmethod
+    def get_next_item() -> str:
+        """ The name of the next unpopulated block of item. """
+        current_items = []
+        all_items = []
+        with open(f"{DIR}all_items/added_items.json") as f:
+            current_items = json.load(f)["items"]
+        with open(f"{DIR}all_items/full_item_list.json") as f:
+            all_items = json.load(f)["items"]
+
+        if len(current_items) >= len(all_items):
+            return ""
+        return all_items[len(current_items)]
