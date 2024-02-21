@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 
+from populate_info.item_group import group_factory
 # TODO -> clean up this import statement its kinda gross.
 from populate_info.item_group.group import Group
 
@@ -19,5 +20,5 @@ class Item:
         return f"https://minecraft.fandom.com/wiki/{self.name.replace(' ', '%20')}"
 
     def change_group(self, new_group_name):
-        """ Removes this item from the current group, and adds it to the new group name."""
-        pass
+        """ Changes the group associated with this item to the new one. """
+        self.group = group_factory.create(group_name=new_group_name, item_name=self.name)

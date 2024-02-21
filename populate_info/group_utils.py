@@ -179,7 +179,7 @@ def maybe_write_category_to_group(group_name: str, item_name: str, category_name
 
 
 def should_show_group(group_name: str):
-    """ Returns true if values should be autopopulated from this group.
+    """ Returns true if values should be auto-populated from this group.
 
     This is true when the group name is interesting and there is another item in it."""
     if not is_group_name_interesting(group_name):

@@ -37,6 +37,8 @@ def start_adding_item(item_name):
 
     # Update group name and reload this page (if applicable).
     if "group-name-btn" in request.form:
+        # TODO -> replace these calls with ones to the new classes -> won't need to remove it from the current group
+        #  since its not saved until after this method is done.
         new_group_name = request.form["group-name"]
         update_group(group_name, new_group_name, item_name)
         session[r.SK_GROUP_NAME] = new_group_name

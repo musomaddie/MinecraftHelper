@@ -11,11 +11,13 @@ def create(
     In doing so, will parse a JSON file corresponding to the given group name, if it exists.
     """
     parser = GroupJsonParser(group_name)
+    has_existing_items = len(parser.get_all_items()) > 0
 
     return Group(
         name=group_name,
         item_names=parser.get_all_items(),
         current_item=item_name,
-        is_interesting=len(parser.get_all_items()) > 0,
+        is_interesting=has_existing_items,
         json_parser=parser,
+        use_group_values=has_existing_items,
     )

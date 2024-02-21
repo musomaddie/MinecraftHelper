@@ -79,3 +79,23 @@ class TestCategoriesHtmlIds:
 
     def test_hidden_group(self, group_non_interesting):
         assert group_non_interesting.categories_html_ids() == []
+
+
+class TestCheckToggleSelected:
+    """ Tests for the check_toggle_selected method. """
+
+    @pytest.mark.parametrize("request_form", [{}, {"not what we want": "hehehe"}])
+    def test_not_in_form_false(self, request_form, group_all_categories):
+        previous_toggle_value = group_all_categories.use_group_values
+        assert not group_all_categories.check_toggle_selected(request_form)
+        assert previous_toggle_value == group_all_categories.use_group_values
+
+    def test_in_form_with_update_request_true(self, group_non_interesting):
+        assert group_non_interesting.check_toggle_selected(
+            {"update-use-group-values": "", "group-checkbox": ""})
+        assert group_non_interesting.use_group_values
+
+    def test_in_form_no_update_requested_true(self, group_non_interesting):
+        assert group_non_interesting.check_toggle_selected(
+            {"update-use-group-values": ""})
+        assert not group_non_interesting.use_group_values
