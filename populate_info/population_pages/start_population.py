@@ -1,11 +1,8 @@
+""" python flask code for entering basic population information for blocks. """
 from flask import redirect, render_template, request, session, url_for
 
-import populate_info.resources as r
-from populate_info.group_utils import (
-    get_group_categories, maybe_group_toggle_update_saved, update_group,
-    write_group_name_to_item_json, should_show_group)
-from populate_info.json_utils import create_json_file, get_next_item
-from populate_info.navigation_utils import move_next_category
+from populate_info.item import item_factory
+from populate_info.item.item import Item
 from populate_info.population_pages import item_blueprint
 
 
@@ -16,35 +13,31 @@ def start_adding_item(item_name):
 
     :param item_name: the name of the item to be added.
     """
-    # Reset the session variables as we assume the item has changed.
-    # TODO -> replace with using the new classes.
-    session[r.SK_CUR_ITEM] = item_name
-    group_name = session.get(r.SK_GROUP_NAME, "")
+    item = item_factory.create(item_name)
 
-    # Return basic page if this is a get request!! TODO -> explain why!
+    if "current_item" in session and session["current_item"]["name"] == item_name:
+        # If the session item hasn't changed then restore it.
+        item = item_factory.create_from_dictionary(session["current_item"])
+    # Reset the session item as it might have changed.
+    session["current_item"] = item
+
     if request.method == "GET":
         return render_template(
             "add_item/start.html",
-            # TODO -> replace with using the new classes.
             item_name=item_name,
-            item_url=r.get_item_url(item_name),
-            group_name=group_name,
-            is_toggle_selected=session.get(r.SK_USE_GROUP_VALUES, True),
-            group_categories=r.category_names_to_html_ids(get_group_categories(group_name)),
-            # TODO - toggle for testing.
-            # show_group=True,
-            show_group=should_show_group(group_name))
+            item_url=item.get_url(),
+            group_name=item.group.name,
+            is_toggle_selected=item.group.use_group_values,
+            group_categories=item.group.categories_html_ids(),
+            show_group=item.group.should_show_group())
 
-    # Update group name and reload this page (if applicable).
+    # Update the group name and reload the page (if applicable).
     if "group-name-btn" in request.form:
-        # TODO -> replace these calls with ones to the new classes -> won't need to remove it from the current group
-        #  since its not saved until after this method is done.
-        new_group_name = request.form["group-name"]
-        update_group(group_name, new_group_name, item_name)
-        session[r.SK_GROUP_NAME] = new_group_name
+        item.change_group(request.form["group-name"])
+        session["current_item"] = item
         return redirect(url_for("add.start_adding_item", item_name=item_name))
 
-    if maybe_group_toggle_update_saved(session, request.form):
+    if item.group.check_toggle_selected(request.form):
         return redirect(url_for("add.start_adding_item", item_name=item_name))
 
     methods = []
@@ -54,14 +47,15 @@ def start_adding_item(item_name):
         methods.append("add.crafting")
     if "env-changes" in request.form.keys():
         methods.append("add.env_changes")
-    session[r.SK_METHOD_LIST] = methods
+    session["methods"] = methods
 
-    create_json_file(item_name)
-    write_group_name_to_item_json(item_name, group_name)
-    return move_next_category(item_name)
+    item.create_json_file()
+    item.group.add_current_item_to_json()
+    return item.move_to_next_category()
 
 
 @item_blueprint.route("/")
 def start():
+    """ Route to start adding blocks with the next applicable item if non is given. """
     session.clear()
-    return redirect(url_for("add.start_adding_item", item_name=get_next_item()))
+    return redirect(url_for("add.start_adding_item", item_name=Item.get_next_item()))

@@ -1,13 +1,11 @@
 """ A group class. """
 from dataclasses import dataclass
 
-from dataclasses_json import dataclass_json
-
 from populate_info.categories.category import PopulationCategory
 from populate_info.item_group.group_parser import GroupJsonParser
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
 class Group:
     """ A group of related items.
