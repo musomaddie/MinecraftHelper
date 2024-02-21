@@ -25,14 +25,15 @@ def _add_manual_test_group():
             f)
 
 
+def get_file_contents(filename: str) -> dict:
+    """ Gets the content of the given file. """
+    with open(filename) as f:
+        return json.load(f)
+
+
 def _create_file(filename, data):
     with open(filename, "w") as f:
         json.dump(data, f)
-
-
-def get_file_contents(filename: str) -> dict:
-    with open(filename) as f:
-        return json.load(f)
 
 
 def assert_dictionary_values(result, expected_key_value_pairs, assert_exact=True):

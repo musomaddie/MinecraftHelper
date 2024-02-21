@@ -3,6 +3,7 @@ import json
 
 import pytest
 
+from conftest import get_file_contents
 from populate_info.item_group.group_parser import KEY_GROUP_NAME, KEY_ITEM_LIST, GroupJsonParser
 
 TEST_GROUP_NAME = "testing group"
@@ -14,12 +15,6 @@ FAKE_ITEM_3 = "Item 3"
 
 EXISTING_FILENAME = "populate_info/item_data/groups/testing_group.json"
 MISSING_FILENAME = "populate_info/item_data/groups/no_file_here.json"
-
-
-def get_file_contents(filename):
-    """ Gets the content of the given file. """
-    with open(filename) as f:
-        return json.load(f)
 
 
 @pytest.fixture
@@ -92,5 +87,4 @@ class TestWriteItems:
     def test_new_file(self, parser_missing_corresponding_file):
         new_items = [TEST_GROUP_ITEM]
         parser_missing_corresponding_file.write_items(new_items)
-
         assert get_file_contents(MISSING_FILENAME).get("items") == new_items

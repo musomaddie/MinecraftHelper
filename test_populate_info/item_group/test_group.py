@@ -1,8 +1,10 @@
 """ Tests for the group class. """
 import json
+from os import path
 
 import pytest
 
+from conftest import get_file_contents
 from populate_info.item_group import group_factory
 from populate_info.item_group.group import Group
 from populate_info.item_group.group_parser import KEY_GROUP_NAME, KEY_ITEM_LIST
@@ -13,6 +15,9 @@ FAKE_ITEM_3 = "Item 3"
 
 TEST_GROUP_NAME = "testing group"
 TEST_GROUP_ITEM = "test item"
+
+EXISTING_GROUP_FILE = "populate_info/item_data/groups/testing_group.json"
+NEW_GROUP_FILE = "populate_info/item_data/groups/missing_group.json"
 
 
 @pytest.fixture
@@ -51,7 +56,7 @@ def group_all_categories() -> Group:
 def group_non_interesting() -> Group:
     """ Returns a very boring group."""
     return group_factory.create(
-        "missing group", TEST_GROUP_ITEM
+        "", "missing group"
     )
 
 
@@ -99,3 +104,17 @@ class TestCheckToggleSelected:
         assert group_non_interesting.check_toggle_selected(
             {"update-use-group-values": ""})
         assert not group_non_interesting.use_group_values
+
+
+class TestAddCurrentItemToJson:
+    """ Tests for add_current_item_to_json"""
+
+    def test_interesting_group(self, group_all_categories):
+        group_all_categories.add_current_item_to_json()
+        contents = get_file_contents(EXISTING_GROUP_FILE)
+        assert contents.get("items") == [FAKE_ITEM_1, FAKE_ITEM_2, TEST_GROUP_ITEM]
+
+    def test_new_file(self, group_non_interesting):
+        group_non_interesting.add_current_item_to_json()
+        # The group file should not actually exist.
+        assert not path.exists(NEW_GROUP_FILE)

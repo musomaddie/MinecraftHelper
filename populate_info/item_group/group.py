@@ -42,3 +42,11 @@ class Group:
             self.use_group_values = "group-checkbox" in request_data
             return True
         return False
+
+    def add_current_item_to_json(self):
+        """ Add the current item to the json file for this group. """
+        # Don't bother writing to the file if the group is non-interesting.
+        if not self.is_interesting:
+            return
+        self.item_names.append(self.current_item)
+        self.json_parser.write_items(self.item_names)
