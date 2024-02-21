@@ -48,3 +48,7 @@ class Group:
             return
         self.item_names.append(self.current_item)
         self.json_parser.write_items(self.item_names)
+
+    def get_breaking_data(self):
+        """ Returns all the breaking data for this group. """
+        pass

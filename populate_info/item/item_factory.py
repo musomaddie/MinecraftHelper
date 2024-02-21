@@ -1,5 +1,6 @@
 """ Factory for creating item instances. """
 from populate_info.item.item import Item
+from populate_info.item.item_parser import ItemJsonParser
 from populate_info.item_group import group_factory
 from populate_info.item_group.group import Group
 from populate_info.item_group.group_parser import GroupJsonParser
@@ -8,13 +9,13 @@ from populate_info.item_group.group_parser import GroupJsonParser
 def create(item_name: str) -> Item:
     """ Creates an item with the corresponding name, but not an interesting group. """
     group = group_factory.create("", item_name)
-    return Item(item_name, group)
+    return Item(item_name, group, ItemJsonParser(item_name))
 
 
 def create_with_group(item_name: str, group_name: str) -> Item:
     """ Creates an item with the corresponding name and an interesting group. """
     group = group_factory.create(group_name, item_name)
-    return Item(item_name, group)
+    return Item(item_name, group, ItemJsonParser(item_name))
 
 
 def create_from_dictionary(item_dict: dict) -> Item:
@@ -29,4 +30,4 @@ def create_from_dictionary(item_dict: dict) -> Item:
         json_parser=parser,
         use_group_values=group_dict["use_group_values"]
     )
-    return Item(item_dict["name"], group)
+    return Item(item_dict["name"], group, ItemJsonParser(item_dict["name"]))

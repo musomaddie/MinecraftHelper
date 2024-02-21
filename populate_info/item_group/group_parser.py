@@ -10,6 +10,7 @@ GROUP_DIR = "populate_info/item_data/groups/"
 """ Keys used within the JSON file. Saved as variables for sanity. """
 KEY_GROUP_NAME = "group name"
 KEY_ITEM_LIST = "items"
+KEY_BREAKING = "breaking"
 
 
 @dataclass
@@ -59,3 +60,7 @@ class GroupJsonParser:
         existing_contents = self.get_file_contents()
         existing_contents[KEY_ITEM_LIST] = group_items
         self._write_all_contents(existing_contents)
+
+    def get_breaking_data(self) -> list[dict]:
+        """ Returns the breaking data for this group. """
+        return self.get_file_contents().get(KEY_BREAKING, [])

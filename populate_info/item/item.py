@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from flask import session, redirect, url_for
 
+from populate_info.item.item_parser import ItemJsonParser
 from populate_info.item_group import group_factory
 # TODO -> clean up this import statement its kinda gross.
 from populate_info.item_group.group import Group
@@ -18,6 +19,7 @@ class Item:
     """ A minecraft item or block. """
     name: str
     group: Group
+    parser: ItemJsonParser
 
     def _filename(self) -> str:
         """ Returns the filename of this item"""
@@ -33,13 +35,7 @@ class Item:
 
     def create_json_file(self):
         """ Creates a json file for this item. """
-        json_data = {"item name": self.name, }
-        # Only save the group name if it's actually interesting.
-        if self.group.is_interesting:
-            json_data["group name"] = self.group.name
-
-        with open(self._filename(), "w") as f:
-            json.dump({"item name": self.name}, f, indent=2)
+        self.parser.write_initial_information(self.group.name)
 
     def move_to_next_category(self):
         """ Moves to the next category. """
@@ -50,6 +46,10 @@ class Item:
         next_category = session["methods"].pop(0)
         # TODO -> do I need to reassign the session variable.
         return redirect(url_for(next_category, item_name=self.name))
+
+    def get_item_breaking_data(self):
+        """ Gets the breaking data associated with this item. """
+        pass
 
     @staticmethod
     def get_next_item() -> str:

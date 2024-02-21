@@ -10,6 +10,7 @@ from populate_info.group_utils import (
     get_button_choice)
 from populate_info.navigation_utils import either_move_next_category_or_repeat
 from populate_info.population_pages import item_blueprint
+from populate_info.population_pages.population_page import PopulationPage
 from populate_info.population_pages.shared_behaviour import render_population_template, save_values_to_file
 
 KEY_TOOL = "requires tool"
@@ -30,6 +31,21 @@ SILK_TOUCH_HTML_TO_JSON = {
     "silk-no-v": False
 }
 SILK_TOUCH_JSON_TO_HTML = {True: f"requires-silk-yes", False: f"requires-silk-no"}
+
+
+class BreakingPopulationPage(PopulationPage):
+    """ Breaking population page for data. """
+
+    def json_to_html_ids(self):
+        pass
+
+
+#
+# @item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
+# def breaking(item_name):
+#     """ Handles populating the breaking obtainment method."""
+#
+#     pass
 
 
 # TODO -> extract this type of method into its own location and document it a hell of a lot better.
