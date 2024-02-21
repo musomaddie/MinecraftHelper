@@ -14,16 +14,18 @@ def start_adding_item(item_name):
     """
     Start adding data for this item.
 
-    :param item_name:
+    :param item_name: the name of the item to be added.
     """
-    # Reset the session variables.
+    # Reset the session variables as we assume the item has changed.
+    # TODO -> replace with using the new classes.
     session[r.SK_CUR_ITEM] = item_name
     group_name = session.get(r.SK_GROUP_NAME, "")
 
-    # Return basic page if this is a get request!!
+    # Return basic page if this is a get request!! TODO -> explain why!
     if request.method == "GET":
         return render_template(
             "add_item/start.html",
+            # TODO -> replace with using the new classes.
             item_name=item_name,
             item_url=r.get_item_url(item_name),
             group_name=group_name,

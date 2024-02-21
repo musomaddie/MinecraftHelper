@@ -94,7 +94,7 @@ def group_file_no_items():
 
 @pytest.fixture
 def group_file_with_1_item(tmp_path):
-    """ Creates a group file with only one existing item (ITEM_1). Returns group_name."""
+    """ Creates a group file with only one existing item (ITEM_1). Returns name."""
     _create_file(r.get_group_fn(GROUP_1),
                  {r.KEY_GROUP_NAME: GROUP_1, r.KEY_GROUP_ITEMS: [ITEM_1]})
     return GROUP_1
@@ -133,6 +133,7 @@ def item_file_name_only():
 
 @pytest.fixture(autouse=True)
 def create_tmp_dir(monkeypatch, tmp_path):
+    # TODO revisit this once clean up is complete.
     Path(tmp_path / r.DIR).mkdir(parents=True)
     Path(tmp_path / r.DIR / "all_items").mkdir(parents=True)
     Path(tmp_path / r.DIR / "groups").mkdir(parents=True)

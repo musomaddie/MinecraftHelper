@@ -16,5 +16,8 @@ class Item:
 
     def get_url(self):
         """ Returns the url for this item on the Minecraft Wiki. """
-        # TODO -> insert link to wiki here!
+        return f"https://minecraft.fandom.com/wiki/{self.name.replace(' ', '%20')}"
+
+    def change_group(self, new_group_name):
+        """ Removes this item from the current group, and adds it to the new group name."""
         pass
