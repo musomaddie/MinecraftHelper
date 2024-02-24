@@ -47,9 +47,9 @@ class Item:
         # TODO -> do I need to reassign the session variable.
         return redirect(url_for(next_category, item_name=self.name))
 
-    def get_item_breaking_data(self):
+    def get_item_breaking_data(self) -> list[dict]:
         """ Gets the breaking data associated with this item. """
-        pass
+        return self.parser.get_breaking_info()
 
     @staticmethod
     def get_next_item() -> str:

@@ -5,6 +5,7 @@ from flask import redirect, request, session, url_for
 import populate_info.population_pages.crafting_population
 import populate_info.resources
 import populate_info.resources as r
+from populate_info.categories.category import PopulationCategory
 from populate_info.group_utils import (
     maybe_group_toggle_update_saved, get_next_group_data,
     get_button_choice)
@@ -37,18 +38,54 @@ class BreakingPopulationPage(PopulationPage):
     """ Breaking population page for data. """
 
     def json_to_html_ids(self):
-        pass
+        # Assuming this has been called only when there is existing group data to populate. Might be a dangerous
+        # assumption but will do for now.
+        default_data = PopulationCategory.get_next_information(
+            self.item.get_item_breaking_data(),
+            self.item.group.get_breaking_data())
+        button_choice = "another" if PopulationCategory.has_more_information_afterwards(
+            self.item.get_item_breaking_data(), self.item.group.get_breaking_data()
+        ) else "next"
+
+        html_ids = {
+            "button-choice": button_choice,
+            "to-mark-checked": [
+                REQ_TOOL_JSON_TO_HTML[default_data[KEY_TOOL]],
+                SILK_TOUCH_JSON_TO_HTML[default_data[KEY_SILK_TOUCH]]
+            ],
+            "reveal": [],
+            "dropdown-select": {},
+        }
+
+        # Add the specific required tool (if it is needed).
+        if default_data[KEY_TOOL] == "specific":
+            html_ids["dropdown-select"]["specific-tool-select"] = self.idify_string(
+                default_data[KEY_TOOL_SPECIFIC]
+            )
+            html_ids["reveal"].append("spec-tool-select")
+
+        if KEY_TOOL_FASTEST in default_data:
+            # If there is the fastest tool, add it to the result.
+            html_ids["to-mark-checked"].append("fastest-tool-yes")
+            html_ids["dropdown-select"]["fastest-specific-tool-select"] = self.idify_string(
+                default_data[KEY_TOOL_FASTEST])
+            html_ids["reveal"].append("fastest-specific-tool-select")
+        else:
+            html_ids["reveal"].append("fastest-tool-no")
+
+        return html_ids
 
 
-#
-# @item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
-# def breaking(item_name):
-#     """ Handles populating the breaking obtainment method."""
-#
-#     pass
+@item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
+def breaking(item_name):
+    """ Handles populating the breaking obtainment method."""
+    population_page = BreakingPopulationPage()
+    if request.method == "GET":
+        return population_page.render_population_template("add_item/breaking.html")
+
+        # TODO -> extract this type of method into its own location and document it a hell of a lot better.
 
 
-# TODO -> extract this type of method into its own location and document it a hell of a lot better.
 def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -> dict[str, list[str]]:
     # TODO -> make the group_data ALWAYS be a list (even if its just a list of one).
     """
@@ -91,8 +128,8 @@ def breaking_json_to_html_ids(group_data: typing.Union[dict, list], item_data) -
     return result
 
 
-@item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
-def breaking(item_name):
+# @item_blueprint.route("/breaking/<item_name>", methods=["GET", "POST"])
+def breaking_v1(item_name):
     """ Handles populating the breaking obtainment method."""
     # TODO - update all uses of session[r.GROUP_NAME] to session.get with a default group name.
     # TODO -> can I util any of this further??
